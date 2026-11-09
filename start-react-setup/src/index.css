@@ -1,0 +1,16 @@
+﻿:root { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; color: #273a34; background: #f5f7f3; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; line-height: 1.6; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, input, textarea { font: inherit; }
+button { cursor: pointer; border: 1px solid #cbd6ce; background: #fff; color: inherit; border-radius: 9px; padding: 8px 14px; }
+button:hover:not(:disabled) { background: #edf2ec; }
+button:disabled { cursor: not-allowed; opacity: .45; }
+:focus-visible { outline: 3px solid #28745c; outline-offset: 3px; }
+input, textarea { width: 100%; padding: 10px; border: 1px solid #9aaca2; border-radius: 8px; color: inherit; background: #fff; }
+textarea { resize: vertical; min-height: 100px; }
+label { display: block; margin: 10px 0 6px; font-weight: 600; }
+h1, h2, p { margin: 0; }
+h2 { font-size: 16px; }
+button.primary { background: #30644f; border-color: #30644f; color: #fff; }
+button.primary:hover { background: #254e3e; }
+button.danger { background: #a83932; color: #fff; }
