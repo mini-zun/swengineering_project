@@ -68,3 +68,20 @@ test('공통 시간 store를 분 단위로 구독하면 분이 바뀔 때만 값
   unsubscribe()
   assert.equal(pending, null, '구독자가 없으면 타이머를 정리한다')
 })
+
+test('실행 중 기기 시간대가 바뀌면 12시간제도 날짜·24시간제와 같은 시간대로 표시한다', () => {
+  const original = process.env.TZ
+  try {
+    const instant = new Date('2026-11-10T14:32:00Z')
+    process.env.TZ = 'UTC'
+    assert.equal(formatTime(instant, { hour12: true }), '오후 2:32')
+    process.env.TZ = 'Asia/Seoul'
+    assert.equal(formatTime(instant), '23:32')
+    assert.equal(formatTime(instant, { hour12: true }), '오후 11:32')
+    assert.equal(formatLongDate(instant), '2026년 11월 10일 화요일')
+    assert.equal(formatTime(new Date('2026-11-10T15:05:09Z'), { hour12: true, showSeconds: true }), '오전 12:05:09')
+  } finally {
+    if (original === undefined) delete process.env.TZ
+    else process.env.TZ = original
+  }
+})

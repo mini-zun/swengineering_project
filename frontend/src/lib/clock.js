@@ -5,22 +5,16 @@ import { WEEKDAY_LABELS, formatDateLabel } from './date.js'
 
 const pad = (value) => String(value).padStart(2, '0')
 
-// 포맷터 생성 비용을 줄이려고 옵션 조합별로 한 번만 만든다.
-const formatters = new Map()
-function formatter(options) {
-  const key = JSON.stringify(options)
-  if (!formatters.has(key)) formatters.set(key, new Intl.DateTimeFormat('ko-KR', options))
-  return formatters.get(key)
-}
-
-/** 기본(미니멀 페이퍼): 24시간제, 초 없음 → "14:32" */
+/**
+ * 기본(미니멀 페이퍼): 24시간제, 초 없음 → "14:32". hour12면 "오후 2:32".
+ * Intl 포맷터는 만들 때의 시간대를 계속 쓰므로, 날짜 표기와 같은 기준이 되도록
+ * 로컬 Date 값(getHours 등)으로 직접 조합한다. 실행 중 기기 시간대가 바뀌어도 함께 따라간다.
+ */
 export function formatTime(date, { hour12 = false, showSeconds = false } = {}) {
-  if (!hour12) {
-    // 24시간제는 브라우저마다 Intl 결과가 달라질 여지가 있어 직접 만든다.
-    const time = `${pad(date.getHours())}:${pad(date.getMinutes())}`
-    return showSeconds ? `${time}:${pad(date.getSeconds())}` : time
-  }
-  return formatter({ hour: 'numeric', minute: '2-digit', ...(showSeconds && { second: '2-digit' }), hour12: true }).format(date)
+  const hours = date.getHours()
+  const rest = `${pad(date.getMinutes())}${showSeconds ? `:${pad(date.getSeconds())}` : ''}`
+  if (!hour12) return `${pad(hours)}:${rest}`
+  return `${hours < 12 ? '오전' : '오후'} ${hours % 12 || 12}:${rest}`
 }
 
 /** "2026년 11월 3일 화요일". 달력과 같은 표기를 쓰도록 date.js의 함수를 그대로 쓴다. */
