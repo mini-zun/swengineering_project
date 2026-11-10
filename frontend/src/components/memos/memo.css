@@ -1,0 +1,110 @@
+/*
+ * 메모 위젯 스타일. 기본값은 디자인 시안 '1. 미니멀 페이퍼'를 따른다.
+ * 테마는 상위 요소에서 공개 변수(--memo-*)만 바꾼다. 아래 --_memo-* 는 내부용이라 테마에서 쓰지 않는다.
+ * 위치와 너비는 레이아웃 slot이 정하므로 여기서는 고정 위치·고정 너비를 쓰지 않는다.
+ */
+.memo-widget {
+  --_memo-text: var(--memo-text, #1C1C1A);
+  --_memo-muted: var(--memo-muted, #5E5D58);
+  --_memo-border: var(--memo-border, 1px solid #E2E0DA);
+  --_memo-radius: var(--memo-radius, 12px);
+  --_memo-shadow: var(--memo-shadow, none);
+  --_memo-padding: var(--memo-padding, 16px);
+  --_memo-font: var(--memo-font, inherit);
+  --_memo-font-size: var(--memo-font-size, 15px);
+  --_memo-line-height: var(--memo-line-height, 1.7);
+  --_memo-title-size: var(--memo-title-size, 15px);
+  --_memo-gap: var(--memo-gap, 12px);
+  --_memo-focus: var(--memo-focus, #2456D6);
+  --_memo-danger: var(--memo-danger, #A42D29);
+  --_memo-control-bg: var(--memo-control-bg, #EFEDE7);
+  --_memo-selected-bg: var(--memo-selected-bg, #1C1C1A);
+  --_memo-selected-text: var(--memo-selected-text, #F7F6F3);
+  --_memo-height-s: var(--memo-height-s, 140px);
+  --_memo-height-m: var(--memo-height-m, 220px);
+  --_memo-height-l: var(--memo-height-l, 360px);
+  --_memo-board-min: var(--memo-board-min-width, 180px);
+  --_memo-bg-paper: var(--memo-bg-paper, #FFFFFF);
+  --_memo-bg-yellow: var(--memo-bg-yellow, #FFF8E1);
+  --_memo-bg-pink: var(--memo-bg-pink, #FCEFF1);
+  --_memo-bg-blue: var(--memo-bg-blue, #EDF2FC);
+  --_memo-bg-green: var(--memo-bg-green, #EDF6EF);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--_memo-gap);
+  width: 100%;
+  min-width: 0;
+  color: var(--_memo-text);
+  font-family: var(--_memo-font);
+}
+
+.memo-widget [data-color="paper"] { --_memo-bg: var(--_memo-bg-paper); }
+.memo-widget [data-color="yellow"] { --_memo-bg: var(--_memo-bg-yellow); }
+.memo-widget [data-color="pink"] { --_memo-bg: var(--_memo-bg-pink); }
+.memo-widget [data-color="blue"] { --_memo-bg: var(--_memo-bg-blue); }
+.memo-widget [data-color="green"] { --_memo-bg: var(--_memo-bg-green); }
+
+/* 레이아웃의 .widget p 기본 여백·색을 메모 안에서는 쓰지 않는다. */
+.memo-widget.memo-widget p { margin: 0; color: inherit; font-size: inherit; }
+.memo-widget :focus-visible { outline: 3px solid var(--_memo-focus); outline-offset: 2px; }
+.memo-widget label { margin: 0; font-weight: 400; }
+.memo-widget button { min-height: 36px; font-size: 13px; }
+
+.memo-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.memo-header h2 { font-size: var(--_memo-title-size); font-weight: 700; }
+.memo-count { color: var(--_memo-muted); font-weight: 400; }
+.memo-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.memo-views { display: flex; gap: 2px; }
+.memo-views button, .memo-pick { border: 0; border-radius: 999px; background: transparent; color: var(--_memo-muted); padding: 6px 12px; }
+.memo-views button[aria-pressed="true"], .memo-pick[aria-pressed="true"] { background: var(--_memo-selected-bg); color: var(--_memo-selected-text); font-weight: 700; }
+.memo-widget .memo-views button[aria-pressed="true"]:hover, .memo-widget .memo-pick[aria-pressed="true"]:hover { background: var(--_memo-selected-bg); }
+
+.memo-picker { display: flex; gap: 4px; overflow-x: auto; padding: 4px 2px; margin-bottom: 4px; }
+.memo-pick { flex-shrink: 0; max-width: 12em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.memo-sheet { display: flex; flex-direction: column; min-width: 0; }
+/* grid가 칸을 나누므로 크기를 바꿔도 카드끼리 겹치지 않는다. */
+.memo-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--_memo-board-min)), 1fr)); gap: var(--_memo-gap); align-items: start; }
+
+.memo-card {
+  display: flex; flex-direction: column; gap: 10px; min-width: 0;
+  padding: var(--_memo-padding); background: var(--_memo-bg, var(--_memo-bg-paper));
+  border: var(--_memo-border); border-radius: var(--_memo-radius); box-shadow: var(--_memo-shadow);
+}
+.memo-card[data-size="s"] { --_memo-height: var(--_memo-height-s); }
+.memo-card[data-size="m"] { --_memo-height: var(--_memo-height-m); }
+.memo-card[data-size="l"] { --_memo-height: var(--_memo-height-l); }
+
+/* 높이는 크기 단계로만 정하고 넘치는 글은 카드 안에서 스크롤해 잘리지 않게 한다. */
+.memo-text {
+  height: var(--_memo-height, var(--_memo-height-m)); min-height: 0; resize: none; overflow-y: auto;
+  padding: 0; border: 0; border-radius: 0; background: transparent; color: inherit;
+  font-family: inherit; font-size: var(--_memo-font-size); line-height: var(--_memo-line-height);
+  white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.memo-text:focus-visible { outline-offset: 6px; }
+.memo-text::placeholder { color: var(--_memo-muted); }
+.memo-text[aria-invalid="true"] { box-shadow: 0 0 0 2px var(--_memo-danger); }
+
+.memo-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.memo-colors { display: flex; gap: 4px; margin: 0; padding: 0; border: 0; }
+.memo-swatch { position: relative; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--_memo-bg); border: var(--_memo-border); cursor: pointer; color: var(--_memo-text); }
+.memo-swatch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.memo-swatch svg { visibility: hidden; }
+.memo-swatch:has(input:checked) { border: 2px solid var(--_memo-text); }
+.memo-swatch:has(input:checked) svg { visibility: visible; }
+.memo-swatch:has(input:focus-visible) { outline: 3px solid var(--_memo-focus); outline-offset: 2px; }
+.memo-size { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--_memo-muted); }
+.memo-size select { font: inherit; color: var(--_memo-text); padding: 4px 6px; border: var(--_memo-border); border-radius: 8px; background: transparent; min-height: 32px; }
+.memo-delete { border: 0; background: transparent; color: var(--_memo-danger); }
+
+.memo-status { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 12px; color: var(--_memo-muted); }
+.memo-status p { flex: 1; min-width: 10em; }
+.memo-status[data-state="failed"] p, .memo-status[data-state="invalid"] p, .memo-status[data-state="unsaved"] p { color: var(--_memo-danger); }
+.memo-length { font-variant-numeric: tabular-nums; }
+
+.memo-empty { color: var(--_memo-muted); font-size: 14px; padding: 24px 0; }
+.memo-error { color: var(--_memo-danger); font-size: 13px; }
+
+.memo-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

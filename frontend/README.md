@@ -35,6 +35,9 @@ App이 공통 상태와 문구 초안을 소유합니다. UI 컴포넌트는 loc
 | layouts/BasicLayout.jsx | tabs, quote, space, status, slots | 전달받은 UI의 배치만 담당. BasicLayout.css를 직접 가져옴 |
 | state/spaces.js | 공통 데이터 | 공간 변경과 이름 검증. 기존 데이터와 ID 보존 |
 | storage/storage.js | 공통 데이터, 선택적 저장소 어댑터 | 읽기·구조 검증·저장·오류 분류 |
+| components/memos/MemoWidget.jsx | space, layout(memoLayout 결과), memos(useMemos 반환값), persisted | 메모 영역 진입점. 보기 방식(sheet·board)에 따라 MemoSheet/MemoBoard + MemoCard를 그림. memo.css를 직접 가져옴 |
+| hooks/useMemos.js | App의 commit(updater) | 메모 초안·1초 자동 저장·메모별 저장 상태·선택 메모. 공간 전환 전 flush |
+| state/memos.js, state/memoAutosave.js | 공통 데이터 | 메모 추가·수정·색상·삭제, 화면 설정(layout[테마].memo의 view·sizes), 메모별 저장 예약 |
 
 `main.jsx`는 `styles/global.css`를 가져오고 `App.jsx`는 공통 상태와 이벤트 연결을 담당합니다. 패키지 이름은 `start-frontend`이며 의존성 버전은 변경하지 않았습니다.
 
@@ -53,6 +56,14 @@ slots={{
 팀원 이벤트에는 대상 spaceId와 itemId를 포함하고 App에서 해당 ID의 데이터만 갱신해야 합니다.
 메모 담당자는 지연 저장에 편집 당시 spaceId·memoId·내용을 연결해야 하며 현재 선택 공간을 나중에 조회해서 저장하면 안 됩니다.
 항목별 내용 스키마, 메모 초안 및 대기 저장 처리 인터페이스는 해당 담당자와 통합 시 확정합니다.
+
+## 메모 (SCRUM-19)
+
+- 기본 디자인은 디자인 시안 '1. 미니멀 페이퍼'를 따릅니다. 색·크기는 `components/memos/memo.css`의 `--memo-*` 변수로만 정하므로, 테마는 상위 요소에서 이 변수와 `layout.<테마>.memo.view`만 바꾸면 됩니다.
+- 메모 내용(`space.memos[]`: id, content, color, updatedAt)과 화면 설정(`layout.basic.memo`: view, sizes)을 분리해 저장합니다. 두 항목 모두 선택값이라 기존 version 1 데이터를 그대로 읽습니다.
+- 메모는 최대 5,000자(코드 포인트 기준), 공간당 20개입니다. 넘친 내용은 잘라 저장하지 않고 오류를 표시합니다.
+- 입력이 1초 멈추면 저장하고, 예약 당시의 공간·메모 ID로 저장합니다. 공간 전환·페이지 숨김 때는 바로 저장합니다.
+- `App`의 `commit`은 새 데이터 또는 `(최신 데이터) => 새 데이터` 함수를 받고 저장 결과(`{ error }`)를 돌려줍니다. 지연 저장이 다른 변경을 덮어쓰지 않게 하기 위함입니다.
 
 ## 저장 구조와 주의점
 
