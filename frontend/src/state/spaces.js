@@ -1,4 +1,5 @@
 import { createId } from './id.js'
+import { removeSpaceFocus } from './productivity.js'
 
 export const characterCount = (value) => Array.from(value).length
 
@@ -32,5 +33,5 @@ export function renameSpace(data, id, name) {
 export function deleteSpace(data, id) {
   if (data.spaces.length === 1) throw new Error('마지막 공간은 삭제할 수 없어요.')
   const spaces = data.spaces.filter((space) => space.id !== id)
-  return { ...data, spaces, activeSpaceId: data.activeSpaceId === id ? spaces[0].id : data.activeSpaceId }
+  return removeSpaceFocus({ ...data, spaces, activeSpaceId: data.activeSpaceId === id ? spaces[0].id : data.activeSpaceId }, id)
 }

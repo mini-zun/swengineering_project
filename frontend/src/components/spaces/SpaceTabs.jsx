@@ -36,7 +36,7 @@ function SpaceDialog({ mode, space, onSubmit, onDismiss, navigationRef }) {
   return <dialog ref={dialog} aria-labelledby="space-dialog-title" onCancel={(event) => { event.preventDefault(); onDismiss() }}>
     <form onSubmit={submit} onKeyDown={(event) => { if (event.key === 'Enter' && (event.nativeEvent.isComposing || event.keyCode === 229)) event.preventDefault() }}>
       <h2 id="space-dialog-title">{title}</h2>
-      {deleting ? <p>‘{space.name}’ 공간과 포함된 바로가기·할 일·메모가 모두 삭제돼요. 삭제할까요?</p> : <>
+      {deleting ? <p>‘{space.name}’ 공간과 포함된 바로가기·할 일·메모·집중 기록이 모두 삭제돼요. 진행 중인 집중도 종료돼요. 삭제할까요?</p> : <>
         <label htmlFor="space-name">공간 이름</label>
         <input id="space-name" value={name} onChange={(event) => setName(event.target.value)} autoFocus aria-describedby="space-name-help space-error" aria-invalid={Boolean(error)} />
         <p id="space-name-help" className="hint">{characterCount(name.trim())}/20자 · 같은 이름은 사용할 수 없어요.</p>

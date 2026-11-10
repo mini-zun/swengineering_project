@@ -57,7 +57,7 @@ slots={{
 }}
 ```
 
-현재 바로가기·할 일·메모·시계·달력·타이머·디데이의 동작은 구현하지 않았습니다. 비활성 기능 버튼도 두지 않았습니다.
+바로가기·할 일·누적 집중 타이머를 기존 공간·메모·시계·달력에 연결했습니다. 디데이는 연결 예정입니다.
 팀원 이벤트에는 대상 spaceId와 itemId를 포함하고 App에서 해당 ID의 데이터만 갱신해야 합니다.
 메모 담당자는 지연 저장에 편집 당시 spaceId·memoId·내용을 연결해야 하며 현재 선택 공간을 나중에 조회해서 저장하면 안 됩니다.
 항목별 내용 스키마, 메모 초안 및 대기 저장 처리 인터페이스는 해당 담당자와 통합 시 확정합니다.
@@ -120,3 +120,56 @@ slots={{
 2. 취소 또는 Escape로 닫았을 때 원래 삭제 버튼으로 초점이 돌아오는지 확인합니다.
 3. 다시 열어 삭제를 확정합니다. 공간이 1개 남아 삭제 버튼이 비활성화되면 선택된 공간 탭으로 초점이 이동해야 합니다.
 4. 이름 변경·공간 생성 대화상자를 취소한 경우에도 원래 실행 버튼으로 돌아오는지 확인합니다.
+
+
+## 2026-11-10 담당 컴포넌트 통합
+
+기존 스크럼의 세 컴포넌트를 이 팀 저장소의 구조에 맞춰 이식했습니다.
+실행은 이 frontend 폴더에서 npm.cmd ci, npm.cmd run dev 순서입니다.
+기존 package-lock.json을 포함합니다. 기존 package.json 의존성은 바꾸지 않았습니다.
+
+| 컴포넌트 | 경로 | 입력·이벤트 |
+|---|---|---|
+| 바로가기 | components/links/SiteLinks.jsx | spaceId, 해당 공간 links, onAdd(spaceId, value), onEdit(spaceId, id, value), onDelete(spaceId, id) |
+| 할 일 | components/todos/TodoList.jsx | spaceId, 해당 공간 todos, onAdd, onEdit, onDelete, onToggle(spaceId, id, done), onClearCompleted(spaceId) |
+| 집중 타이머 | components/timer/FocusTimer.jsx | 현재 공간과 전체 공간 이름, 공통 focus 상태, 시작·일시정지·재개·종료·목표·복원 콜백 |
+
+공통 UI와 CSS는 components/productivity/, 계산·입력 검증은 lib/productivity.js,
+팀의 중첩 데이터에 대한 변경은 state/productivity.js가 담당합니다.
+컴포넌트가 독자적으로 localStorage에 저장하지 않습니다. App의 commit과 기존 storage/storage.js를 함께 사용합니다.
+App의 links·todos·timer 슬롯만 연결했으며 다른 위젯과 화면 배치는 유지했습니다.
+
+저장 키 start.home.v1, version 1, spaces[].links/todos/memos는 유지합니다.
+바로가기: { id, name, url, createdAt, updatedAt }.
+할 일: { id, content, done, dueDate, completedAt, createdAt, updatedAt }.
+항목의 소속은 바깥 공간으로 표현하므로 중복 spaceId를 저장하지 않습니다.
+기존 빈 링크·할 일 목록은 그대로 복원됩니다. 유효하지 않은 기존 항목은 자동 수정·삭제하지 않고 읽기를 차단해 원본을 보존합니다.
+
+선택 필드 focus가 공통 데이터 최상위에 추가됩니다:
+{ activeSession, sessions, dailyGoalMinutes, checkpoint }.
+필드가 없는 기존 데이터는 빈 집중 상태와 목표 60분으로 표시하며, 다른 기존 필드를 덮어쓰지 않습니다.
+기존 독립 시연 앱의 저장 데이터는 자동으로 가져오지 않습니다.
+
+타이머는 시작한 공간에 기록되고 공간 이동 중에도 계속 실행됩니다.
+페이지 표시 중 5초마다, 페이지 숨김·이탈 시 저장 시각을 갱신합니다.
+다시 열었을 때 진행 중이던 세션은 '저장 시각에 종료' 또는 '경과 시간 포함해 계속'을 사용자가 선택합니다.
+저장 실패 시 화면의 최신 상태를 유지하고 공통 저장 실패 안내·재시도 버튼을 사용합니다.
+공간 삭제 시 해당 공간의 진행 세션과 완료 기록도 삭제되며 확인창에서 안내합니다.
+
+팀 확인이 필요한 제안값: 하루 목표 기본 60분, 종료한 집중 중 1분 이상만 기록,
+진행 중 세션의 재접속 선택 정책. 기존 독립 컴포넌트 동작을 이식한 값이며 새 팀 합의로 확정한 것은 아닙니다.
+
+### 이번 검증
+
+- Node v26.13.0에서 npm.cmd test: 48개 통과(기존 38개 + 통합 상태·저장 10개).
+- 별도 임시 검증 환경의 React/jsdom 테스트: 7개 통과. 링크 입력 검증·수정·삭제 확인,
+  할 일 필터·기한·입력, 타이머 목표 및 실제 App의 공간 전환·타이머 소속·새로고침·복원 선택 확인.
+- esbuild 0.28.2로 전체 React 진입점의 JSX·import 번들 검사 통과.
+- npm install은 npm 서버 DNS 연결 오류(ENOTFOUND)로 완료하지 못했습니다.
+  원래 팀 도구 버전의 npm.cmd run lint / npm.cmd run build는 도구 미설치로 실행되지 못했습니다.
+  위 esbuild 검사는 Vite 8 빌드 통과를 뜻하지 않습니다.
+- 실제 브라우저 미리보기는 로컬 서버 접속 시간 초과로 열리지 않았습니다.
+  1280×720·1920×1080 배치, 실제 초점 이동과 한글 조합 입력은 추가 확인이 필요합니다.
+- Git 이력이 없는 ZIP 원본을 바탕으로 만든 수정본입니다. 브랜치·Issue·원격 push·PR·배포는 수행하지 않았습니다.
+
+통합 담당자는 루트의 CHANGES.md를 보고 변경된 파일만 작업 브랜치에 적용하면 됩니다.

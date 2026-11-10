@@ -1,5 +1,6 @@
 import { createDefaultData, validateSpaceName } from '../state/spaces.js'
 import { validateLayout, validateMemoFields } from '../state/memos.js'
+import { validateProductivityItem, validateFocus } from '../state/productivity.js'
 
 export const STORAGE_KEY = 'start.home.v1'
 
@@ -19,11 +20,13 @@ function validateData(data) {
         if (!item || typeof item.id !== 'string' || !item.id || itemIds.has(item.id)) throw new Error('공간의 항목 ID가 올바르지 않아요.')
         itemIds.add(item.id)
         if (field === 'memos') validateMemoFields(item)
+        else validateProductivityItem(field, item)
       }
     }
   }
   // layout은 선택 항목이라 기존 version 1 데이터도 그대로 읽힌다.
   validateLayout(data.layout)
+  validateFocus(data)
   return { ...data, activeSpaceId: ids.has(data.activeSpaceId) ? data.activeSpaceId : data.spaces[0].id }
 }
 
