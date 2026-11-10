@@ -3,6 +3,8 @@ import SpaceTabs from './components/spaces/SpaceTabs.jsx'
 import Quote from './components/quote/Quote.jsx'
 import Clock from './components/clock/Clock.jsx'
 import BasicLayout from './layouts/BasicLayout.jsx'
+import Calendar from './components/calendar/Calendar.jsx'
+import { useToday } from './hooks/useToday.js'
 import { createSpace, renameSpace, deleteSpace } from './state/spaces.js'
 import { loadData, saveData } from './storage/storage.js'
 
@@ -14,6 +16,8 @@ function initialize() {
 export default function App() {
   const [session, setSession] = useState(initialize)
   const [quoteDraft, setQuoteDraft] = useState(null)
+  // 오늘 날짜는 여기서 한 번만 구해 시계·달력에 같은 값을 내려준다.
+  const todayKey = useToday()
   const data = session.data
   useEffect(() => {
     if (session.status !== 'new') return
@@ -33,7 +37,8 @@ export default function App() {
     <p role="alert">{session.error}</p><p>원본 보호를 위해 편집과 자동 저장을 멈췄어요. 기존 데이터는 변경하지 않았어요.</p>
     <button onClick={() => setSession(initialize())}>다시 불러오기</button></main>
   const activeSpace = data.spaces.find((space) => space.id === data.activeSpaceId)
-  return <BasicLayout space={activeSpace} slots={{ clock: <Clock /> }}
+  return <BasicLayout space={activeSpace}
+    slots={{ clock: <Clock />, calendar: <Calendar todayKey={todayKey} /> }}
     tabs={<SpaceTabs spaces={data.spaces} activeSpaceId={data.activeSpaceId}
       onSelect={(id) => { if (data.spaces.some((space) => space.id === id)) commit({ ...data, activeSpaceId: id }) }}
       onCreate={(name) => commit(createSpace(data, name))}

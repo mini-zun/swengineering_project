@@ -101,3 +101,13 @@ test('time source는 절전 복귀 시 즉시 다시 계산한다', () => {
   assert.equal(calls, 1)
   assert.equal(toDateKey(new Date(source.getSnapshot())), '2026-11-11')
 })
+
+test('time source는 알림 중 마지막 구독을 해제해도 타이머를 다시 예약하지 않는다', () => {
+  const clock = fakeClock(new Date(2026, 10, 10, 12, 0, 0).getTime())
+  const source = createTimeSource(clock)
+  let unsubscribe
+  unsubscribe = source.subscribe(() => unsubscribe())
+  clock.advance(1000)
+  assert.equal(clock.pending, null)
+  assert.equal(clock.listeners.visibilitychange, undefined)
+})
