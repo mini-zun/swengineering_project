@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import SpaceTabs from './components/spaces/SpaceTabs.jsx'
 import Quote from './components/quote/Quote.jsx'
 import BasicLayout from './layouts/BasicLayout.jsx'
+import Calendar from './components/calendar/Calendar.jsx'
+import { useToday } from './hooks/useToday.js'
 import MemoWidget from './components/memos/MemoWidget.jsx'
 import { useMemos } from './hooks/useMemos.js'
 import { memoLayout } from './state/memos.js'
@@ -16,6 +18,8 @@ function initialize() {
 export default function App() {
   const [session, setSession] = useState(initialize)
   const [quoteDraft, setQuoteDraft] = useState(null)
+  // 오늘 날짜는 여기서 한 번만 구해 시계·달력에 같은 값을 내려준다.
+  const todayKey = useToday()
   const data = session.data
   // 자동 저장처럼 렌더 사이에 일어나는 변경이 서로 덮어쓰지 않도록 가장 최근 데이터를 따로 들고 있는다.
   const latest = useRef(session.data)
@@ -45,7 +49,10 @@ export default function App() {
     <button onClick={() => setSession(initialize())}>다시 불러오기</button></main>
   const activeSpace = data.spaces.find((space) => space.id === data.activeSpaceId)
   return <BasicLayout space={activeSpace}
-    slots={{ memos: <MemoWidget space={activeSpace} layout={memoLayout(data)} memos={memos} persisted={session.status === 'saved'} /> }}
+    slots={{
+      calendar: <Calendar todayKey={todayKey} />,
+      memos: <MemoWidget space={activeSpace} layout={memoLayout(data)} memos={memos} persisted={session.status === 'saved'} />,
+    }}
     tabs={<SpaceTabs spaces={data.spaces} activeSpaceId={data.activeSpaceId}
       onSelect={(id) => {
         if (!data.spaces.some((space) => space.id === id)) return

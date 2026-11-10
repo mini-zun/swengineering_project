@@ -9,7 +9,7 @@ React 19 + Vite 8 + JavaScript 프로젝트입니다. npm과 기존 package-lock
 - 최초 의존성 설치: `npm.cmd ci`
 - 개발 서버: `npm.cmd run dev`
 - ESLint: `npm.cmd run lint`
-- 상태·저장 테스트: `npm.cmd test`
+- 자동 테스트(tests/*.test.mjs 전체): `npm.cmd test`
 - 배포용 빌드: `npm.cmd run build`
 - 빌드 미리보기: `npm.cmd run preview`
 
@@ -38,6 +38,8 @@ App이 공통 상태와 문구 초안을 소유합니다. UI 컴포넌트는 loc
 | components/memos/MemoWidget.jsx | space, layout(memoLayout 결과), memos(useMemos 반환값), persisted | 메모 영역 진입점. 보기 방식(sheet·board)에 따라 MemoSheet/MemoBoard + MemoCard를 그림. memo.css를 직접 가져옴 |
 | hooks/useMemos.js | App의 commit(updater) | 메모 초안·1초 자동 저장·메모별 저장 상태·선택 메모. 공간 전환 전 flush |
 | state/memos.js, state/memoAutosave.js | 공통 데이터 | 메모 추가·수정·색상·삭제, 화면 설정(layout[테마].memo의 view·sizes), 메모별 저장 예약 |
+| components/calendar/Calendar.jsx | todayKey('YYYY-MM-DD'), variant(full·month·week·mini), title, weekStart | 월간 달력·이번 주 표시, 이전·다음 달·오늘로 이동. 보고 있는 달은 저장하지 않음. 색·크기는 Calendar.css의 --calendar-* 변수 |
+| hooks/useToday.js, lib/timeSource.js, lib/date.js | 없음 | 시계·달력 공유. 단일 타이머 store와 로컬 기준 날짜 계산. App이 useToday()를 한 번 호출해 todayKey를 내려줌 |
 
 `main.jsx`는 `styles/global.css`를 가져오고 `App.jsx`는 공통 상태와 이벤트 연결을 담당합니다. 패키지 이름은 `start-frontend`이며 의존성 버전은 변경하지 않았습니다.
 
