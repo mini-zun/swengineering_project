@@ -12,6 +12,9 @@ export function createTimeSource({ now = Date.now, setTimer = setTimeout, clearT
 
   function schedule() {
     clearTimer(timer)
+    timer = null
+    // 알림 도중 마지막 구독이 해제됐으면 다시 예약하지 않는다.
+    if (listeners.size === 0) return
     timer = setTimer(() => { update(); schedule() }, 1000 - (now() % 1000))
   }
 
