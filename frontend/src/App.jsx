@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import SpaceTabs from './components/spaces/SpaceTabs.jsx'
 import Quote from './components/quote/Quote.jsx'
 import BasicLayout from './layouts/BasicLayout.jsx'
+import Calendar from './components/calendar/Calendar.jsx'
+import { useToday } from './hooks/useToday.js'
 import { createSpace, renameSpace, deleteSpace } from './state/spaces.js'
 import { loadData, saveData } from './storage/storage.js'
 
@@ -13,6 +15,8 @@ function initialize() {
 export default function App() {
   const [session, setSession] = useState(initialize)
   const [quoteDraft, setQuoteDraft] = useState(null)
+  // 오늘 날짜는 여기서 한 번만 구해 시계·달력에 같은 값을 내려준다.
+  const todayKey = useToday()
   const data = session.data
   useEffect(() => {
     if (session.status !== 'new') return
@@ -33,6 +37,7 @@ export default function App() {
     <button onClick={() => setSession(initialize())}>다시 불러오기</button></main>
   const activeSpace = data.spaces.find((space) => space.id === data.activeSpaceId)
   return <BasicLayout space={activeSpace}
+    slots={{ calendar: <Calendar todayKey={todayKey} /> }}
     tabs={<SpaceTabs spaces={data.spaces} activeSpaceId={data.activeSpaceId}
       onSelect={(id) => { if (data.spaces.some((space) => space.id === id)) commit({ ...data, activeSpaceId: id }) }}
       onCreate={(name) => commit(createSpace(data, name))}

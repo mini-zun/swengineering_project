@@ -1,0 +1,61 @@
+/* 기본값은 미니멀 페이퍼. 전역 토큰(--color-*)이 있으면 그 값을 따르고, 테마는 토큰이나 --calendar-* 만 덮어쓴다. */
+.calendar {
+  --calendar-ink: var(--color-ink, #1C1C1A);
+  --calendar-muted-fg: var(--color-ink-muted, #5E5D58);
+  --calendar-line: var(--color-line, #E2E0DA);
+  --calendar-card-bg: var(--color-surface, #FFFFFF);
+  --calendar-card-border-color: var(--calendar-line);
+  --calendar-card-padding: 16px;
+  --calendar-radius: var(--radius-card, 12px);
+  --calendar-subtle-bg: var(--color-surface-subtle, #EFEDE7);
+  --calendar-accent: var(--color-accent, #2456D6);
+  --calendar-today-bg: var(--calendar-ink);
+  --calendar-today-fg: var(--color-bg, #F7F6F3);
+  --calendar-weekend-fg: var(--calendar-ink);
+  --calendar-outside-opacity: 0.55;
+  --calendar-font-family: var(--font-base, 'Noto Sans KR', system-ui, sans-serif);
+  --calendar-heading-size: 15px;
+  --calendar-title-size: 15px;
+  --calendar-day-size: 14px;
+  --calendar-label-size: 12px;
+  --calendar-cell-height: 36px;
+  --calendar-gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--calendar-gap);
+  width: 100%;
+  min-width: 0;
+  color: var(--calendar-ink);
+  font-family: var(--calendar-font-family);
+}
+.calendar--mini { --calendar-cell-height: 28px; --calendar-day-size: 12px; --calendar-label-size: 11px; --calendar-card-padding: 12px; }
+
+.calendar .calendar-heading { margin: 0; font-size: var(--calendar-heading-size); font-weight: 700; }
+.calendar-card { padding: var(--calendar-card-padding); border: 1px solid var(--calendar-card-border-color); border-radius: var(--calendar-radius); background: var(--calendar-card-bg); }
+
+.calendar-nav { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+.calendar .calendar-title { flex: 1; min-width: 0; text-align: center; font-size: var(--calendar-title-size); font-weight: 700; white-space: nowrap; overflow-wrap: normal; }
+.calendar .calendar-icon-button, .calendar .calendar-today-button { min-height: 44px; border: 0; border-radius: 999px; background: transparent; color: var(--calendar-ink); }
+.calendar .calendar-icon-button { width: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.calendar .calendar-today-button { padding: 0 12px; font-size: 13px; color: var(--calendar-muted-fg); }
+.calendar .calendar-icon-button:hover:not(:disabled), .calendar .calendar-today-button:hover:not(:disabled) { background: var(--calendar-subtle-bg); }
+
+.calendar-grid { width: 100%; table-layout: fixed; border-collapse: collapse; text-align: center; }
+.calendar-grid th { padding: 0 0 6px; font-size: var(--calendar-label-size); font-weight: 400; color: var(--calendar-muted-fg); }
+.calendar-day { height: var(--calendar-cell-height); padding: 2px 0; font-size: var(--calendar-day-size); }
+.calendar-day time { display: inline-flex; align-items: center; justify-content: center; width: min(100%, var(--calendar-cell-height)); aspect-ratio: 1; border-radius: 999px; }
+.calendar-day.is-weekend { color: var(--calendar-weekend-fg); }
+.calendar-day.is-outside { opacity: var(--calendar-outside-opacity); }
+.calendar-day.is-today time { background: var(--calendar-today-bg); color: var(--calendar-today-fg); font-weight: 700; }
+
+.calendar-week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; margin: 0; padding: 0; list-style: none; }
+.calendar-week-day time { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 0; border-radius: var(--calendar-radius); }
+.calendar-week-label { font-size: var(--calendar-label-size); color: var(--calendar-muted-fg); }
+.calendar-week-number { font-size: var(--calendar-day-size); font-weight: 500; }
+.calendar-week-day.is-weekend .calendar-week-number { color: var(--calendar-weekend-fg); }
+.calendar-week-day.is-today time { background: var(--calendar-today-bg); color: var(--calendar-today-fg); }
+.calendar-week-day.is-today .calendar-week-label { color: inherit; }
+.calendar-week-day.is-today .calendar-week-number { color: inherit; font-weight: 700; }
+.calendar-week-day.is-today time::after { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--calendar-accent); }
+
+.calendar-sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
