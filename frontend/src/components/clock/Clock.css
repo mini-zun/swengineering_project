@@ -1,0 +1,66 @@
+/*
+ * 시계 스타일 변수. 기본값은 미니멀 페이퍼 시안 기준이고, 테마는 상위 요소에서
+ * 같은 이름의 변수만 덮어쓴다. 전역 토큰(--color-*)이 생기면 그 값을 먼저 따른다.
+ */
+.clock {
+  --clock-color: var(--color-text, #1C1C1A);
+  --clock-muted-color: var(--color-text-muted, #5E5D58);
+  --clock-font-family: inherit;
+  --clock-align: center;
+  --clock-gap: 8px;
+  --clock-date-size: 14px;
+  --clock-date-weight: 400;
+  --clock-date-tracking: 0.08em;
+  --clock-time-size: 112px;
+  --clock-time-weight: 900;
+  --clock-time-tracking: -0.04em;
+  /* 칸 너비 대비 시각 글자 최대 크기(cqi). "14:32"가 칸 안에 들어가는 값. */
+  --clock-time-fit: 30;
+  --clock-compact-size: 14px;
+
+  margin: 0;
+  color: var(--clock-color);
+  font-family: var(--clock-font-family);
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+}
+
+.clock--hero {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: var(--clock-align);
+  gap: var(--clock-gap);
+  text-align: var(--clock-align);
+}
+
+.clock--hero.clock--seconds { --clock-time-fit: 19; }
+
+.clock--hero .clock-date {
+  color: var(--clock-muted-color);
+  font-size: var(--clock-date-size);
+  font-weight: var(--clock-date-weight);
+  letter-spacing: var(--clock-date-tracking);
+  overflow-wrap: anywhere;
+}
+
+.clock--hero .clock-time {
+  /* 넓은 칸에서는 시안 크기, 좁은 칸에서는 칸 너비에 맞춰 줄여 잘리지 않게 한다. */
+  font-size: min(var(--clock-time-size), calc(var(--clock-time-fit) * 1cqi));
+  font-weight: var(--clock-time-weight);
+  letter-spacing: var(--clock-time-tracking);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.clock--compact {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 6px;
+  font-size: var(--clock-compact-size);
+}
+
+.clock--compact .clock-time { font-weight: 700; }
+.clock--compact .clock-date,
+.clock--compact .clock-separator { color: var(--clock-muted-color); }
