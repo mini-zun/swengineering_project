@@ -4,7 +4,7 @@ import { createDefaultData, createSpace, deleteSpace } from '../src/state/spaces
 import { loadData, saveData, STORAGE_KEY } from '../src/storage/storage.js'
 import {
   MEMO_MAX_COUNT, MEMO_MAX_LENGTH, addMemo, applyMemoSave, deleteMemo, memoLabel, memoLayout, memoSize,
-  setMemoColor, setMemoSize, setMemoView, updateMemoContent,
+  setMemoColor, setMemoSize, setMemoView, settleFailedDrafts, updateMemoContent,
 } from '../src/state/memos.js'
 import { createMemoAutosave } from '../src/state/memoAutosave.js'
 
@@ -171,4 +171,36 @@ test('저장 실패 뒤에도 데이터는 바뀌지 않고 같은 내용으로 
   const storage = memoryStorage()
   assert.equal(saveData(next, storage).error, null)
   assert.equal(memoOf(loadData(storage).data, a, memoA).content, '실패해도 남아야 하는 글')
+})
+
+test('메모 자동 저장 실패 뒤 다른 변경으로 전체 저장에 성공하면 같은 내용의 실패 초안만 정리한다', () => {
+  const { data: start, a, b, memoA, memoB } = twoSpaces()
+  const failing = { setItem() { throw new DOMException('full', 'QuotaExceededError') } }
+  // A 자동 저장 실패: 최신 데이터에는 새 내용이 남고 초안은 failed가 된다.
+  let latest = applyMemoSave(start, { spaceId: a, memoId: memoA, content: 'A 새 내용' })
+  assert.ok(saveData(latest, failing).error)
+  let drafts = {
+    [memoA]: { spaceId: a, content: 'A 새 내용', status: 'failed', error: '저장 실패' },
+    [memoB]: { spaceId: b, content: 'B 입력 중', status: 'pending', error: null },
+  }
+  // 저장소 복구 뒤 다른 변경(B 색상)이 저장에 성공한다.
+  latest = setMemoColor(latest, b, memoB, 'blue')
+  const storage = memoryStorage()
+  assert.equal(saveData(latest, storage).error, null)
+  assert.equal(memoOf(loadData(storage).data, a, memoA).content, 'A 새 내용')
+  drafts = settleFailedDrafts(drafts, latest)
+  assert.equal(drafts[memoA], undefined)
+  assert.equal(drafts[memoB].status, 'pending')
+})
+
+test('기록된 내용과 다른 실패 초안·길이 초과 초안은 저장된 것으로 처리하지 않는다', () => {
+  const { data, a, b, memoA, memoB } = twoSpaces()
+  const drafts = {
+    [memoA]: { spaceId: a, content: '아직 기록 안 된 내용', status: 'failed', error: '저장 실패' },
+    [memoB]: { spaceId: b, content: '가'.repeat(MEMO_MAX_LENGTH + 1), status: 'invalid', error: '초과' },
+  }
+  assert.equal(settleFailedDrafts(drafts, data), drafts)
+  const removed = settleFailedDrafts(drafts, deleteMemo(data, a, memoA))
+  assert.equal(removed[memoA], undefined)
+  assert.equal(removed[memoB].status, 'invalid')
 })

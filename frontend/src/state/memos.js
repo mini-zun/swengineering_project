@@ -114,6 +114,22 @@ export function memoLabel(memo, index) {
   return chars.length > 12 ? `${chars.slice(0, 12).join('')}…` : firstLine
 }
 
+// 전체 저장이 성공했을 때 호출한다. 실패했던 메모 초안의 내용이 이번에 기록된 데이터와 같으면
+// 실제로 저장된 것이므로 실패 표시를 지운다. 입력 중(pending)·길이 초과(invalid) 초안과
+// 기록된 내용과 다른 실패 초안은 그대로 둔다. 대상 메모가 삭제됐으면 초안도 지운다.
+export function settleFailedDrafts(drafts, savedData) {
+  let changed = false
+  const next = {}
+  for (const [memoId, draft] of Object.entries(drafts)) {
+    if (draft.status === 'failed') {
+      const memo = savedData.spaces.find((space) => space.id === draft.spaceId)?.memos.find((item) => item.id === memoId)
+      if (!memo || memo.content === draft.content) { changed = true; continue }
+    }
+    next[memoId] = draft
+  }
+  return changed ? next : drafts
+}
+
 // 저장 데이터 검사용. storage.js의 validateData에서 호출한다.
 export function validateMemoFields(memo) {
   validateMemoContent(memo.content)

@@ -37,6 +37,7 @@ export default function App() {
     // 저장 실패 시에도 최신 입력을 메모리에 유지해 재시도한다.
     const result = saveData(nextData)
     setSession({ data: nextData, error: null, status: result.error ? 'failed' : 'saved', saveError: result.error })
+    if (!result.error) memos.markSaved(nextData)
     return result
   }
   if (session.error) return <main className="recovery"><h1>저장한 데이터를 불러오지 못했어요</h1>

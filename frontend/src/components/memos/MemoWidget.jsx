@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { MEMO_MAX_COUNT, memoLabel, memoSize } from '../../state/memos.js'
 import MemoBoard from './MemoBoard.jsx'
 import MemoCard from './MemoCard.jsx'
@@ -9,15 +9,35 @@ import './memo.css'
 // memos는 useMemos 훅의 반환값이고 layout은 memoLayout(data)의 결과다.
 export default function MemoWidget({ space, layout, memos, persisted, allowViewSwitch = true }) {
   const [error, setError] = useState('')
+  const root = useRef(null)
+  // 삭제 뒤 초점을 옮길 대상. 다음 렌더 후 실제로 남아 있는 요소에 초점을 준다.
+  const focusAfterDelete = useRef(null)
+  useEffect(() => {
+    const target = focusAfterDelete.current
+    if (!target) return
+    focusAfterDelete.current = null
+    const element = target === 'add' ? root.current?.querySelector('.memo-add') : root.current?.querySelector(`#memo-${CSS.escape(target)}`)
+    element?.focus()
+  })
   const items = space.memos.map((memo, index) => {
     const draft = memos.drafts[memo.id]
     return { memo, draft, label: memoLabel(draft ? { ...memo, content: draft.content } : memo, index) }
   })
   const selected = items.find((item) => item.memo.id === memos.selectedMemoId(space.id)) ?? items[0]
 
+  // 예외 없이 실행됐으면 true. 저장 실패는 화면 안내만 하고 메모리의 변경은 유지된다.
   function run(action) {
-    try { setError(action()?.error ?? '') }
-    catch (failure) { setError(failure.message) }
+    try { setError(action()?.error ?? ''); return true }
+    catch (failure) { setError(failure.message); return false }
+  }
+
+  function remove(memoId) {
+    const index = items.findIndex((item) => item.memo.id === memoId)
+    const next = items[index + 1] ?? items[index - 1]
+    if (!run(() => memos.remove(space.id, memoId))) return
+    // 다음 메모(없으면 이전 메모)를 보여 주고 그 입력창으로, 남은 메모가 없으면 '새 메모' 버튼으로 초점을 옮긴다.
+    if (next) memos.select(space.id, next.memo.id)
+    focusAfterDelete.current = next ? next.memo.id : 'add'
   }
 
   const card = ({ memo, draft, label }) => <MemoCard key={memo.id} memo={memo} label={label} draft={draft} persisted={persisted}
@@ -25,11 +45,11 @@ export default function MemoWidget({ space, layout, memos, persisted, allowViewS
     onChange={(content) => memos.edit(space.id, memo.id, content)}
     onColor={(color) => run(() => memos.setColor(space.id, memo.id, color))}
     onSize={(size) => run(() => memos.setSize(space.id, memo.id, size))}
-    onDelete={() => run(() => memos.remove(space.id, memo.id))}
+    onDelete={() => remove(memo.id)}
     onRetry={() => memos.retry(space.id, memo.id)} />
 
   const full = items.length >= MEMO_MAX_COUNT
-  return <div className="memo-widget" data-view={layout.view}>
+  return <div className="memo-widget" data-view={layout.view} ref={root}>
     <div className="memo-header">
       <h2>메모 <span className="memo-count">{items.length}</span></h2>
       <div className="memo-actions">

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { createMemoAutosave } from '../state/memoAutosave.js'
-import { addMemo, applyMemoSave, deleteMemo, setMemoColor, setMemoSize, setMemoView, validateMemoContent } from '../state/memos.js'
+import { addMemo, applyMemoSave, deleteMemo, setMemoColor, setMemoSize, setMemoView, settleFailedDrafts, validateMemoContent } from '../state/memos.js'
 
 // 메모 로직(초안·자동 저장·선택 메모)을 표시 컴포넌트와 분리한다.
 // 테마가 새 표시 방식을 추가해도 이 훅은 그대로 쓴다.
@@ -63,6 +63,8 @@ export function useMemos(commit) {
       autosave.flush(spaceId)
     },
     flush: (spaceId) => autosave.flush(spaceId),
+    // App이 전체 데이터 저장에 성공할 때마다 호출한다. 다른 변경과 함께 기록된 실패 초안을 정리한다.
+    markSaved: (savedData) => setDrafts((previous) => settleFailedDrafts(previous, savedData)),
     retryAll() {
       for (const [memoId, draft] of Object.entries(drafts)) if (draft.status === 'failed') autosave.schedule(draft.spaceId, memoId, draft.content)
       autosave.flush()

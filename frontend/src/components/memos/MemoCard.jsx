@@ -9,7 +9,8 @@ function MemoDeleteDialog({ label, onConfirm, onDismiss }) {
     const element = dialog.current
     const previousFocus = document.activeElement
     element.showModal()
-    return () => { element.close(); previousFocus?.focus() }
+    // 삭제를 확정하면 원래 삭제 버튼도 카드와 함께 사라진다. 그때 초점은 MemoWidget이 남은 요소로 옮긴다.
+    return () => { element.close(); if (previousFocus?.isConnected) previousFocus.focus() }
   }, [])
   return <dialog ref={dialog} aria-labelledby="memo-delete-title" onCancel={(event) => { event.preventDefault(); onDismiss() }}>
     <h2 id="memo-delete-title">메모 삭제</h2>
