@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import SpaceTabs from './components/spaces/SpaceTabs.jsx'
 import Quote from './components/quote/Quote.jsx'
+import Clock from './components/clock/Clock.jsx'
 import BasicLayout from './layouts/BasicLayout.jsx'
 import Calendar from './components/calendar/Calendar.jsx'
 import { useToday } from './hooks/useToday.js'
@@ -37,7 +38,7 @@ export default function App() {
     <button onClick={() => setSession(initialize())}>다시 불러오기</button></main>
   const activeSpace = data.spaces.find((space) => space.id === data.activeSpaceId)
   return <BasicLayout space={activeSpace}
-    slots={{ calendar: <Calendar todayKey={todayKey} /> }}
+    slots={{ clock: <Clock />, calendar: <Calendar todayKey={todayKey} /> }}
     tabs={<SpaceTabs spaces={data.spaces} activeSpaceId={data.activeSpaceId}
       onSelect={(id) => { if (data.spaces.some((space) => space.id === id)) commit({ ...data, activeSpaceId: id }) }}
       onCreate={(name) => commit(createSpace(data, name))}

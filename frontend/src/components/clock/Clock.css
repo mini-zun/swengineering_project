@@ -1,0 +1,60 @@
+/*
+ * 시계 스타일 변수. 테마는 시계를 감싼 상위 요소(레이아웃 칸, 테마 루트 등)에
+ * --clock-* 변수를 지정하면 된다. 여기서 같은 변수를 다시 선언하면 상위 값이 가려지므로,
+ * 기본값(미니멀 페이퍼 시안)은 각 속성의 var() fallback으로만 둔다.
+ * 전역 토큰(--color-*)이 생기면 그 값을 먼저 따른다.
+ *
+ * 공개 변수: --clock-color, --clock-muted-color, --clock-font-family, --clock-align, --clock-gap,
+ * --clock-date-size, --clock-date-weight, --clock-date-tracking,
+ * --clock-time-size, --clock-time-weight, --clock-time-tracking, --clock-time-fit, --clock-compact-size
+ */
+.clock {
+  margin: 0;
+  color: var(--clock-color, var(--color-text, #1C1C1A));
+  font-family: var(--clock-font-family, inherit);
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+}
+
+.clock--hero {
+  /* 칸 너비 대비 시각 글자 최대 크기(cqi). "14:32"가 칸 안에 들어가는 값. 내부 전용 */
+  --_clock-time-fit: var(--clock-time-fit, 30);
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: var(--clock-align, center);
+  gap: var(--clock-gap, 8px);
+  text-align: var(--clock-align, center);
+}
+
+/* 초를 표시하면 글자가 길어지므로 기본 fit만 줄인다. 테마가 --clock-time-fit을 주면 그 값을 따른다. */
+.clock--hero.clock--seconds { --_clock-time-fit: var(--clock-time-fit, 19); }
+
+.clock--hero .clock-date {
+  color: var(--clock-muted-color, var(--color-text-muted, #5E5D58));
+  font-size: var(--clock-date-size, 14px);
+  font-weight: var(--clock-date-weight, 400);
+  letter-spacing: var(--clock-date-tracking, 0.08em);
+  overflow-wrap: anywhere;
+}
+
+.clock--hero .clock-time {
+  /* 넓은 칸에서는 시안 크기, 좁은 칸에서는 칸 너비에 맞춰 줄여 잘리지 않게 한다. */
+  font-size: min(var(--clock-time-size, 112px), calc(var(--_clock-time-fit) * 1cqi));
+  font-weight: var(--clock-time-weight, 900);
+  letter-spacing: var(--clock-time-tracking, -0.04em);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.clock--compact {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 6px;
+  font-size: var(--clock-compact-size, 14px);
+}
+
+.clock--compact .clock-time { font-weight: 700; }
+.clock--compact .clock-date,
+.clock--compact .clock-separator { color: var(--clock-muted-color, var(--color-text-muted, #5E5D58)); }
