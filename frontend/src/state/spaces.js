@@ -1,7 +1,8 @@
 import { createId } from './id.js'
 import { removeSpaceFocus } from './productivity.js'
+import { characterCount } from '../lib/text.js'
 
-export const characterCount = (value) => Array.from(value).length
+export { characterCount }
 
 export function validateSpaceName(spaces, name, excludedId) {
   const trimmed = name.trim()

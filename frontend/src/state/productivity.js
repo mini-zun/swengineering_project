@@ -45,11 +45,14 @@ export function removeSpaceFocus(data, spaceId) {
 
 export function validateProductivityItem(field, item) {
   if (field === 'links') {
-    if (validateName(item.name, '사이트 이름', 40) !== item.name || normalizeUrl(item.url) !== item.url) throw new Error('바로가기 데이터가 올바르지 않아요.')
+    if (validateName(item.name, '사이트 이름', 40) !== item.name) throw new Error('바로가기 데이터가 올바르지 않아요.')
+    // URL 표준화 차이는 손상이 아니다. 입력 원본을 변형하지 않고 복사본을 반환한다.
+    return { ...item, url: normalizeUrl(item.url) }
   } else if (field === 'todos') {
     if (validateName(item.content, '할 일', 100) !== item.content || typeof item.done !== 'boolean') throw new Error('할 일 데이터가 올바르지 않아요.')
     validateDueDate(item.dueDate)
   }
+  return item
 }
 
 export function validateFocus(data) {
@@ -71,7 +74,7 @@ export function validateFocus(data) {
       previous = segment.end
     }
     if (session.status === 'running' ? !Number.isFinite(session.runningSince) || session.runningSince < previous : session.runningSince !== null) fail()
-    if (session.status === 'ended' && (!Number.isFinite(session.endedAt) || session.endedAt < previous || session.focusSeconds !== Math.floor(elapsedMs(session) / 1000) || session.focusSeconds < 60)) fail()
+    if (session.status === 'ended' && (!Number.isFinite(session.endedAt) || session.endedAt < previous || session.focusSeconds !== Math.floor(elapsedMs(session) / 1000) || session.focusSeconds < 0)) fail()
   }
   if (focus.sessions.some((session) => session.status !== 'ended') || focus.activeSession?.status === 'ended') fail()
 }

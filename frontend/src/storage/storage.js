@@ -9,25 +9,31 @@ function validateData(data) {
   if (data.version !== 1) throw new Error('지원하지 않는 저장 데이터 버전이에요.')
   if (!Array.isArray(data.spaces) || !data.spaces.length || typeof data.quote !== 'string' || typeof data.activeSpaceId !== 'string') throw new Error('저장 데이터의 구조가 올바르지 않아요.')
   const ids = new Set()
+  const spaces = []
   for (const space of data.spaces) {
+    const normalized = { ...space }
     if (!space || typeof space.id !== 'string' || !space.id || ids.has(space.id) || typeof space.name !== 'string') throw new Error('공간 데이터가 올바르지 않아요.')
     ids.add(space.id)
     if (validateSpaceName(data.spaces, space.name, space.id) !== space.name) throw new Error('공간 이름이 올바르지 않아요.')
     for (const field of ['links', 'todos', 'memos']) {
       if (!Array.isArray(space[field])) throw new Error('공간의 항목 목록이 올바르지 않아요.')
       const itemIds = new Set()
+      normalized[field] = []
       for (const item of space[field]) {
         if (!item || typeof item.id !== 'string' || !item.id || itemIds.has(item.id)) throw new Error('공간의 항목 ID가 올바르지 않아요.')
         itemIds.add(item.id)
-        if (field === 'memos') validateMemoFields(item)
-        else validateProductivityItem(field, item)
+        if (field === 'memos') {
+          validateMemoFields(item)
+          normalized[field].push(item)
+        } else normalized[field].push(validateProductivityItem(field, item))
       }
     }
+    spaces.push(normalized)
   }
   // layout은 선택 항목이라 기존 version 1 데이터도 그대로 읽힌다.
   validateLayout(data.layout)
   validateFocus(data)
-  return { ...data, activeSpaceId: ids.has(data.activeSpaceId) ? data.activeSpaceId : data.spaces[0].id }
+  return { ...data, spaces, activeSpaceId: ids.has(data.activeSpaceId) ? data.activeSpaceId : data.spaces[0].id }
 }
 
 // 읽기 실패 시 기본값을 반환하지 않아 원본을 자동 저장으로 덮어쓰지 않는다.

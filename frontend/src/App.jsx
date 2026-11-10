@@ -14,6 +14,7 @@ import { SiteLinks } from './components/links/SiteLinks.jsx'
 import { TodoList } from './components/todos/TodoList.jsx'
 import { FocusTimer } from './components/timer/FocusTimer.jsx'
 import { changeProductivity, focusState } from './state/productivity.js'
+import { FOCUS_CHECKPOINT_INTERVAL_MS } from './lib/productivity.js'
 
 function initialize() {
   const result = loadData()
@@ -61,7 +62,7 @@ export default function App() {
   const running = focus?.activeSession?.status === 'running' && !session.recovery
   useEffect(() => {
     if (!running) return
-    const timer = setInterval(() => checkpoint(), 5000)
+    const timer = setInterval(() => checkpoint(), FOCUS_CHECKPOINT_INTERVAL_MS)
     const onHidden = () => { if (document.visibilityState === 'hidden') checkpoint() }
     const onPageHide = () => checkpoint()
     document.addEventListener('visibilitychange', onHidden)
@@ -79,16 +80,23 @@ export default function App() {
   return <BasicLayout space={activeSpace}
     slots={{
       links: <SiteLinks key={activeSpace.id} spaceId={activeSpace.id} links={activeSpace.links}
+        onRetry={() => commit((current) => current)}
         onAdd={(spaceId, value) => dispatch({ type: 'link/add', spaceId, ...value })}
         onEdit={(spaceId, id, value) => dispatch({ type: 'link/edit', spaceId, id, ...value })}
         onDelete={(spaceId, id) => dispatch({ type: 'link/delete', spaceId, id })} />,
       todos: <TodoList key={activeSpace.id} spaceId={activeSpace.id} todos={activeSpace.todos}
+        onRetry={() => commit((current) => current)}
         onAdd={(spaceId, value) => dispatch({ type: 'todo/add', spaceId, ...value })}
         onToggle={(spaceId, id, done) => dispatch({ type: 'todo/toggle', spaceId, id, done })}
         onEdit={(spaceId, id, value) => dispatch({ type: 'todo/edit', spaceId, id, ...value })}
         onDelete={(spaceId, id) => dispatch({ type: 'todo/delete', spaceId, id })}
         onClearCompleted={(spaceId) => dispatch({ type: 'todo/clear', spaceId })} />,
       timer: <FocusTimer spaceId={activeSpace.id} spaceName={activeSpace.name} spaces={data.spaces}
+        onRetry={() => {
+          const result = commit((current) => current)
+          if (!result.error) setSession((current) => ({ ...current, recovery: null }))
+          return result
+        }}
         activeSession={focus.activeSession} sessions={focus.sessions} dailyGoalMinutes={focus.dailyGoalMinutes}
         onStart={(spaceId) => dispatch({ type: 'focus/start', spaceId })}
         onPause={() => dispatch({ type: 'focus/pause' })}
@@ -96,9 +104,11 @@ export default function App() {
         onStop={() => dispatch({ type: 'focus/stop' })}
         onGoalChange={(minutes) => dispatch({ type: 'focus/goal', minutes })}
         recovery={session.recovery} onRecover={(choice) => {
-          if (choice === 'stop') dispatch({ type: 'focus/stop', now: session.recovery.checkpoint })
-          else commit((current) => ({ ...current, focus: { ...focusState(current), checkpoint: Date.now() } }))
-          setSession((current) => ({ ...current, recovery: null }))
+          const result = choice === 'stop'
+            ? dispatch({ type: 'focus/stop', now: session.recovery.checkpoint })
+            : commit((current) => ({ ...current, focus: { ...focusState(current), checkpoint: Date.now() } }))
+          if (!result.error) setSession((current) => ({ ...current, recovery: null }))
+          return result
         }} />,
       clock: <Clock />,
       calendar: <Calendar todayKey={todayKey} />,

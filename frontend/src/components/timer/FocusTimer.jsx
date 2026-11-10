@@ -1,14 +1,16 @@
-import { useId, useState } from "react";
+import { useId, useState } from 'react'
 import {
   dateKey,
   elapsedMs,
   focusForDay,
   goalMinutes,
-} from "../../lib/productivity.js";
-import { ErrorText, Icon, Modal } from "../productivity/shared.jsx";
-import { formatDuration } from "../../lib/productivityUi.js";
-import useNow from "../../hooks/useNow.js";
-import "../productivity/components.css";
+} from '../../lib/productivity.js'
+import { ErrorText, Icon, Modal } from '../productivity/shared.jsx'
+import { formatDuration } from '../../lib/productivityUi.js'
+import useNow from '../../hooks/useNow.js'
+import './FocusTimer.css'
+import { useSaveAction } from '../../hooks/useSaveAction.js'
+import { HISTORY_MIN_SECONDS } from '../../lib/productivity.js'
 
 export function FocusTimer({
   spaceId,
@@ -22,17 +24,18 @@ export function FocusTimer({
   onResume,
   onStop,
   onGoalChange,
+  onRetry,
   recovery = null,
   onRecover,
   disabled = false,
 }) {
   const now = useNow({ unit: 1000 }),
-    effectiveNow = recovery ? recovery.checkpoint : now;
-  const [error, setError] = useState(""),
-    [busy, setBusy] = useState(false),
-    [goalOpen, setGoalOpen] = useState(false),
+    effectiveNow = recovery ? recovery.checkpoint : now
+  const [goalOpen, setGoalOpen] = useState(false),
     [goal, setGoal] = useState(String(dailyGoalMinutes)),
-    id = useId();
+    id = useId()
+  const { error, busy, retryOnly, run: act } = useSaveAction(onRetry)
+  const history = sessions.filter((session) => session.focusSeconds >= HISTORY_MIN_SECONDS)
   const elapsed = elapsedMs(activeSession, effectiveNow),
     today = focusForDay(
       sessions,
@@ -40,29 +43,18 @@ export function FocusTimer({
       dateKey(new Date(now)),
       effectiveNow,
     ),
-    progress = (today / (dailyGoalMinutes * 60000)) * 100;
+    progress = (today / (dailyGoalMinutes * 60000)) * 100
   const owner =
-    spaces.find((s) => s.id === activeSession?.spaceId)?.name || spaceName;
-  async function act(callback) {
-    setError("");
-    setBusy(true);
-    try {
-      await callback();
-    } catch (e) {
-      setError(e.message || "시간을 변경하지 못했어요.");
-    } finally {
-      setBusy(false);
-    }
-  }
-  const locked = disabled || busy || !!recovery;
+    spaces.find((s) => s.id === activeSession?.spaceId)?.name || spaceName
+  const locked = disabled || busy || retryOnly || !!recovery
   return (
     <section className="sc-panel sc-focus" aria-label="누적 집중 타이머">
       <div className="sc-section-heading">
         <div>
           <span className="sc-kicker">
             <span
-              className={`sc-live-dot ${activeSession?.status === "running" && !recovery ? "running" : ""}`}
-            />{" "}
+              className={`sc-live-dot ${activeSession?.status === 'running' && !recovery ? 'running' : ''}`}
+            />{' '}
             FOCUS SESSION
           </span>
           <h2>나에게 집중하는 시간</h2>
@@ -85,12 +77,12 @@ export function FocusTimer({
         <div>
           <span className="sc-timer-state">
             {recovery
-              ? "이전 기록 확인 중"
-              : activeSession?.status === "running"
-                ? "집중하는 중"
+              ? '이전 기록 확인 중'
+              : activeSession?.status === 'running'
+                ? '집중하는 중'
                 : activeSession
-                  ? "잠시 쉬는 중"
-                  : "준비되면 시작해요"}
+                  ? '잠시 쉬는 중'
+                  : '준비되면 시작해요'}
           </span>
           <output className="sc-time" aria-label="이번 집중 누적 시간">
             {formatDuration(elapsed)}
@@ -115,14 +107,14 @@ export function FocusTimer({
               className="sc-button"
               disabled={locked}
               onClick={() =>
-                act(activeSession.status === "running" ? onPause : onResume)
+                act(activeSession.status === 'running' ? onPause : onResume)
               }
             >
               <Icon
-                name={activeSession.status === "running" ? "pause" : "play"}
+                name={activeSession.status === 'running' ? 'pause' : 'play'}
                 size={15}
               />
-              {activeSession.status === "running" ? "일시정지" : "이어서 집중"}
+              {activeSession.status === 'running' ? '일시정지' : '이어서 집중'}
             </button>
             <button
               className="sc-button sc-stop"
@@ -135,6 +127,7 @@ export function FocusTimer({
         )}
       </div>
       <ErrorText>{error}</ErrorText>
+      {retryOnly && !goalOpen && !recovery && <button className="sc-button" disabled={busy} onClick={() => act(() => {})}>저장 재시도</button>}
       {activeSession && activeSession.spaceId !== spaceId && (
         <p className="sc-focus-owner">
           현재 보는 공간과 관계없이 <b>{owner}</b>에 기록돼요.
@@ -152,8 +145,8 @@ export function FocusTimer({
           <button
             className="sc-text-button"
             onClick={() => {
-              setGoal(String(dailyGoalMinutes));
-              setGoalOpen(true);
+              setGoal(String(dailyGoalMinutes))
+              setGoalOpen(true)
             }}
             disabled={locked}
           >
@@ -172,21 +165,21 @@ export function FocusTimer({
         </div>
         <span className="sc-goal-caption">
           오늘 목표의 {Math.floor(progress)}%를 채웠어요
-          {progress >= 100 ? " ✓" : ""}
+          {progress >= 100 ? ' ✓' : ''}
         </span>
       </div>
       <p className="sc-focus-note">
-        종료한 집중은 1분 이상일 때 기록에 남아요.
+        짧은 집중도 오늘 누적에 포함돼요. 최근 목록은 1분 이상만 표시해요.
         <br />
         일시정지한 시간은 누적되지 않아요.
       </p>
       <div className="sc-history">
         <h3>
-          최근 집중 기록 <span>{sessions.length}</span>
+          최근 집중 기록 <span>{history.length}</span>
         </h3>
-        {sessions.length ? (
+        {history.length ? (
           <ul>
-            {sessions
+            {history
               .slice(-3)
               .reverse()
               .map((session) => (
@@ -194,14 +187,14 @@ export function FocusTimer({
                   <span>
                     <b>
                       {spaces.find((s) => s.id === session.spaceId)?.name ||
-                        "이전 공간"}
+                        '이전 공간'}
                     </b>
                     <small>
-                      {new Date(session.startedAt).toLocaleString("ko-KR", {
-                        month: "numeric",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
+                      {new Date(session.startedAt).toLocaleString('ko-KR', {
+                        month: 'numeric',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
                         hour12: false,
                       })}
                     </small>
@@ -217,17 +210,15 @@ export function FocusTimer({
       {goalOpen && (
         <Modal
           title="하루 집중 목표"
+          closable={!busy}
           onClose={() => {
-            if (!busy) setGoalOpen(false);
+            if (!busy) setGoalOpen(false)
           }}
         >
           <form
             onSubmit={(e) => {
-              e.preventDefault();
-              act(async () => {
-                await onGoalChange(goalMinutes(goal));
-                setGoalOpen(false);
-              });
+              e.preventDefault()
+              act(() => onGoalChange(goalMinutes(goal)), () => setGoalOpen(false))
             }}
           >
             <label className="sc-field" htmlFor={`${id}-goal`}>
@@ -239,9 +230,8 @@ export function FocusTimer({
                 max="1440"
                 step="1"
                 value={goal}
-                autoFocus
                 onChange={(e) => setGoal(e.target.value)}
-                disabled={busy}
+                disabled={busy || retryOnly}
               />
             </label>
             <p className="sc-hint">
@@ -258,7 +248,7 @@ export function FocusTimer({
                 취소
               </button>
               <button className="sc-button" disabled={busy}>
-                목표 저장
+                {retryOnly ? '저장 재시도' : '목표 저장'}
               </button>
             </div>
           </form>
@@ -272,25 +262,26 @@ export function FocusTimer({
         >
           <p className="sc-dialog-copy">
             이 페이지를 벗어난 동안의 시간도 포함해 이어갈까요? 마지막 저장
-            시각은 {new Date(recovery.checkpoint).toLocaleString("ko-KR")}
+            시각은 {new Date(recovery.checkpoint).toLocaleString('ko-KR')}
             입니다.
           </p>
           <p className="sc-hint">
-            마지막 저장 시각에 종료하면 이후 시간은 포함하지 않아요. 저장 이후의 시간은 종료 기록에 포함되지 않아요.
+            마지막 저장 시각에 종료하면 이후 시간은 포함하지 않아요.
+            갑작스러운 종료 시 최대 약 30초와 저장 실패 이후의 시간이 빠질 수 있어요.
           </p>
           <ErrorText>{error}</ErrorText>
           <div className="sc-modal-actions">
             <button
               className="sc-button secondary"
               disabled={busy}
-              onClick={() => act(() => onRecover("stop"))}
+              onClick={() => act(() => onRecover('stop'))}
             >
-              저장 시각에 종료
+              {retryOnly ? '저장 재시도' : '저장 시각에 종료'}
             </button>
             <button
               className="sc-button"
-              disabled={busy}
-              onClick={() => act(() => onRecover("continue"))}
+              disabled={busy || retryOnly}
+              onClick={() => act(() => onRecover('continue'))}
             >
               경과 시간 포함해 계속
             </button>
@@ -298,5 +289,5 @@ export function FocusTimer({
         </Modal>
       )}
     </section>
-  );
+  )
 }
