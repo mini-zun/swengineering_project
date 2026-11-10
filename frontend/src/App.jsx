@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import SpaceTabs from './components/spaces/SpaceTabs.jsx'
 import Quote from './components/quote/Quote.jsx'
+import Clock from './components/clock/Clock.jsx'
 import BasicLayout from './layouts/BasicLayout.jsx'
 import Calendar from './components/calendar/Calendar.jsx'
 import { useToday } from './hooks/useToday.js'
@@ -50,6 +51,7 @@ export default function App() {
   const activeSpace = data.spaces.find((space) => space.id === data.activeSpaceId)
   return <BasicLayout space={activeSpace}
     slots={{
+      clock: <Clock />,
       calendar: <Calendar todayKey={todayKey} />,
       memos: <MemoWidget space={activeSpace} layout={memoLayout(data)} memos={memos} persisted={session.status === 'saved'} />,
     }}

@@ -33,6 +33,7 @@ App이 공통 상태와 문구 초안을 소유합니다. UI 컴포넌트는 loc
 | components/spaces/SpaceTabs.jsx | spaces, activeSpaceId | onSelect(spaceId), onCreate(name), onRename(spaceId, name), onDelete(spaceId) |
 | components/quote/Quote.jsx | value, draft (null이면 표시 모드) | onEdit(), onDraftChange(text), onSave(), onCancel() |
 | layouts/BasicLayout.jsx | tabs, quote, space, status, slots | 전달받은 UI의 배치만 담당. BasicLayout.css를 직접 가져옴 |
+| components/clock/Clock.jsx | variant('hero' \| 'compact'), hour12, showSeconds | 현재 시각·날짜·요일 표시만 담당. 저장 데이터 없음. 스타일은 Clock.css의 `--clock-*` 변수 |
 | state/spaces.js | 공통 데이터 | 공간 변경과 이름 검증. 기존 데이터와 ID 보존 |
 | storage/storage.js | 공통 데이터, 선택적 저장소 어댑터 | 읽기·구조 검증·저장·오류 분류 |
 | components/memos/MemoWidget.jsx | space, layout(memoLayout 결과), memos(useMemos 반환값), persisted | 메모 영역 진입점. 보기 방식(sheet·board)에 따라 MemoSheet/MemoBoard + MemoCard를 그림. memo.css를 직접 가져옴 |
@@ -45,6 +46,8 @@ App이 공통 상태와 문구 초안을 소유합니다. UI 컴포넌트는 loc
 
 BasicLayout의 slots에 실제 팀원 컴포넌트를 전달하면 연결 예정 안내가 교체됩니다.
 슬롯 키: links, todos, memos, clock, calendar, timer, dday.
+
+시계·달력은 `lib/timeSource.js`의 시간 store 하나를 같이 구독합니다. 시계는 `hooks/useNow.js`로 분(초 표시 시 초) 단위, 달력은 `useToday`로 날짜 단위로 바뀔 때만 다시 그립니다.
 
 예시(팀원 컴포넌트가 준비된 뒤 App에서 연결):
 
