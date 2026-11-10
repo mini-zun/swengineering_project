@@ -1,4 +1,4 @@
-﻿:root { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; color: #273a34; background: #f5f7f3; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; line-height: 1.6; }
+:root { font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; color: #273a34; background: #f5f7f3; font-synthesis: none; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; line-height: 1.6; }
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; }
 button, input, textarea { font: inherit; }

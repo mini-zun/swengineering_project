@@ -2,6 +2,19 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createDefaultData, createSpace, renameSpace, deleteSpace, characterCount } from '../src/state/spaces.js'
 import { loadData, saveData, STORAGE_KEY } from '../src/state/storage.js'
+import { createId } from '../src/state/id.js'
+
+test('randomUUID가 없는 HTTP 환경에서도 고유한 UUID v4를 생성한다', () => {
+  const httpCrypto = { getRandomValues: globalThis.crypto.getRandomValues.bind(globalThis.crypto) }
+  const ids = Array.from({ length: 100 }, () => createId(httpCrypto))
+  assert.equal(new Set(ids).size, ids.length)
+  for (const id of ids) assert.match(id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/)
+})
+
+test('네이티브 UUID를 사용할 수 있으면 기존 생성 경로를 유지한다', () => {
+  const nativeId = globalThis.crypto.randomUUID()
+  assert.equal(createId({ randomUUID: () => nativeId }), nativeId)
+})
 
 function memoryStorage(raw = null) {
   return { raw, getItem(key) { assert.equal(key, STORAGE_KEY); return this.raw }, setItem(key, value) { assert.equal(key, STORAGE_KEY); this.raw = value } }

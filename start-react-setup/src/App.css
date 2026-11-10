@@ -1,4 +1,4 @@
-﻿.basic-layout { --surface: #fff; --border: #dce4dc; max-width: 1480px; margin: auto; padding: 0 40px; }
+.basic-layout { --surface: #fff; --border: #dce4dc; max-width: 1480px; margin: auto; padding: 0 40px; }
 .app-header { min-height: 96px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .brand { font-size: 30px; font-weight: 750; color: #30644f; text-decoration: none; }
 .brand span { font-size: 13px; font-weight: 400; margin-left: 16px; color: #62716a; }

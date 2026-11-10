@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { characterCount } from '../state/spaces.js'
 
-function SpaceDialog({ mode, space, onSubmit, onDismiss }) {
+function SpaceDialog({ mode, space, onSubmit, onDismiss, navigationRef }) {
   const dialog = useRef(null)
   const [name, setName] = useState(space?.name ?? '')
   const [error, setError] = useState('')
@@ -10,10 +10,22 @@ function SpaceDialog({ mode, space, onSubmit, onDismiss }) {
 
   useEffect(() => {
     const element = dialog.current
+    const navigation = navigationRef.current
     const previousFocus = document.activeElement
     element.showModal()
-    return () => { element.close(); previousFocus?.focus() }
-  }, [])
+    return () => {
+      element.close()
+      // 삭제 버튼의 disabled 갱신과 대화상자 제거가 끝난 뒤 복귀 대상을 고른다.
+      queueMicrotask(() => {
+        if (element.open) return // StrictMode에서 다시 열린 대화상자의 초점을 유지한다.
+        const canRestore = previousFocus?.isConnected && !previousFocus.disabled
+        if (canRestore) previousFocus.focus()
+        if (navigation?.isConnected && (!canRestore || document.activeElement !== previousFocus)) {
+          navigation.querySelector('.space-tab[aria-pressed="true"]')?.focus()
+        }
+      })
+    }
+  }, [navigationRef])
 
   function submit(event) {
     event.preventDefault()
@@ -37,9 +49,10 @@ function SpaceDialog({ mode, space, onSubmit, onDismiss }) {
 }
 
 export default function SpaceTabs({ spaces, activeSpaceId, onSelect, onCreate, onRename, onDelete }) {
+  const navigationRef = useRef(null)
   const [editing, setEditing] = useState(null)
   const active = spaces.find((space) => space.id === activeSpaceId)
-  return <section className="space-navigation" aria-label="공간 관리">
+  return <section ref={navigationRef} className="space-navigation" aria-label="공간 관리">
     <div className="space-tabs" role="group" aria-label="공간 선택">
       {spaces.map((space) => <button key={space.id} aria-pressed={space.id === activeSpaceId} title={space.name}
         className={space.id === activeSpaceId ? 'space-tab selected' : 'space-tab'} onClick={() => onSelect(space.id)}>{space.name}</button>)}
@@ -48,7 +61,7 @@ export default function SpaceTabs({ spaces, activeSpaceId, onSelect, onCreate, o
       <button onClick={() => setEditing({ mode: 'rename', space: active })}>이름 변경</button>
       <button disabled={spaces.length === 1} title={spaces.length === 1 ? '마지막 공간은 삭제할 수 없어요.' : '현재 공간 삭제'}
         onClick={() => setEditing({ mode: 'delete', space: active })}>삭제</button></div>
-    {editing && <SpaceDialog {...editing} onDismiss={() => setEditing(null)} onSubmit={(name) => {
+    {editing && <SpaceDialog {...editing} navigationRef={navigationRef} onDismiss={() => setEditing(null)} onSubmit={(name) => {
       if (editing.mode === 'create') onCreate(name)
       else if (editing.mode === 'rename') onRename(editing.space.id, name)
       else onDelete(editing.space.id)

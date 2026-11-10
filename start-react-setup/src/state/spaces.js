@@ -1,3 +1,5 @@
+import { createId } from './id.js'
+
 export const characterCount = (value) => Array.from(value).length
 
 export function validateSpaceName(spaces, name, excludedId) {
@@ -8,7 +10,7 @@ export function validateSpaceName(spaces, name, excludedId) {
 }
 
 export function emptySpace(name) {
-  return { id: crypto.randomUUID(), name, links: [], todos: [], memos: [] }
+  return { id: createId(), name, links: [], todos: [], memos: [] }
 }
 
 export function createDefaultData() {
