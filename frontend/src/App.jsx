@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react'
-import SpaceTabs from './components/SpaceTabs.jsx'
-import Quote from './components/Quote.jsx'
-import BasicLayout from './components/BasicLayout.jsx'
+import SpaceTabs from './components/spaces/SpaceTabs.jsx'
+import Quote from './components/quote/Quote.jsx'
+import BasicLayout from './layouts/BasicLayout.jsx'
 import { createSpace, renameSpace, deleteSpace } from './state/spaces.js'
-import { loadData, saveData } from './state/storage.js'
-import './App.css'
+import { loadData, saveData } from './storage/storage.js'
 
 function initialize() {
   const result = loadData()

@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createDefaultData, createSpace, renameSpace, deleteSpace, characterCount } from '../src/state/spaces.js'
-import { loadData, saveData, STORAGE_KEY } from '../src/state/storage.js'
+import { loadData, saveData, STORAGE_KEY } from '../src/storage/storage.js'
 import { createId } from '../src/state/id.js'
 
 test('randomUUID가 없는 HTTP 환경에서도 고유한 UUID v4를 생성한다', () => {

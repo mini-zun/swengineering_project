@@ -1,4 +1,4 @@
-import { createDefaultData, validateSpaceName } from './spaces.js'
+import { createDefaultData, validateSpaceName } from '../state/spaces.js'
 
 export const STORAGE_KEY = 'start.home.v1'
 

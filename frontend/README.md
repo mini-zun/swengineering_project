@@ -4,7 +4,7 @@ React 19 + Vite 8 + JavaScript 프로젝트입니다. npm과 기존 package-lock
 
 ## 실행과 검사
 
-프로젝트 폴더(start-react-setup)에서 실행합니다. 검증 환경: Windows, Node v24.18.0, npm 11.16.0.
+프로젝트 폴더(`frontend/`)에서 실행합니다. 검증 환경: Windows, Node v24.18.0, npm 11.16.0.
 
 - 최초 의존성 설치: `npm.cmd ci`
 - 개발 서버: `npm.cmd run dev`
@@ -30,11 +30,13 @@ App이 공통 상태와 문구 초안을 소유합니다. UI 컴포넌트는 loc
 
 | 컴포넌트 | 입력 | 변경 이벤트 / 책임 |
 |---|---|---|
-| SpaceTabs | spaces, activeSpaceId | onSelect(spaceId), onCreate(name), onRename(spaceId, name), onDelete(spaceId) |
-| Quote | value, draft (null이면 표시 모드) | onEdit(), onDraftChange(text), onSave(), onCancel() |
-| BasicLayout | tabs, quote, space, status, slots | 전달받은 UI의 배치만 담당 |
+| components/spaces/SpaceTabs.jsx | spaces, activeSpaceId | onSelect(spaceId), onCreate(name), onRename(spaceId, name), onDelete(spaceId) |
+| components/quote/Quote.jsx | value, draft (null이면 표시 모드) | onEdit(), onDraftChange(text), onSave(), onCancel() |
+| layouts/BasicLayout.jsx | tabs, quote, space, status, slots | 전달받은 UI의 배치만 담당. BasicLayout.css를 직접 가져옴 |
 | state/spaces.js | 공통 데이터 | 공간 변경과 이름 검증. 기존 데이터와 ID 보존 |
-| state/storage.js | 공통 데이터, 선택적 저장소 어댑터 | 읽기·구조 검증·저장·오류 분류 |
+| storage/storage.js | 공통 데이터, 선택적 저장소 어댑터 | 읽기·구조 검증·저장·오류 분류 |
+
+`main.jsx`는 `styles/global.css`를 가져오고 `App.jsx`는 공통 상태와 이벤트 연결을 담당합니다. 패키지 이름은 `start-frontend`이며 의존성 버전은 변경하지 않았습니다.
 
 BasicLayout의 slots에 실제 팀원 컴포넌트를 전달하면 연결 예정 안내가 교체됩니다.
 슬롯 키: links, todos, memos, clock, calendar, timer, dday.
@@ -79,6 +81,7 @@ slots={{
 
 - 상태·저장 자동 테스트 8개 통과(2026-11-10): 기존 6개 시나리오와 UUID 생성 2개. `randomUUID`가 없는 환경의 UUID v4 형식·중복 여부와 네이티브 생성 경로를 확인했습니다.
 - ESLint 통과. Vite 빌드 통과. 샌드박스에서 하위 프로세스 실행이 EPERM으로 차단되어 빌드·테스트는 권한 확장 후 검증했습니다.
+- 폴더 구조 변경 후 `frontend/`에서 lint, 테스트 8개, build를 다시 실행해 통과했습니다. 생성된 JS·CSS 해시가 이동 전과 동일합니다. 실행 화면의 새 브라우저 검증을 뜻하지는 않습니다.
 - 테스트는 모의 저장소만 사용하며 사용자 브라우저 데이터를 수정하지 않습니다.
 - [PR #2 리뷰](https://github.com/mini-zun/swengineering_project/pull/2#pullrequestreview-5835890545)에서 리뷰어가 기존 커밋 `6455bf4`의 Chromium 1280×720 동작을 확인했습니다. 공간 생성·중복 이름 거부, 문구 줄바꿈 저장, 새로고침 후 공간·선택·문구 복원, 삭제 안내, 마지막 공간 삭제 버튼 비활성, 가로 넘침 없음과 콘솔 오류 없음, 잘못된 JSON 원본 보존을 확인했다는 보고입니다. 이번 수정본을 직접 검증한 결과와는 구분합니다.
 - 이번 수정본의 실제 브라우저 확인 미완료: 브라우저 연결 호스트 사용 불가.
@@ -87,9 +90,9 @@ slots={{
 
 ## PR #2 리뷰 반영
 
-- 앱 위치는 `start-react-setup/`을 유지했습니다. 루트 README에 실행 경로와 Vercel Root Directory 기준을 추가했습니다. 폴더 이동·이름 변경은 별도 팀 협의 후 진행합니다.
+- 앱 위치를 `frontend/`로 정리하고 루트 README의 실행 경로와 Vercel Root Directory 기준을 갱신했습니다. 기능 UI는 `components/`, 화면 배치는 `layouts/`, 저장 처리는 `storage/`, 공통 스타일은 `styles/`로 구분했습니다.
 - 사용하지 않는 `src/assets/hero.png`, `react.svg`, `vite.svg`, `public/icons.svg`를 제거했습니다. 현재 사용하는 `public/favicon.svg`는 유지합니다.
-- React import를 합치고 App.jsx, App.css, index.css, 이 문서의 BOM을 제거했습니다.
+- React import를 합치고 App.jsx, BasicLayout.css, global.css, 이 문서의 BOM을 제거했습니다.
 - 공간 삭제 후 기존 버튼이 비활성화되거나 제거되면 선택된 공간 탭으로 초점을 복귀하도록 수정했습니다. 대화상자가 다시 열린 StrictMode 실행에서는 초점을 빼앗지 않습니다.
 - HTTPS·localhost에서는 네이티브 UUID를 사용하고, `randomUUID`가 없는 HTTP 개발 환경에서는 `getRandomValues`로 UUID v4를 생성합니다. 기존 ID와 저장 형식은 변경하지 않습니다. 실제 다른 기기에서의 HTTP 접속은 미검증입니다.
 - 문구의 공간별 저장 전환과 스키마 이전, 선정 디자인 반영, 팀원 컴포넌트 통합은 이번 리뷰 정리 범위에서 제외한 미완료 작업입니다.

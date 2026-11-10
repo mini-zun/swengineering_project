@@ -1,3 +1,5 @@
+import './BasicLayout.css'
+
 const areas = [
   ['links', '사이트 바로가기', '자주 찾는 사이트가 모이는 곳'],
   ['todos', '할 일', '하루의 할 일을 정리하는 곳'],

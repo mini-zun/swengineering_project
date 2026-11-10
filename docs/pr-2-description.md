@@ -6,7 +6,7 @@
 - PR 리뷰에 따라 React 중복 import와 BOM, 사용하지 않는 템플릿 이미지·아이콘을 정리했습니다.
 - 공간 삭제 후 실행 버튼이 비활성화되면 선택된 공간 탭으로 초점을 복귀하도록 수정했습니다.
 - HTTP 개발 환경에서 randomUUID가 없을 때 getRandomValues로 UUID v4를 생성하도록 보완했습니다.
-- 앱 위치는 start-react-setup/을 유지하며 루트 README에 실행 경로와 Vercel Root Directory 기준을 추가했습니다.
+- 앱 폴더를 frontend/로 정리하고 기능 UI(components), 화면 배치(layouts), 저장 처리(storage), 공통 스타일(styles)을 구분했습니다. import·테스트·README·패키지 이름과 잠금 파일의 이름도 함께 갱신했습니다. 의존성 버전은 유지합니다.
 
 ## 관련 이슈
 
@@ -32,5 +32,6 @@
 
 - 문구는 현재 전체 공간 공통입니다. SCRUM-22의 공간별 저장 요구사항과 차이가 있어 미완료이며, 변경 시 기존 문구 이전 정책과 스키마 버전 변경을 함께 처리해야 합니다.
 - 저장 키와 데이터 형식은 이번 수정에서 변경하지 않았습니다. ID 생성 보완은 신규 공간에만 적용되고 기존 ID는 유지합니다.
-- 앱 폴더 이동·이름 변경과 ESLint 의존성 업그레이드는 포함하지 않았습니다. 리뷰에서 언급된 audit 결과는 이번에 재검증하지 않았습니다.
-- 실행은 start-react-setup/에서 npm run dev, Vercel 연결 시 Root Directory도 start-react-setup입니다. 실제 배포 설정은 변경하지 않았습니다.
+- 팀원 작업 브랜치를 합칠 때 변경된 폴더와 import 경로를 맞춰야 합니다. App의 공통 상태 관리와 컴포넌트 입력·이벤트 인터페이스는 유지합니다.
+- ESLint 의존성 업그레이드는 포함하지 않았습니다. 리뷰에서 언급된 audit 결과는 이번에 재검증하지 않았습니다.
+- 실행은 frontend/에서 npm run dev, Vercel 연결 시 Root Directory도 frontend입니다. 이전 경로로 설정돼 있다면 변경해야 하며, 실제 배포 설정은 변경하지 않았습니다.

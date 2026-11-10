@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { characterCount } from '../state/spaces.js'
+import { characterCount } from '../../state/spaces.js'
 
 function SpaceDialog({ mode, space, onSubmit, onDismiss, navigationRef }) {
   const dialog = useRef(null)
