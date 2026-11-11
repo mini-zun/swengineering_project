@@ -6,10 +6,11 @@ import './Dday.css'
 
 /**
  * 디데이 위젯. ddays와 todayKey를 받아 표시하고 변경은 이벤트로만 올려 보낸다(저장은 App의 commit).
+ * - onAdd·onUpdate·onDelete·onRetry는 저장 결과({ error })를 돌려줘야 한다. onRetry는 최신 상태 저장만 다시 시도한다.
  * - todayKey: App의 useToday() 값. 자정에 바뀌면 다시 계산되므로 여기서 타이머를 두지 않는다.
  * - 색·크기는 Dday.css의 --dday-* 변수로, 위치와 너비는 레이아웃 slot이 정한다.
  */
-export default function DdayWidget({ ddays, todayKey, onAdd, onUpdate, onDelete }) {
+export default function DdayWidget({ ddays, todayKey, onAdd, onUpdate, onDelete, onRetry }) {
   const [editing, setEditing] = useState(null)
   const addButton = useRef(null)
   const focusAdd = useCallback(() => addButton.current?.focus(), [])
@@ -32,10 +33,10 @@ export default function DdayWidget({ ddays, todayKey, onAdd, onUpdate, onDelete 
           <button onClick={() => setEditing({ mode: 'delete', dday })} aria-label={`${dday.title} 삭제`}>삭제</button>
         </div>
       </li>)}</ul>}
-    {editing && <DdayDialog {...editing} todayKey={todayKey} fallbackFocus={focusAdd} onDismiss={() => setEditing(null)} onSubmit={(fields) => {
-      if (editing.mode === 'add') onAdd(fields)
-      else if (editing.mode === 'edit') onUpdate(editing.dday.id, fields)
-      else onDelete(editing.dday.id)
+    {editing && <DdayDialog {...editing} todayKey={todayKey} fallbackFocus={focusAdd} onRetry={onRetry} onDismiss={() => setEditing(null)} onSubmit={(fields) => {
+      if (editing.mode === 'add') return onAdd(fields)
+      if (editing.mode === 'edit') return onUpdate(editing.dday.id, fields)
+      return onDelete(editing.dday.id)
     }} />}
   </div>
 }

@@ -58,7 +58,8 @@ export default function App() {
       dday: <DdayWidget ddays={ddaysOf(data)} todayKey={todayKey}
         onAdd={(fields) => commit((current) => addDday(current, fields))}
         onUpdate={(id, fields) => commit((current) => updateDday(current, id, fields))}
-        onDelete={(id) => commit((current) => deleteDday(current, id))} />,
+        onDelete={(id) => commit((current) => deleteDday(current, id))}
+        onRetry={() => commit((current) => current)} />,
       memos: <MemoWidget space={activeSpace} layout={memoLayout(data)} memos={memos} persisted={session.status === 'saved'} />,
     }}
     tabs={<SpaceTabs spaces={data.spaces} activeSpaceId={data.activeSpaceId}

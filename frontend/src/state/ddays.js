@@ -49,3 +49,14 @@ export function updateDday(data, id, { title, targetDate }) {
 export function deleteDday(data, id) {
   return { ...data, ddays: ddaysOf(data).filter((dday) => dday.id !== id) }
 }
+
+// 대화상자 제출 흐름. App의 commit은 저장에 실패해도 메모리에는 변경을 반영하고 { error }를 돌려준다.
+// 그래서 실패 뒤 다시 제출할 때는 추가·수정·삭제를 반복하지 않고(중복 등록 방지) 최신 상태 저장만 재시도한다.
+// 반환값: { done } 이면 대화상자를 닫고, 아니면 { error, retrying }을 표시한다.
+export function submitDdayChange({ retrying, apply, retry }) {
+  let result
+  try { result = retrying ? retry() : apply() }
+  catch (failure) { return { done: false, retrying, error: failure.message } }
+  if (result?.error) return { done: false, retrying: true, error: `변경 내용은 화면에 남아 있지만 저장하지 못했어요. ${result.error}` }
+  return { done: true, retrying: false, error: '' }
+}

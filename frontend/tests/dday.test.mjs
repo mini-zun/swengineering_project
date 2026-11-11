@@ -4,7 +4,7 @@ import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { daysBetween } from '../src/lib/date.js'
 import { formatDday, ddayStatus, sortDdaysForDisplay } from '../src/lib/dday.js'
-import { addDday, updateDday, deleteDday, ddaysOf, validateDdays, DDAY_TITLE_MAX } from '../src/state/ddays.js'
+import { addDday, updateDday, deleteDday, ddaysOf, validateDdays, submitDdayChange, DDAY_TITLE_MAX } from '../src/state/ddays.js'
 import { createDefaultData } from '../src/state/spaces.js'
 import { loadData, saveData, STORAGE_KEY } from '../src/storage/storage.js'
 
@@ -108,4 +108,40 @@ test('잘못된 디데이 저장 데이터는 거부하고 원본을 덮어쓰�
     assert.equal(loadData(storage).data, null)
     assert.equal(storage.raw, raw)
   }
+})
+
+test('저장에 실패하면 대화상자를 유지하고, 재시도는 변경을 반복하지 않고 최신 상태만 저장한다', () => {
+  // App의 commit과 같은 동작: 메모리에는 반영하고 저장 결과만 돌려준다.
+  let quotaFull = true
+  const storage = { raw: null, getItem() { return this.raw }, setItem(key, value) {
+    if (quotaFull) throw Object.assign(new Error('full'), { name: 'QuotaExceededError' })
+    this.raw = value
+  } }
+  let latest = createDefaultData()
+  const commit = (next) => { latest = next(latest); return saveData(latest, storage) }
+  const apply = () => commit((current) => addDday(current, { title: '시험', targetDate: '2026-12-15' }))
+  const retry = () => commit((current) => current)
+
+  let outcome = submitDdayChange({ retrying: false, apply, retry })
+  assert.equal(outcome.done, false)
+  assert.equal(outcome.retrying, true)
+  assert.match(outcome.error, /저장 공간이 부족해요/)
+  assert.equal(latest.ddays.length, 1)
+
+  outcome = submitDdayChange({ retrying: outcome.retrying, apply, retry })
+  assert.equal(outcome.done, false)
+  assert.equal(latest.ddays.length, 1)
+
+  quotaFull = false
+  outcome = submitDdayChange({ retrying: outcome.retrying, apply, retry })
+  assert.deepEqual(outcome, { done: true, retrying: false, error: '' })
+  assert.equal(latest.ddays.length, 1)
+  assert.deepEqual(JSON.parse(storage.raw).ddays, latest.ddays)
+})
+
+test('검증 오류는 재시도 상태로 바꾸지 않고 메시지만 보여 준다', () => {
+  const outcome = submitDdayChange({ retrying: false, apply: () => addDday(createDefaultData(), { title: ' ', targetDate: '2026-12-15' }), retry: () => ({ error: null }) })
+  assert.equal(outcome.done, false)
+  assert.equal(outcome.retrying, false)
+  assert.match(outcome.error, /1~30자/)
 })
