@@ -40,7 +40,9 @@ App이 공통 상태와 문구 초안을 소유합니다. UI 컴포넌트는 loc
 | hooks/useMemos.js | App의 commit(updater) | 메모 초안·1초 자동 저장·메모별 저장 상태·선택 메모. 공간 전환 전 flush |
 | state/memos.js, state/memoAutosave.js | 공통 데이터 | 메모 추가·수정·색상·삭제, 화면 설정(layout[테마].memo의 view·sizes), 메모별 저장 예약 |
 | components/calendar/Calendar.jsx | todayKey('YYYY-MM-DD'), variant(full·month·week·mini), title, weekStart | 월간 달력·이번 주 표시, 이전·다음 달·오늘로 이동. 보고 있는 달은 저장하지 않음. 색·크기는 Calendar.css의 --calendar-* 변수 |
-| hooks/useToday.js, lib/timeSource.js, lib/date.js | 없음 | 시계·달력 공유. 단일 타이머 store와 로컬 기준 날짜 계산. App이 useToday()를 한 번 호출해 todayKey를 내려줌 |
+| hooks/useToday.js, lib/timeSource.js, lib/date.js | 없음 | 시계·달력·디데이 공유. 단일 타이머 store와 로컬 기준 날짜 계산. App이 useToday()를 한 번 호출해 todayKey를 내려줌 |
+| components/dday/DdayWidget.jsx | ddays, todayKey | onAdd({ title, targetDate }), onUpdate(ddayId, { title, targetDate }), onDelete(ddayId). D-n·D-Day·D+n 표시, 가까운 날짜순. 색·크기는 Dday.css의 `--dday-*` 변수 |
+| state/ddays.js, lib/dday.js | 공통 데이터 | 디데이 추가·수정·삭제와 이름(1~30자)·날짜 검증, 표시 문구와 표시 정렬 |
 
 `main.jsx`는 `styles/global.css`를 가져오고 `App.jsx`는 공통 상태와 이벤트 연결을 담당합니다. 패키지 이름은 `start-frontend`이며 의존성 버전은 변경하지 않았습니다.
 
@@ -57,7 +59,7 @@ slots={{
 }}
 ```
 
-바로가기·할 일·누적 집중 타이머를 기존 공간·메모·시계·달력에 연결했습니다. 디데이는 연결 예정입니다.
+바로가기·할 일·누적 집중 타이머와 디데이를 기존 공간·메모·시계·달력에 연결했습니다.
 팀원 이벤트에는 대상 spaceId와 itemId를 포함하고 App에서 해당 ID의 데이터만 갱신해야 합니다.
 메모 담당자는 지연 저장에 편집 당시 spaceId·memoId·내용을 연결해야 하며 현재 선택 공간을 나중에 조회해서 저장하면 안 됩니다.
 항목별 내용 스키마, 메모 초안 및 대기 저장 처리 인터페이스는 해당 담당자와 통합 시 확정합니다.
@@ -70,6 +72,13 @@ slots={{
 - 입력이 1초 멈추면 저장하고, 예약 당시의 공간·메모 ID로 저장합니다. 공간 전환·페이지 숨김 때는 바로 저장합니다.
 - `App`의 `commit`은 새 데이터 또는 `(최신 데이터) => 새 데이터` 함수를 받고 저장 결과(`{ error }`)를 돌려줍니다. 지연 저장이 다른 변경을 덮어쓰지 않게 하기 위함입니다.
 
+## 디데이 (SCRUM-42)
+
+- 남은 날짜는 시각이 아닌 달력 날짜 차이(`lib/date.js`의 `daysBetween`)로 계산합니다. 미래는 D-n, 당일은 D-Day, 지난 날짜는 D+n이며 지난 디데이는 자동으로 지우지 않습니다.
+- 자정 갱신은 App의 `todayKey`로 처리하며 위젯 안에 별도 타이머를 두지 않습니다.
+- 디데이는 좌우명처럼 모든 공간이 함께 쓰는 내용 데이터(`ddays[]`: id, title, targetDate 'YYYY-MM-DD')입니다. 선택값이라 기존 version 1 데이터를 그대로 읽고, 테마 화면 설정과 분리되어 테마를 바꿔도 유지됩니다.
+- 화면은 다가오는 날을 가까운 순으로, 지난 날을 뒤에 보여 줍니다. 저장 순서는 바꾸지 않습니다.
+
 ## 저장 구조와 주의점
 
 브라우저 localStorage의 start.home.v1 키에 다음 구조를 저장합니다.
@@ -79,6 +88,7 @@ slots={{
   version: 1,
   activeSpaceId: '고유 ID',
   quote: '',
+  ddays: [{ id: '고유 ID', title: '기말고사', targetDate: '2026-12-15' }], // 선택
   spaces: [{ id: '고유 ID', name: '기본 공간', links: [], todos: [], memos: [] }]
 }
 ```

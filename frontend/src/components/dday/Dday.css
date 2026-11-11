@@ -1,0 +1,59 @@
+/*
+ * 디데이 스타일 변수. 테마는 위젯을 감싼 상위 요소에 --dday-* 변수를 지정한다.
+ * 여기서 같은 변수를 다시 선언하면 상위 값이 가려지므로 기본값(미니멀 페이퍼 시안)은 var() fallback으로만 둔다.
+ * 전역 토큰(--color-*)이 생기면 그 값을 먼저 따른다.
+ *
+ * 공개 변수: --dday-color, --dday-muted-color, --dday-border-color, --dday-accent-color, --dday-font-family,
+ * --dday-gap, --dday-title-size, --dday-date-size, --dday-count-size, --dday-count-weight, --dday-count-tracking
+ */
+.dday {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dday-gap, 12px);
+  color: var(--dday-color, var(--color-text, #1C1C1A));
+  font-family: var(--dday-font-family, inherit);
+  min-width: 0;
+}
+
+.dday-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.dday-heading h2 { font-size: 15px; font-weight: 700; }
+
+.dday .dday-empty { margin: 0; color: var(--dday-muted-color, var(--color-text-muted, #5E5D58)); font-size: 13px; }
+
+.dday-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+
+.dday-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "text count" "actions actions";
+  align-items: center;
+  gap: 4px 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--dday-border-color, var(--color-border, #E2E0DA));
+}
+.dday-item:last-child { border-bottom: 0; }
+
+.dday-text { grid-area: text; display: flex; flex-direction: column; min-width: 0; }
+.dday-title { font-size: var(--dday-title-size, 15px); font-weight: 500; overflow-wrap: anywhere; }
+.dday-date { font-size: var(--dday-date-size, 12px); color: var(--dday-muted-color, var(--color-text-muted, #5E5D58)); }
+
+.dday-count {
+  grid-area: count;
+  font-size: var(--dday-count-size, 32px);
+  font-weight: var(--dday-count-weight, 900);
+  letter-spacing: var(--dday-count-tracking, -0.02em);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* 당일은 색과 함께 'D-Day' 글자로도 구분된다. */
+.dday-item--today .dday-count { color: var(--dday-accent-color, var(--color-accent, #2456D6)); }
+.dday-item--past .dday-count { color: var(--dday-muted-color, var(--color-text-muted, #5E5D58)); }
+
+.dday-actions { grid-area: actions; display: flex; gap: 6px; }
+.dday-actions button { padding: 4px 10px; font-size: 13px; }
+
+/* 대화상자는 위젯 칸 안에서 열리므로 레이아웃의 '.widget p' 스타일이 덮어쓰지 않게 공통 대화상자 모양으로 되돌린다. */
+.dday-dialog p { margin: 0; color: inherit; font-size: inherit; }
+.dday-dialog .hint { margin-top: 6px; font-size: 12px; color: #65746b; }
+.dday-dialog .error { margin-top: 10px; font-size: 13px; color: #a42d29; }
