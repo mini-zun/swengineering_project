@@ -111,7 +111,7 @@ export function TodoList({
         <div>
           <span className="sc-kicker">ONE THING AT A TIME</span>
           <h2>
-            오늘의 할 일 <span className="sc-count">{items.length}</span>
+            할 일 <span className="sc-count">{items.length}</span>
           </h2>
         </div>
         <span className="sc-completion">

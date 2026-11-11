@@ -1,27 +1,30 @@
 import './BasicLayout.css'
 
-const areas = [
-  ['links', '사이트 바로가기', '자주 찾는 사이트가 모이는 곳'],
-  ['todos', '할 일', '하루의 할 일을 정리하는 곳'],
-  ['memos', '메모', '떠오른 생각을 자유롭게 적는 곳'],
-  ['clock', '시계·오늘 날짜', '지금의 시간과 날짜를 확인하는 곳'],
-  ['calendar', '달력·주간 날짜', '날짜를 살펴보는 곳'],
-  ['timer', '집중 타이머', '집중한 시간을 쌓아 가는 곳'],
-  ['dday', '디데이', '기다리는 날까지의 시간을 확인하는 곳'],
-]
-
-// slots에 팀원 컴포넌트를 전달한다. 데이터와 변경 이벤트는 App에서 연결한다.
+// 같은 slot을 한 번만 렌더해 편집 상태와 실행 중인 타이머를 유지한다.
 export default function BasicLayout({ tabs, quote, space, status, slots = {} }) {
   return <div className="basic-layout">
-    <header className="app-header"><a className="brand" href="#main">Start<span>내 취향 웹홈페이지</span></a><span className="header-note">나에게 맞는 하루의 시작</span></header>
-    {tabs}
-    <main id="main">
-      <div className="page-heading"><div><p className="eyebrow">MY SPACE</p><h1>{space.name}</h1></div><p>공간을 바꾸면, 하루에 필요한 것들도 함께.</p></div>
-      {quote}
-      <div className="widget-grid">{areas.map(([key, title, description]) => <section key={key} className={`widget widget-${key}`} aria-label={title}>
-        {slots[key] ?? <><h2>{title}</h2><p>{description}</p><span className="placeholder-label">컴포넌트 연결 예정</span></>}
-      </section>)}</div>
+    <a className="skip-link" href="#main">본문으로 이동</a>
+    <header className="app-header">
+      {tabs}
+      <a className="brand" href="#main" aria-label="Start 본문으로 이동">Start<span>나만의 시작페이지</span></a>
+    </header>
+    <main id="main" tabIndex={-1} aria-label={`${space.name} 공간`}>
+      <h1 className="visually-hidden">{space.name} 공간</h1>
+      <section className="hero" aria-label="오늘의 시간과 한 문장">
+        {slots.clock}
+        {quote}
+      </section>
+      <div className="widget widget-links">{slots.links}</div>
+      <div className="workspace-grid">
+        <div className="widget widget-todos">{slots.todos}</div>
+        <div className="widget widget-memos">{slots.memos}</div>
+        <div className="widget widget-timer">{slots.timer}</div>
+      </div>
+      <div className="support-grid">
+        <section className="widget widget-calendar" aria-label="달력·주간 날짜">{slots.calendar}</section>
+        <section className="widget widget-dday" aria-label="디데이">{slots.dday}</section>
+      </div>
     </main>
-    <footer>{status}<p>로그인 없이 이 브라우저에 저장됩니다.</p></footer>
+    <footer className="app-footer">{status}<p>로그인 없이 이 브라우저에 저장됩니다.</p></footer>
   </div>
 }
