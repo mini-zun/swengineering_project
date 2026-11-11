@@ -42,8 +42,8 @@ test('이름의 공백·중복·초과를 거부하고 한글·이모지를 같�
 test('이름 변경·전환·삭제는 다른 공간의 데이터와 ID를 보존한다', () => {
   let data = createDefaultData()
   const first = data.spaces[0]
-  first.links.push({ id: 'link-a', name: '테스트' })
-  first.todos.push({ id: 'todo-a', content: 'A' })
+  first.links.push({ id: 'link-a', name: '테스트', url: 'https://example.com/' })
+  first.todos.push({ id: 'todo-a', content: 'A', done: false })
   first.memos.push({ id: 'memo-a', content: 'A\n메모' })
   data = createSpace(data, '공간 B')
   const second = data.spaces[1]
