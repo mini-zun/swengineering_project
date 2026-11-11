@@ -75,3 +75,13 @@ export function formatMonthTitle({ year, month }) {
 export function formatDateLabel(date) {
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${WEEKDAY_LABELS[date.getDay()]}요일`
 }
+
+// 두 날짜 키 사이의 달력 날짜 차이(to - from). 시각은 보지 않는다.
+// 로컬 Date끼리 빼면 서머타임 전환일에 하루가 23·25시간이 되므로 UTC 자정끼리 비교한다.
+export function daysBetween(fromKey, toKey) {
+  const utcDay = (key) => {
+    const date = fromDateKey(key)
+    return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  }
+  return Math.round((utcDay(toKey) - utcDay(fromKey)) / 86400000)
+}

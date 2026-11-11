@@ -9,6 +9,8 @@ import MemoWidget from './components/memos/MemoWidget.jsx'
 import { useMemos } from './hooks/useMemos.js'
 import { memoLayout } from './state/memos.js'
 import { createSpace, renameSpace, deleteSpace } from './state/spaces.js'
+import DdayWidget from './components/dday/DdayWidget.jsx'
+import { addDday, updateDday, deleteDday, ddaysOf } from './state/ddays.js'
 import { loadData, saveData } from './storage/storage.js'
 
 function initialize() {
@@ -19,7 +21,7 @@ function initialize() {
 export default function App() {
   const [session, setSession] = useState(initialize)
   const [quoteDraft, setQuoteDraft] = useState(null)
-  // 오늘 날짜는 여기서 한 번만 구해 시계·달력에 같은 값을 내려준다.
+  // 오늘 날짜는 여기서 한 번만 구해 시계·달력·디데이에 같은 값을 내려준다.
   const todayKey = useToday()
   const data = session.data
   // 자동 저장처럼 렌더 사이에 일어나는 변경이 서로 덮어쓰지 않도록 가장 최근 데이터를 따로 들고 있는다.
@@ -53,6 +55,10 @@ export default function App() {
     slots={{
       clock: <Clock />,
       calendar: <Calendar todayKey={todayKey} />,
+      dday: <DdayWidget ddays={ddaysOf(data)} todayKey={todayKey}
+        onAdd={(fields) => commit((current) => addDday(current, fields))}
+        onUpdate={(id, fields) => commit((current) => updateDday(current, id, fields))}
+        onDelete={(id) => commit((current) => deleteDday(current, id))} />,
       memos: <MemoWidget space={activeSpace} layout={memoLayout(data)} memos={memos} persisted={session.status === 'saved'} />,
     }}
     tabs={<SpaceTabs spaces={data.spaces} activeSpaceId={data.activeSpaceId}
