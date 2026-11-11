@@ -1,0 +1,283 @@
+@import '../productivity/components.css';
+.sc-focus {
+  background: var(--sc-focus-bg, #fff);
+  color: var(--sc-focus-text, #1c1c1a);
+  border: 1px solid #1c1c1a33;
+  border-radius: 13px;
+  padding: 25px 25px 20px;
+  box-shadow: 0 6px 22px #1c1c1a0a;
+}
+.sc-focus .sc-section-heading {
+  margin-bottom: 8px;
+  align-items: flex-start;
+}
+.sc-focus .sc-section-heading > svg {
+  color: #5e5d58;
+  margin-top: 2px;
+}
+.sc-focus h2 {
+  font-size: 17px;
+  letter-spacing: -0.7px;
+  font-weight: 500;
+}
+.sc-focus .sc-kicker {
+  color: #5e5d58;
+  font-size: 8px;
+  letter-spacing: 1.8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 13px;
+}
+.sc-live-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #2456d6;
+}
+.sc-live-dot.running {
+  background: #f7f6f3;
+  box-shadow: 0 0 7px #1c1c1a55;
+}
+.sc-focus-subtitle {
+  color: #5e5d58;
+  font-size: 9px;
+  line-height: 1.6;
+}
+.sc-timer {
+  width: 219px;
+  height: 219px;
+  margin: 25px auto 23px;
+  position: relative;
+}
+.sc-timer svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.sc-timer circle {
+  fill: none;
+  stroke-width: 2.7;
+  stroke-linecap: round;
+}
+.sc-timer-track {
+  stroke: #1c1c1a14;
+}
+.sc-timer-progress {
+  stroke: #2456d6;
+  transition: stroke-dashoffset 0.3s;
+}
+.sc-timer > div {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+.sc-timer-state {
+  font-size: 9px;
+  color: #5e5d58;
+}
+.sc-time {
+  font-family: "SFMono-Regular", Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+  font-size: 34px;
+  line-height: 1;
+  letter-spacing: -1.8px;
+  font-weight: 400;
+}
+.sc-timer-space {
+  font-size: 9px;
+  color: #5e5d58;
+  max-width: 170px;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+.sc-timer-actions {
+  display: flex;
+  gap: 8px;
+}
+.sc-timer-actions .sc-button {
+  background: #f7f6f3;
+  color: #1c1c1a;
+  flex: 1;
+  font-size: 11px;
+  min-height: 40px;
+}
+.sc-timer-actions .sc-button.sc-stop {
+  flex: 0;
+  background: transparent;
+  color: #5e5d58;
+  border-color: #1c1c1a44;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+.sc-focus-owner {
+  font-size: 10px;
+  color: #5e5d58;
+  line-height: 1.7;
+  margin-top: 12px !important;
+}
+.sc-daily-focus {
+  border-top: 1px solid #1c1c1a1c;
+  margin-top: 23px;
+  padding-top: 18px;
+}
+.sc-daily-focus > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 10px;
+  color: #5e5d58;
+}
+.sc-daily-focus > div:first-child > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sc-daily-focus small {
+  font-size: 8px;
+  color: #5e5d58;
+}
+.sc-daily-focus strong {
+  font-family: Consolas, monospace;
+  font-weight: 400;
+  font-size: 13px;
+  color: #5e5d58;
+}
+.sc-daily-goal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9px;
+  color: #5e5d58;
+  margin-top: 17px;
+}
+.sc-focus .sc-text-button {
+  color: #5e5d58;
+  font-size: 9px;
+}
+.sc-goal-track {
+  height: 4px;
+  background: #1c1c1a1c;
+  border-radius: 5px;
+  margin-top: 9px;
+  overflow: hidden;
+}
+.sc-goal-track > div {
+  height: 100%;
+  background: #f7f6f3;
+  border-radius: 5px;
+}
+.sc-goal-caption {
+  font-size: 8px;
+  color: #5e5d58;
+  display: block;
+  margin-top: 7px;
+}
+.sc-focus-note {
+  font-size: 8px;
+  color: #5e5d58;
+  line-height: 1.9;
+  margin-top: 18px !important;
+}
+.sc-history {
+  border-top: 1px solid #1c1c1a1c;
+  padding-top: 17px;
+  margin-top: 18px;
+}
+.sc-history h3 {
+  font-size: 10px;
+  font-weight: 500;
+  color: #5e5d58;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.sc-history h3 span {
+  font-size: 9px;
+  color: #5e5d58;
+}
+.sc-history > p {
+  font-size: 9px;
+  color: #5e5d58;
+  margin-top: 12px;
+}
+.sc-history ul {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.sc-history li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 4px;
+  font-size: 10px;
+  gap: 10px;
+}
+.sc-history li > span {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sc-history b {
+  font-weight: 400;
+  color: #5e5d58;
+}
+.sc-history small {
+  color: #5e5d58;
+  font-size: 8px;
+}
+.sc-history strong {
+  font:
+    400 11px Consolas,
+    monospace;
+  color: #5e5d58;
+}
+.sc-focus > .sc-error {
+  color: #5e5d58;
+}
+@media (max-width: 1000px) {
+  .sc-focus {
+    padding: 23px 19px 19px;
+  }
+}
+@media (max-width: 700px) {
+  .sc-focus {
+    padding: 24px;
+  }
+  .sc-timer {
+    margin: 24px auto;
+  }
+  .sc-focus h2 {
+    font-size: 19px;
+  }
+  .sc-focus-subtitle {
+    font-size: 11px;
+  }
+  .sc-timer-state,
+  .sc-timer-space {
+    font-size: 10px;
+  }
+  .sc-focus-note {
+    font-size: 9px;
+  }
+}
+.widget .sc-focus { padding: 20px; }
+.widget .sc-timer { width: min(219px, 100%); height: auto; aspect-ratio: 1; }
+.widget .sc-focus p { color: inherit; }
+
+.sc-focus { background: var(--sc-surface, #fff); color: var(--sc-text, #1c1c1a); }
+.sc-focus .sc-kicker, .sc-focus-subtitle, .sc-timer-state, .sc-timer-space,
+.sc-daily-focus, .sc-daily-focus small, .sc-daily-goal, .sc-goal-caption,
+.sc-focus-note, .sc-history h3, .sc-history small { color: var(--sc-muted, #5e5d58); }
+.sc-timer-actions .sc-button { background: var(--sc-accent, #2456d6); color: #fff; }
+.sc-timer-actions .sc-button.sc-stop { background: transparent; color: var(--sc-accent, #2456d6); border-color: var(--sc-line, #e2e0da); }
+.sc-daily-focus strong, .sc-history strong { color: var(--sc-text, #1c1c1a); }
+.sc-goal-track, .sc-timer-track { background: var(--sc-line, #e2e0da); }
+.sc-timer-progress { stroke: var(--sc-accent, #2456d6); }

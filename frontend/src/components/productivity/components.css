@@ -1,0 +1,288 @@
+/* 공통 UI. 테마는 --sc-* 변수를 상위 요소에서 재정의한다. */
+.sc-panel,
+.sc-dialog {
+  color: var(--sc-text, #1c1c1a);
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.sc-panel *,
+.sc-dialog * {
+  box-sizing: border-box;
+}
+.sc-panel button,
+.sc-panel input,
+.sc-dialog button,
+.sc-dialog input {
+  font: inherit;
+}
+.sc-panel button,
+.sc-dialog button {
+  cursor: pointer;
+}
+.sc-panel button:disabled,
+.sc-dialog button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.sc-panel button:focus-visible,
+.sc-panel a:focus-visible,
+.sc-panel input:focus-visible,
+.sc-dialog button:focus-visible,
+.sc-dialog input:focus-visible {
+  outline: 3px solid var(--sc-accent, #2456d6);
+  outline-offset: 3px;
+}
+.sc-panel h2,
+.sc-panel h3,
+.sc-panel p,
+.sc-dialog h3,
+.sc-dialog p {
+  margin: 0;
+}
+.sc-panel a {
+  color: inherit;
+  text-decoration: none;
+}
+.sc-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 23px;
+}
+.sc-section-heading h2 {
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.7px;
+  line-height: 1.5;
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+.sc-kicker {
+  display: block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.7px;
+  color: var(--sc-muted, #5e5d58);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.sc-count {
+  display: inline-grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1;
+  background: var(--sc-soft, #f7f6f3);
+  color: var(--sc-accent, #5e5d58);
+  min-width: 21px;
+  height: 21px;
+  padding: 0 5px;
+  border-radius: 6px;
+  letter-spacing: 0;
+}
+.sc-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  min-height: 41px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 10px 17px;
+  background: var(--sc-accent, #2456d6);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+}
+.sc-button:hover:not(:disabled) {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+}
+.sc-button.secondary {
+  background: var(--sc-surface, #fff);
+  border-color: var(--sc-line, #e2e0da);
+  color: var(--sc-text, #1c1c1a);
+  box-shadow: 0 2px 3px #1c1c1a03;
+}
+.sc-button.compact {
+  min-height: 34px;
+  padding: 7px 11px;
+  font-size: 10px;
+}
+.sc-button.danger {
+  background: #a83932;
+  color: white;
+}
+.sc-icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--sc-muted, #5e5d58);
+  padding: 4px;
+  flex-shrink: 0;
+}
+.sc-icon-button:hover:not(:disabled) {
+  background: var(--sc-soft, #f7f6f3);
+  color: var(--sc-text, #1c1c1a);
+}
+.sc-text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 0;
+  padding: 3px 0;
+  font-size: 10px;
+  color: var(--sc-muted, #5e5d58);
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+.sc-text-button:hover:not(:disabled) {
+  color: var(--sc-accent, #5e5d58);
+}
+.sc-text-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.sc-dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-height: 88vh;
+  overflow-y: auto;
+  border: 1px solid var(--sc-line, #e2e0da);
+  border-radius: 13px;
+  padding: 24px;
+  background: var(--sc-surface, #fff);
+  box-shadow: 0 20px 100px #1c1c1a3d;
+}
+.sc-dialog::backdrop {
+  background: #1c1c1a52;
+  backdrop-filter: blur(4px);
+}
+.sc-modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 22px;
+}
+.sc-modal-head h3 {
+  font-size: 18px;
+  letter-spacing: -0.5px;
+  font-weight: 600;
+}
+.sc-field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+.sc-field > span {
+  font-size: 9px;
+  color: var(--sc-muted, #5e5d58);
+  font-weight: 400;
+}
+.sc-field > input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--sc-line, #e2e0da);
+  background: var(--sc-input, #f7f6f3);
+  border-radius: 6px;
+  color: var(--sc-text, #1c1c1a);
+  font-size: 12px;
+  min-height: 42px;
+}
+.sc-hint,
+.sc-dialog-copy {
+  font-size: 11px !important;
+  line-height: 1.9;
+  color: var(--sc-muted, #5e5d58);
+  margin-bottom: 9px !important;
+}
+.sc-hint {
+  font-size: 10px !important;
+}
+.sc-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 22px;
+}
+.sc-error {
+  font-size: 11px !important;
+  color: #a83932;
+  margin-top: 10px !important;
+  line-height: 1.8;
+}
+.sc-error-inline {
+  color: #a83932 !important;
+}
+.sc-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.sc-skip {
+  position: fixed;
+  top: -100px;
+  left: 15px;
+  z-index: 99;
+  padding: 10px 20px;
+  background: white;
+  color: #5e5d58;
+}
+.sc-skip:focus {
+  top: 10px;
+}
+@media (max-width: 1000px) {
+  .sc-section-heading h2 {
+    font-size: 17px;
+  }
+}
+@media (max-width: 700px) {
+  .sc-section-heading h2 {
+    font-size: 17px;
+  }
+  .sc-section-heading {
+    gap: 8px;
+  }
+  .sc-button.compact {
+    font-size: 9px;
+    padding: 7px 8px;
+  }
+  .sc-dialog {
+    padding: 21px;
+  }
+  .sc-dialog .sc-button {
+    font-size: 11px;
+    padding: 10px 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sc-panel * {
+    transition: none !important;
+  }
+}
+.widget .sc-section-heading { flex-wrap: wrap; }

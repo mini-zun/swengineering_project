@@ -1,0 +1,275 @@
+@import '../productivity/components.css';
+.sc-todos {
+  margin-top: 31px;
+  padding: 24px 25px 18px;
+  background: var(--sc-surface, #fff);
+  border: 1px solid var(--sc-line, #e2e0da);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px #1c1c1a03;
+}
+.sc-todos .sc-section-heading {
+  margin-bottom: 16px;
+}
+.sc-completion {
+  color: var(--sc-muted, #5e5d58);
+  font-size: 10px;
+  white-space: nowrap;
+}
+.sc-completion b {
+  color: var(--sc-accent, #5e5d58);
+  font-weight: 600;
+}
+.sc-todo-progress {
+  height: 4px;
+  background: var(--sc-line, #f7f6f3);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.sc-todo-progress > div {
+  height: 100%;
+  background: #2456d6;
+  border-radius: 5px;
+  transition: width 0.2s;
+}
+.sc-todo-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--sc-line, #e2e0da);
+}
+.sc-segmented {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.sc-segmented button {
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 5px;
+  color: var(--sc-muted, #5e5d58);
+  background: transparent;
+  padding: 6px 10px;
+  min-height: 29px;
+}
+.sc-segmented button[aria-pressed="true"] {
+  background: var(--sc-soft, #f7f6f3);
+  color: var(--sc-accent, #5e5d58);
+  font-weight: 600;
+}
+.sc-segmented button > span {
+  font-size: 9px;
+  opacity: 0.7;
+  font-weight: 400;
+}
+.sc-caption {
+  font-size: 9px;
+  color: var(--sc-muted, #5e5d58);
+}
+.sc-todo-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.sc-todo-row {
+  padding: 17px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--sc-line, #e2e0da);
+  min-height: 64px;
+}
+.sc-todo-row > input {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border: 1.5px solid #e2e0da;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0;
+  background: var(--sc-surface, #fff);
+}
+.sc-todo-row > input:checked {
+  background: #2456d6;
+  border-color: #e2e0da;
+}
+.sc-todo-row > input:checked:after {
+  content: "✓";
+  font-size: 12px;
+  color: white;
+  font-weight: 700;
+}
+.sc-todo-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+}
+.sc-todo-content label {
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.sc-todo-row.is-done label {
+  text-decoration: line-through;
+  color: var(--sc-muted, #5e5d58);
+}
+.sc-due {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9px;
+  color: var(--sc-muted, #5e5d58);
+}
+.sc-due.is-overdue {
+  color: #5e5d58;
+}
+.sc-row-tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.sc-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  padding: 22px 12px;
+  color: var(--sc-muted, #5e5d58);
+  text-align: center;
+}
+.sc-empty > span {
+  width: 31px;
+  height: 31px;
+  border: 1px solid var(--sc-line, #e2e0da);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+  color: #5e5d58;
+}
+.sc-empty p {
+  font-size: 11px;
+}
+.sc-empty small {
+  font-size: 9px;
+  opacity: 0.8;
+  margin-top: 5px;
+}
+.sc-todo-form {
+  margin-top: 18px;
+  padding: 12px;
+  background: var(--sc-input, #f7f6f3);
+  border: 1px solid var(--sc-line, #e2e0da);
+  border-radius: 8px;
+}
+.sc-todo-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #5e5d58;
+}
+.sc-todo-input > input {
+  border: 0;
+  background: none;
+  font-size: 11px;
+  color: var(--sc-text, #1c1c1a);
+  flex: 1;
+  min-width: 0;
+  padding: 4px;
+  line-height: 1.6;
+}
+.sc-todo-input > span {
+  font-size: 9px;
+  white-space: nowrap;
+  color: var(--sc-muted, #5e5d58);
+}
+.sc-todo-form-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--sc-line, #e2e0da);
+}
+.sc-todo-form-bottom label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  color: var(--sc-muted, #5e5d58);
+}
+.sc-todo-form-bottom input {
+  border: 0;
+  background: none;
+  font-size: 10px;
+  padding: 3px;
+  color: var(--sc-text, #1c1c1a);
+  max-width: 125px;
+  color-scheme: light;
+}
+.sc-card-footer {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--sc-muted, #5e5d58);
+}
+@media (max-width: 1000px) {
+  .sc-todos {
+    padding: 22px 19px 17px;
+  }
+  .sc-caption {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .sc-todos {
+    margin-top: 23px;
+    padding: 20px 17px 16px;
+  }
+  .sc-todo-row {
+    gap: 10px;
+  }
+  .sc-todo-content label {
+    font-size: 11px;
+  }
+  .sc-row-tools {
+    gap: 0;
+  }
+  .sc-row-tools .sc-icon-button {
+    width: 24px;
+  }
+  .sc-completion {
+    font-size: 9px;
+  }
+  .sc-todo-input > input {
+    font-size: 10px;
+  }
+  .sc-todo-form {
+    padding: 10px;
+  }
+  .sc-todo-form-bottom input {
+    max-width: 116px;
+    font-size: 10px;
+  }
+}
+.widget .sc-todos { margin: 0; padding: 0; border: 0; box-shadow: none; }
+.widget .sc-todo-row > input { padding: 0; }
+.widget .sc-todo-content label { margin: 0; }
+.widget .sc-todo-list { max-height: 330px; overflow-y: auto; }
+.widget .sc-todo-form-bottom { flex-wrap: wrap; }
+.widget .sc-todo-form-bottom label { margin: 0; min-width: 0; }
