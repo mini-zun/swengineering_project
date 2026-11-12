@@ -109,6 +109,8 @@ dialog p { overflow-wrap: anywhere; }
 .basic-layout .memo-size { font-size: 12px; }
 
 .basic-layout .sc-focus { padding: 0; border: 0; box-shadow: none; background: transparent; }
+/* 컴포넌트 CSS가 나중에 로드돼도 기본 테마의 제목·버튼 표시를 유지한다. */
+.basic-layout .sc-focus .sc-kicker { display: none; }
 .basic-layout .focus-card { border: 1px solid var(--color-border); background: var(--color-surface); border-radius: 12px; padding: 20px; }
 .basic-layout .sc-timer { width: auto; height: auto; aspect-ratio: auto; margin: 0; }
 .basic-layout .sc-timer > div { position: static; align-items: flex-start; gap: 8px; }
@@ -117,7 +119,8 @@ dialog p { overflow-wrap: anywhere; }
 .basic-layout .sc-timer-state { order: 1; }
 .basic-layout .sc-timer-space { order: 2; }
 .basic-layout .sc-timer-actions { margin-top: 16px; flex-wrap: wrap; }
-.basic-layout .sc-timer-actions .sc-button { flex: 1; font-size: 13px; }
+.basic-layout .sc-timer-actions .sc-button { flex: 1; font-size: 13px; background: var(--color-text); color: var(--color-bg); }
+.basic-layout .sc-timer-actions .sc-button.sc-stop { background: var(--color-surface); border-color: var(--color-border); color: var(--color-text); }
 .basic-layout .sc-focus-owner { font-size: 12px; }
 .basic-layout .sc-daily-focus { margin: 16px 0 0; padding: 16px 0 0; border-color: var(--color-border); }
 .basic-layout .sc-daily-focus > div:first-child, .basic-layout .sc-daily-goal { font-size: 12px; flex-wrap: wrap; }
