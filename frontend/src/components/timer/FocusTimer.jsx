@@ -57,23 +57,12 @@ export function FocusTimer({
             />{' '}
             FOCUS SESSION
           </span>
-          <h2>나에게 집중하는 시간</h2>
+          <h2>집중 시간</h2>
         </div>
         <Icon name="clock" size={21} />
       </div>
-      <p className="sc-focus-subtitle">서두르지 말고, 한 번에 하나씩.</p>
+      <div className="focus-card">
       <div className="sc-timer">
-        <svg viewBox="0 0 220 220" aria-hidden="true">
-          <circle cx="110" cy="110" r="98" className="sc-timer-track" />
-          <circle
-            cx="110"
-            cy="110"
-            r="98"
-            className="sc-timer-progress"
-            strokeDasharray="615.75"
-            strokeDashoffset={615.75 * (1 - Math.min(progress, 100) / 100)}
-          />
-        </svg>
         <div>
           <span className="sc-timer-state">
             {recovery
@@ -88,7 +77,7 @@ export function FocusTimer({
             {formatDuration(elapsed)}
           </output>
           <span className="sc-timer-space">
-            {activeSession ? `${owner}에서 시작한 집중` : `${spaceName} 공간`}
+            {activeSession ? `${owner}에서 시작한 집중` : spaceName}
           </span>
         </div>
       </div>
@@ -126,13 +115,6 @@ export function FocusTimer({
           </>
         )}
       </div>
-      <ErrorText>{error}</ErrorText>
-      {retryOnly && !goalOpen && !recovery && <button className="sc-button" disabled={busy} onClick={() => act(() => {})}>저장 재시도</button>}
-      {activeSession && activeSession.spaceId !== spaceId && (
-        <p className="sc-focus-owner">
-          현재 보는 공간과 관계없이 <b>{owner}</b>에 기록돼요.
-        </p>
-      )}
       <div className="sc-daily-focus">
         <div>
           <span>
@@ -168,6 +150,16 @@ export function FocusTimer({
           {progress >= 100 ? ' ✓' : ''}
         </span>
       </div>
+      <ErrorText>{error}</ErrorText>
+      {retryOnly && !goalOpen && !recovery && <button className="sc-button" disabled={busy} onClick={() => act(() => {})}>저장 재시도</button>}
+      {activeSession && activeSession.spaceId !== spaceId && (
+        <p className="sc-focus-owner">
+          현재 보는 공간과 관계없이 <b>{owner}</b>에 기록돼요.
+        </p>
+      )}
+      </div>
+      <details className="focus-details">
+        <summary>집중 기록과 안내</summary>
       <p className="sc-focus-note">
         짧은 집중도 오늘 누적에 포함돼요. 최근 목록은 1분 이상만 표시해요.
         <br />
@@ -207,6 +199,7 @@ export function FocusTimer({
           <p>집중을 마치면 기록이 여기에 쌓여요.</p>
         )}
       </div>
+      </details>
       {goalOpen && (
         <Modal
           title="하루 집중 목표"

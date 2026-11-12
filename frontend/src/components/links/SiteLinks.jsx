@@ -75,25 +75,7 @@ function LinkForm({ link, spaceId, onSave, onClose, onRetry, returnFocusRef }) {
   )
 }
 function SiteIcon({ link }) {
-  const [failed, setFailed] = useState(false),
-    host = new URL(link.url).hostname
-  // Fetch only the registered site's own icon; no third-party favicon service receives the URL.
-  return (
-    <span className="sc-site-icon">
-      {!failed ? (
-        <img
-          src={`${new URL(link.url).origin}/favicon.ico`}
-          alt=""
-          loading="lazy"
-          referrerPolicy="no-referrer"
-          onError={() => setFailed(true)}
-        />
-      ) : (
-        Array.from(link.name)[0]?.toUpperCase()
-      )}
-      <span className="sc-sr">{host}</span>
-    </span>
-  )
+  return <span className="sc-site-icon" aria-hidden="true">{Array.from(link.name)[0]?.toUpperCase()}</span>
 }
 /** Controlled component. Callbacks always receive the originating space ID. */
 export function SiteLinks({
@@ -115,7 +97,7 @@ export function SiteLinks({
         <div>
           <span className="sc-kicker">QUICK ACCESS</span>
           <h2>
-            자주 가는 곳 <span className="sc-count">{items.length}</span>
+            바로가기 <span className="sc-count">{items.length}</span>
           </h2>
         </div>
         <button
@@ -139,7 +121,8 @@ export function SiteLinks({
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`${link.name} (새 탭)`}
+              title={link.url}
+              aria-label={`${link.name} — ${link.url} (새 탭)`}
             >
               <SiteIcon key={link.url} link={link} />
               <span className="sc-site-info">

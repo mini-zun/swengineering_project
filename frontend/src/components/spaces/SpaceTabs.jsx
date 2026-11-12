@@ -50,11 +50,16 @@ function SpaceDialog({ mode, space, onSubmit, onDismiss, navigationRef }) {
 
 export default function SpaceTabs({ spaces, activeSpaceId, onSelect, onCreate, onRename, onDelete }) {
   const navigationRef = useRef(null)
+  const activeTabRef = useRef(null)
   const [editing, setEditing] = useState(null)
   const active = spaces.find((space) => space.id === activeSpaceId)
+  useEffect(() => {
+    // 새 공간 생성·선택·이름 변경 뒤에도 선택된 탭을 보이는 영역에 둔다.
+    activeTabRef.current?.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+  }, [activeSpaceId, active?.name])
   return <section ref={navigationRef} className="space-navigation" aria-label="공간 관리">
     <div className="space-tabs" role="group" aria-label="공간 선택">
-      {spaces.map((space) => <button key={space.id} aria-pressed={space.id === activeSpaceId} title={space.name}
+      {spaces.map((space) => <button key={space.id} ref={space.id === activeSpaceId ? activeTabRef : null} aria-pressed={space.id === activeSpaceId} title={space.name}
         className={space.id === activeSpaceId ? 'space-tab selected' : 'space-tab'} onClick={() => onSelect(space.id)}>{space.name}</button>)}
     </div>
     <div className="space-actions"><button onClick={() => setEditing({ mode: 'create' })}>+ 새 공간</button>
