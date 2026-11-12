@@ -121,7 +121,8 @@ export function SiteLinks({
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`${link.name} (새 탭)`}
+              title={link.url}
+              aria-label={`${link.name} — ${link.url} (새 탭)`}
             >
               <SiteIcon key={link.url} link={link} />
               <span className="sc-site-info">

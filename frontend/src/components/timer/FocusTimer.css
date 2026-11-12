@@ -179,11 +179,11 @@
   display: block;
   margin-top: 7px;
 }
-.sc-focus-note {
+.sc-focus .sc-focus-note {
   font-size: 8px;
   color: #5e5d58;
   line-height: 1.9;
-  margin-top: 18px !important;
+  margin-top: 18px;
 }
 .sc-history {
   border-top: 1px solid #1c1c1a1c;

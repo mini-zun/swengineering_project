@@ -11,21 +11,21 @@
   margin: auto;
   padding: 28px 40px 0;
 }
-.skip-link { position: fixed; top: 8px; left: 8px; z-index: 10; padding: 10px 16px; background: #fff; color: var(--color-text); transform: translateY(-160%); }
+.skip-link { position: fixed; top: 8px; left: 8px; z-index: 10; padding: 10px 16px; background: var(--color-surface); color: var(--color-text); transform: translateY(-160%); }
 .skip-link:focus { transform: translateY(0); }
 .app-header { display: flex; align-items: center; gap: 24px; min-height: 44px; }
 .brand { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; color: var(--color-text-muted); text-decoration: none; font-size: 18px; font-weight: 700; flex-shrink: 0; }
 .brand span { font-size: 11px; font-weight: 400; }
 .space-navigation { display: flex; align-items: center; flex: 1; gap: 14px; min-width: 0; }
 .space-tabs { display: flex; align-items: center; gap: 4px; overflow-x: auto; min-width: 0; padding: 5px; }
-.space-tab { flex-shrink: 0; max-width: 240px; overflow-wrap: anywhere; border: 0; border-radius: 999px; background: transparent; color: var(--color-text-muted); min-height: 44px; padding: 10px 18px; font-size: 15px; }
+.space-tab { flex-shrink: 0; max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: 0; border-radius: 999px; background: transparent; color: var(--color-text-muted); min-height: 44px; padding: 10px 18px; font-size: 15px; }
 .space-tab.selected, .space-tab.selected:hover:not(:disabled) { background: var(--color-text); color: var(--color-bg); font-weight: 700; }
 .space-actions { display: flex; gap: 6px; flex-shrink: 0; }
 .space-actions button { background: transparent; border-color: transparent; font-size: 12px; padding: 8px; min-height: 36px; color: var(--color-text-muted); }
-.space-actions button:first-child { border: 1px dashed #b8b6af; border-radius: 999px; padding: 8px 12px; }
+.space-actions button:first-child { border: 1px dashed var(--color-border-strong); border-radius: 999px; padding: 8px 12px; }
 .hero { padding: 56px 0 42px; text-align: center; }
 .quote-card { margin: 14px auto 0; max-width: 640px; }
-.quote-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 17px; color: #3b3a36; }
+.quote-text { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 17px; color: var(--color-quote); }
 .quote-display { display: flex; flex-direction: column; align-items: center; gap: 6px; }
 .quote-edit { border: 0; padding: 4px 10px; background: transparent; font-size: 12px; color: var(--color-text-muted); }
 .quote-card form { text-align: left; padding: 16px; border: 1px solid var(--color-border); background: var(--color-surface); border-radius: var(--radius-card); }
@@ -54,10 +54,10 @@ dialog p { overflow-wrap: anywhere; }
 .basic-layout .sc-section-heading h2 { font-size: 15px; font-weight: 700; letter-spacing: 0; }
 .basic-layout .sc-count { background: transparent; color: var(--color-text-muted); font-size: 13px; padding: 0; min-width: 0; font-weight: 400; }
 .basic-layout .sc-button { background: var(--color-text); font-size: 13px; border-radius: 9px; min-height: 40px; }
-.basic-layout .sc-button:hover:not(:disabled) { background: #353530; transform: none; }
+.basic-layout .sc-button:hover:not(:disabled) { background: var(--color-primary-hover); transform: none; }
 .basic-layout .sc-button.secondary, .basic-layout .sc-button.sc-stop { background: var(--color-surface); border-color: var(--color-border); color: var(--color-text); }
 .basic-layout .sc-button.secondary:hover:not(:disabled), .basic-layout .sc-button.sc-stop:hover:not(:disabled) { background: var(--color-surface-subtle); }
-.basic-layout .sc-button.danger { background: #a83932; }
+.basic-layout .sc-button.danger { background: var(--color-danger); color: var(--color-on-danger); }
 .basic-layout .sc-button.compact { font-size: 12px; min-height: 36px; padding: 6px 10px; }
 .basic-layout .sc-text-button { font-size: 12px; }
 .basic-layout .sc-icon-button { width: 30px; height: 30px; }
@@ -86,7 +86,7 @@ dialog p { overflow-wrap: anywhere; }
 .basic-layout .sc-todo-toolbar { padding-bottom: 8px; }
 .basic-layout .sc-todo-list { max-height: 330px; overflow-y: auto; padding: 4px; margin: -4px; }
 .basic-layout .sc-todo-row { padding: 12px 0; min-height: 56px; gap: 10px; }
-.basic-layout .sc-todo-row > input { padding: 0; border-color: #b8b6af; border-radius: 3px; }
+.basic-layout .sc-todo-row > input { padding: 0; border-color: var(--color-border-strong); border-radius: 3px; }
 .basic-layout .sc-todo-row > input:checked { background: var(--color-text); border-color: var(--color-text); }
 .basic-layout .sc-todo-content label { font-size: 14px; font-weight: 400; margin: 0; }
 .basic-layout .sc-due { font-size: 11px; }
@@ -108,11 +108,11 @@ dialog p { overflow-wrap: anywhere; }
 .basic-layout .memo-delete { margin-left: auto; }
 .basic-layout .memo-size { font-size: 12px; }
 
-.basic-layout .sc-focus { padding: 0; border: 0; box-shadow: none; background: transparent; }
+.basic-layout .widget .sc-focus { padding: 0; border: 0; box-shadow: none; background: transparent; }
 /* 컴포넌트 CSS가 나중에 로드돼도 기본 테마의 제목·버튼 표시를 유지한다. */
 .basic-layout .sc-focus .sc-kicker { display: none; }
 .basic-layout .focus-card { border: 1px solid var(--color-border); background: var(--color-surface); border-radius: 12px; padding: 20px; }
-.basic-layout .sc-timer { width: auto; height: auto; aspect-ratio: auto; margin: 0; }
+.basic-layout .widget .sc-timer { width: auto; height: auto; aspect-ratio: auto; margin: 0; }
 .basic-layout .sc-timer > div { position: static; align-items: flex-start; gap: 8px; }
 .basic-layout .sc-time { font: 900 clamp(28px, 3.3vw, 44px)/1.2 var(--font-base); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
 .basic-layout .sc-timer-state, .basic-layout .sc-timer-space { font-size: 12px; text-align: left; max-width: 100%; }
@@ -132,7 +132,7 @@ dialog p { overflow-wrap: anywhere; }
 .basic-layout .sc-goal-caption { font-size: 12px; }
 .basic-layout .focus-details { margin-top: 16px; font-size: 13px; color: var(--color-text-muted); }
 .basic-layout .focus-details summary { cursor: pointer; padding: 6px 0; }
-.basic-layout .sc-focus-note { font-size: 12px; margin-top: 12px !important; }
+.basic-layout .sc-focus .sc-focus-note { font-size: 12px; margin-top: 12px; }
 .basic-layout .sc-history { border-color: var(--color-border); padding-top: 12px; margin-top: 12px; }
 .basic-layout .sc-history h3, .basic-layout .sc-history > p, .basic-layout .sc-history li { font-size: 13px; }
 .basic-layout .sc-history small, .basic-layout .sc-history h3 span { font-size: 11px; }

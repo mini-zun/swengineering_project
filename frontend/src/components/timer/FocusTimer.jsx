@@ -77,9 +77,43 @@ export function FocusTimer({
             {formatDuration(elapsed)}
           </output>
           <span className="sc-timer-space">
-            {activeSession ? `${owner}에서 시작한 집중` : `${spaceName} 공간`}
+            {activeSession ? `${owner}에서 시작한 집중` : spaceName}
           </span>
         </div>
+      </div>
+      <div className="sc-timer-actions">
+        {!activeSession ? (
+          <button
+            className="sc-button"
+            disabled={locked}
+            onClick={() => act(() => onStart(spaceId))}
+          >
+            <Icon name="play" size={15} /> 집중 시작
+          </button>
+        ) : (
+          <>
+            <button
+              className="sc-button"
+              disabled={locked}
+              onClick={() =>
+                act(activeSession.status === 'running' ? onPause : onResume)
+              }
+            >
+              <Icon
+                name={activeSession.status === 'running' ? 'pause' : 'play'}
+                size={15}
+              />
+              {activeSession.status === 'running' ? '일시정지' : '이어서 집중'}
+            </button>
+            <button
+              className="sc-button sc-stop"
+              disabled={locked}
+              onClick={() => act(onStop)}
+            >
+              <Icon name="stop" size={15} /> 종료
+            </button>
+          </>
+        )}
       </div>
       <div className="sc-daily-focus">
         <div>
@@ -115,40 +149,6 @@ export function FocusTimer({
           오늘 목표의 {Math.floor(progress)}%를 채웠어요
           {progress >= 100 ? ' ✓' : ''}
         </span>
-      </div>
-      <div className="sc-timer-actions">
-        {!activeSession ? (
-          <button
-            className="sc-button"
-            disabled={locked}
-            onClick={() => act(() => onStart(spaceId))}
-          >
-            <Icon name="play" size={15} /> 집중 시작
-          </button>
-        ) : (
-          <>
-            <button
-              className="sc-button"
-              disabled={locked}
-              onClick={() =>
-                act(activeSession.status === 'running' ? onPause : onResume)
-              }
-            >
-              <Icon
-                name={activeSession.status === 'running' ? 'pause' : 'play'}
-                size={15}
-              />
-              {activeSession.status === 'running' ? '일시정지' : '이어서 집중'}
-            </button>
-            <button
-              className="sc-button sc-stop"
-              disabled={locked}
-              onClick={() => act(onStop)}
-            >
-              <Icon name="stop" size={15} /> 종료
-            </button>
-          </>
-        )}
       </div>
       <ErrorText>{error}</ErrorText>
       {retryOnly && !goalOpen && !recovery && <button className="sc-button" disabled={busy} onClick={() => act(() => {})}>저장 재시도</button>}
