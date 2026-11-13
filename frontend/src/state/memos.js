@@ -1,16 +1,17 @@
 import { createId } from './id.js'
 import { characterCount } from './spaces.js'
+import { SIZE_PRESETS, SIZE_LABELS, DEFAULT_SIZE } from '../lib/sizes.js'
 
 export const MEMO_MAX_LENGTH = 5000
 export const MEMO_MAX_COUNT = 20
 // 색 키만 저장한다. 실제 색은 테마가 --memo-bg-<키> 변수로 정한다.
 export const MEMO_COLORS = ['paper', 'yellow', 'pink', 'blue', 'green']
 export const MEMO_COLOR_LABELS = { paper: '흰색', yellow: '노랑', pink: '분홍', blue: '파랑', green: '초록' }
-export const MEMO_SIZES = ['s', 'm', 'l']
-export const MEMO_SIZE_LABELS = { s: '작게', m: '보통', l: '크게' }
+export const MEMO_SIZES = SIZE_PRESETS
+export const MEMO_SIZE_LABELS = SIZE_LABELS
 export const MEMO_VIEWS = ['sheet', 'board']
 export const DEFAULT_MEMO_COLOR = 'paper'
-export const DEFAULT_MEMO_SIZE = 'm'
+export const DEFAULT_MEMO_SIZE = DEFAULT_SIZE
 // 테마 선택 기능 전까지는 기본 디자인(미니멀 페이퍼) 하나만 있다.
 export const DEFAULT_THEME_ID = 'basic'
 export const DEFAULT_MEMO_VIEW = 'sheet'

@@ -9,6 +9,7 @@ import { useToday } from './hooks/useToday.js'
 import MemoWidget from './components/memos/MemoWidget.jsx'
 import { useMemos } from './hooks/useMemos.js'
 import { memoLayout } from './state/memos.js'
+import { BASIC_THEME_ID, WIDGET_LABELS, setWidgetSize, widgetSize } from './state/widgetSizes.js'
 import { createSpace, renameSpace, deleteSpace } from './state/spaces.js'
 import DdayWidget from './components/dday/DdayWidget.jsx'
 import { addDday, updateDday, deleteDday, ddaysOf } from './state/ddays.js'
@@ -84,6 +85,8 @@ export default function App() {
     <button onClick={() => setSession(initialize())}>다시 불러오기</button></main>
   const activeSpace = data.spaces.find((space) => space.id === data.activeSpaceId)
   return <BasicLayout space={activeSpace}
+    widgetSizes={Object.fromEntries(Object.keys(WIDGET_LABELS).map((id) => [id, widgetSize(data, activeSpace.id, id, BASIC_THEME_ID)]))}
+    onWidgetSizeChange={(widgetId, size) => commit((current) => setWidgetSize(current, { spaceId: activeSpace.id, themeId: BASIC_THEME_ID, widgetId, size }))}
     slots={{
       links: <SiteLinks key={activeSpace.id} spaceId={activeSpace.id} links={activeSpace.links}
         onRetry={() => commit((current) => current)}

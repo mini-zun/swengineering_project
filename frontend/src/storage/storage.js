@@ -2,6 +2,7 @@ import { createDefaultData, validateSpaceName } from '../state/spaces.js'
 import { validateLayout, validateMemoFields } from '../state/memos.js'
 import { validateProductivityItem, validateFocus } from '../state/productivity.js'
 import { validateDdays } from '../state/ddays.js'
+import { validateWidgetSizes } from '../state/widgetSizes.js'
 
 export const STORAGE_KEY = 'start.home.v1'
 
@@ -36,6 +37,7 @@ function validateData(data) {
   }
   // layout은 선택 항목이라 기존 version 1 데이터도 그대로 읽힌다.
   validateLayout(data.layout)
+  validateWidgetSizes(data.layout)
   validateFocus(data)
   // ddays도 선택 항목이다. 없으면 디데이가 없는 것으로 본다.
   validateDdays(data.ddays)

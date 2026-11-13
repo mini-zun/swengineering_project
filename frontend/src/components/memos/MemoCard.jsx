@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { characterCount } from '../../state/spaces.js'
-import { MEMO_MAX_LENGTH, MEMO_SIZES, MEMO_SIZE_LABELS, memoColor } from '../../state/memos.js'
+import { MEMO_MAX_LENGTH, memoColor } from '../../state/memos.js'
 import MemoColorPicker from './MemoColorPicker.jsx'
+import SizeSelect from '../common/SizeSelect.jsx'
 
 function MemoDeleteDialog({ label, onConfirm, onDismiss }) {
   const dialog = useRef(null)
@@ -40,11 +41,7 @@ export default function MemoCard({ memo, label, size, draft, persisted, onChange
       onChange={(event) => onChange(event.target.value)} aria-invalid={state === 'invalid'} aria-describedby={`${id}-status`} />
     <div className="memo-toolbar">
       <MemoColorPicker name={`${id}-color`} value={color} onChange={onColor} />
-      <label className="memo-size">크기
-        <select value={size} onChange={(event) => onSize(event.target.value)}>
-          {MEMO_SIZES.map((key) => <option key={key} value={key}>{MEMO_SIZE_LABELS[key]}</option>)}
-        </select>
-      </label>
+      <SizeSelect className="memo-size" label={`${label} 크기`} value={size} onChange={onSize} />
     </div>
     <div className="memo-status" data-state={state}>
       <p id={`${id}-status`} role={state === 'failed' || state === 'invalid' ? 'alert' : 'status'}>{statusText(draft, persisted)}</p>
