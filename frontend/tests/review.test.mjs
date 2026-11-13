@@ -24,7 +24,7 @@ test('저장 실패 후 두 번 재시도해도 링크 추가는 한 번만 실�
   assert.equal(result.retryOnly, true)
   assert.match(result.error, /저장 공간/)
   // 첫 실패 이후의 다른 공통 변경도 전체 재시도 대상에 포함되어야 한다.
-  latest.quote = '실패 후 입력한 문구'
+  latest.spaces[0].quote = '실패 후 입력한 문구'
   for (let i = 0; i < 2; i++) {
     retryOnly = result.retryOnly
     result = await runSaveAction(add, { retryOnly, onRetry: retry })
@@ -35,7 +35,7 @@ test('저장 실패 후 두 번 재시도해도 링크 추가는 한 번만 실�
   assert.equal(latest.spaces[0].links[0].id, 'unsaved-link')
   const storage = memoryStorage()
   assert.equal(saveData(latest, storage).error, null)
-  assert.equal(loadData(storage).data.quote, '실패 후 입력한 문구')
+  assert.equal(loadData(storage).data.spaces[0].quote, '실패 후 입력한 문구')
 })
 
 test('추가·수정·삭제·완료 정리의 저장 실패는 원래 변경을 반복하지 않는다', async () => {

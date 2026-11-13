@@ -21,17 +21,18 @@ PowerShell 실행 정책으로 npm.ps1이 차단되면 npm.cmd를 사용합니�
 - FR-13: 저장 성공·실패 표시, 메모리의 최신 데이터 유지와 저장 재시도. 읽기 오류 시 원본 보존 및 편집 차단.
 - FR-17: 좌우명·문구 입력·수정·취소·저장·복원. 빈 문구, 공백과 줄바꿈을 보존합니다.
 - 기본 화면: 이슈 #13의 미니멀 페이퍼 디자인을 적용했습니다. 날짜·큰 시계·좌우명 아래에 바로가기를 놓고, PC에서 할 일·메모·집중 시간을 3열로 배치합니다. 좁은 화면에서는 열 수를 줄입니다. 추가 테마 선택은 이번 변경 범위에 포함하지 않습니다.
-- 현재 문구는 전체 공간 공통으로 저장하며 공간 전환 중 편집 초안도 유지됩니다. SCRUM-22의 공간별 저장 요구사항과 차이가 있어 미완료입니다. 이 임시 구현을 팀의 최종 합의로 간주하지 않습니다. 공간별 저장으로 변경할 때는 기존 문구 이전 정책과 스키마 버전 변경을 함께 처리해야 합니다.
+- 문구는 공간별로 저장합니다(#15, SCRUM-22). 공간 전환 시 편집 초안은 원래 공간에 유지되며 명시적으로 저장하기 전에는 새로고침으로 사라집니다. 새 공간의 문구는 비어 있습니다. 저장 실패 시 편집창과 입력을 유지하고 재시도를 제공합니다.
 - 이름 글자 수는 Array.from으로 센 유니코드 코드 포인트 기준입니다. 앞뒤 공백 제거 후 1~20자이며 조용히 잘라 저장하지 않습니다.
 
 ## 컴포넌트 경계와 팀원 연결
 
-App이 공통 상태와 문구 초안을 소유합니다. UI 컴포넌트는 localStorage를 직접 호출하지 않습니다.
+App이 공통 상태를 소유하고 `useQuotes`가 공간 ID별 문구 초안을 관리합니다. UI 컴포넌트는 localStorage를 직접 호출하지 않습니다.
 
 | 컴포넌트 | 입력 | 변경 이벤트 / 책임 |
 |---|---|---|
 | components/spaces/SpaceTabs.jsx | spaces, activeSpaceId | onSelect(spaceId), onCreate(name), onRename(spaceId, name), onDelete(spaceId) |
-| components/quote/Quote.jsx | value, draft (null이면 표시 모드) | onEdit(), onDraftChange(text), onSave(), onCancel() |
+| components/quote/Quote.jsx | 해당 공간 value, draft(null 또는 { content, error }) | onEdit(), onDraftChange(text), onSave(), onCancel(). App에서 공간 ID를 연결 |
+| hooks/useQuotes.js, state/quotes.js | App의 commit(updater), 공간 ID·내용 | 공간별 초안·수동 저장·실패 표시·재시도 성공 후 정리. 공간 삭제 시 초안 제거 |
 | layouts/BasicLayout.jsx | tabs, quote, space, status, slots | 전달받은 UI의 배치만 담당. BasicLayout.css를 직접 가져옴 |
 | components/clock/Clock.jsx | variant('hero' \| 'compact'), hour12, showSeconds | 현재 시각·날짜·요일 표시만 담당. 저장 데이터 없음. 스타일은 Clock.css의 `--clock-*` 변수 |
 | state/spaces.js | 공통 데이터 | 공간 변경과 이름 검증. 기존 데이터와 ID 보존 |
@@ -76,7 +77,7 @@ slots={{
 
 - 남은 날짜는 시각이 아닌 달력 날짜 차이(`lib/date.js`의 `daysBetween`)로 계산합니다. 미래는 D-n, 당일은 D-Day, 지난 날짜는 D+n이며 지난 디데이는 자동으로 지우지 않습니다.
 - 자정 갱신은 App의 `todayKey`로 처리하며 위젯 안에 별도 타이머를 두지 않습니다.
-- 디데이는 좌우명처럼 모든 공간이 함께 쓰는 내용 데이터(`ddays[]`: id, title, targetDate 'YYYY-MM-DD')입니다. 선택값이라 기존 version 1 데이터를 그대로 읽고, 테마 화면 설정과 분리되어 테마를 바꿔도 유지됩니다.
+- 디데이는 모든 공간이 함께 쓰는 내용 데이터(`ddays[]`: id, title, targetDate 'YYYY-MM-DD')입니다. 공간별로 저장하는 좌우명과 범위가 다릅니다. 선택값이라 기존 version 1 데이터도 이전하여 읽고, 테마 화면 설정과 분리되어 테마를 바꿔도 유지됩니다.
 - 화면은 다가오는 날을 가까운 순으로, 지난 날을 뒤에 보여 줍니다. 저장 순서는 바꾸지 않습니다.
 
 ## 저장 구조와 주의점
@@ -85,11 +86,10 @@ slots={{
 
 ```js
 {
-  version: 1,
+  version: 2,
   activeSpaceId: '고유 ID',
-  quote: '',
   ddays: [{ id: '고유 ID', title: '기말고사', targetDate: '2026-12-15' }], // 선택
-  spaces: [{ id: '고유 ID', name: '기본 공간', links: [], todos: [], memos: [] }]
+  spaces: [{ id: '고유 ID', name: '기본 공간', quote: '', links: [], todos: [], memos: [] }]
 }
 ```
 
@@ -100,7 +100,11 @@ slots={{
 최초 빈 공간도 저장을 시도합니다. 저장 실패 시 현재 입력을 유지하며 전체 최신 상태로 재시도합니다.
 잘못된 JSON, 지원하지 않는 버전, 잘못된 구조, 저장소 접근 오류는 빈 데이터로 대체하지 않습니다.
 읽기 오류 화면에서는 다시 불러오기만 제공하며 원본을 지우거나 덮어쓰지 않습니다.
-현재 저장소에는 이전 앱의 저장 구현이 없어 마이그레이션 대상이 발견되지 않았습니다. 향후 형식 변경 시 기존 데이터를 이전하는 처리가 필요합니다.
+저장 키는 기존 `start.home.v1`을 유지하고 내부 스키마만 version 2로 올립니다. version 1의 공통 문구는 당시 화면에 보이던 내용을 보존하기 위해 모든 기존 공간의 `quote`에 복사합니다. 새로 만드는 공간에는 복사하지 않습니다. 나머지 내용·ID·선택 공간·화면 설정·집중 기록은 보존합니다.
+
+읽기와 전체 구조 검증에 성공하면 메모리에서 이전하고 App이 저장을 시도합니다. 읽기 자체는 저장소에 쓰지 않으며, 읽기·검증·이전 실패 시 원본 보호 화면에서 편집과 자동 저장을 막습니다. 이전 결과 저장에 실패하면 기존 원본은 유지하고 최신 메모리 데이터로 재시도합니다. version 2를 다시 읽을 때는 문구를 재복사하지 않습니다. 구버전 앱으로의 역변환과 구·신버전 탭 동시 편집은 지원하지 않습니다.
+
+문구 초안은 공간 전환만으로 저장하지 않습니다. 저장 버튼을 누르면 해당 공간의 내용에 반영하고 영속화를 시도합니다. 실패 시 초안을 유지하며 다른 기능의 전체 저장 재시도가 성공해도 실제 기록된 실패 초안만 정리합니다. 실패 후 편집을 닫아도 이미 메모리에 반영한 내용은 취소되지 않습니다. 일반 편집 취소는 저장하지 않은 초안만 버립니다.
 로그인·기기 간 동기화·여러 탭 동시 편집은 지원 범위가 아닙니다. 주소와 포트가 다르면 저장 데이터도 분리됩니다.
 
 ## 검증 결과 및 남은 확인
@@ -121,7 +125,7 @@ slots={{
 - React import를 합치고 App.jsx, BasicLayout.css, global.css, 이 문서의 BOM을 제거했습니다.
 - 공간 삭제 후 기존 버튼이 비활성화되거나 제거되면 선택된 공간 탭으로 초점을 복귀하도록 수정했습니다. 대화상자가 다시 열린 StrictMode 실행에서는 초점을 빼앗지 않습니다.
 - HTTPS·localhost에서는 네이티브 UUID를 사용하고, `randomUUID`가 없는 HTTP 개발 환경에서는 `getRandomValues`로 UUID v4를 생성합니다. 기존 ID와 저장 형식은 변경하지 않습니다. 실제 다른 기기에서의 HTTP 접속은 미검증입니다.
-- 문구의 공간별 저장 전환과 스키마 이전, 선정 디자인 반영, 팀원 컴포넌트 통합은 이번 리뷰 정리 범위에서 제외한 미완료 작업입니다.
+- 당시 PR #2 리뷰 정리에서는 문구의 공간별 저장 전환과 스키마 이전을 제외했습니다. 해당 두 항목은 이후 #15에서 반영했습니다. 아래 과거 검증 기록은 당시 변경 범위를 기준으로 합니다.
 - 리뷰에서 언급된 ESLint 개발 의존성의 audit 항목은 이번에 업그레이드하지 않았고 재검증하지 않았습니다.
 
 ### 초점 복귀 수동 확인 방법
@@ -163,7 +167,7 @@ App의 links·todos·timer 슬롯에 연결합니다. 각 컴포넌트는 독자
 
 ### 저장 구조와 호환성
 
-저장 키 start.home.v1과 version 1, spaces[].links/todos/memos 구조를 사용합니다.
+저장 키 start.home.v1과 version 2, spaces[].links/todos/memos 구조를 사용합니다. version 1은 공통 저장 계층에서 이전합니다.
 - 바로가기: { id, name, url, createdAt, updatedAt }
 - 할 일: { id, content, done, dueDate, completedAt, createdAt, updatedAt }
 - 최상위 선택 필드 focus: { activeSession, sessions, dailyGoalMinutes, checkpoint }

@@ -12,12 +12,12 @@ export function validateSpaceName(spaces, name, excludedId) {
 }
 
 export function emptySpace(name) {
-  return { id: createId(), name, links: [], todos: [], memos: [] }
+  return { id: createId(), name, quote: '', links: [], todos: [], memos: [] }
 }
 
 export function createDefaultData() {
   const space = emptySpace('기본 공간')
-  return { version: 1, spaces: [space], activeSpaceId: space.id, quote: '' }
+  return { version: 2, spaces: [space], activeSpaceId: space.id }
 }
 
 export function createSpace(data, name) {
