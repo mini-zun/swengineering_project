@@ -8,8 +8,9 @@ export const WIDGET_LABELS = {
 
 const isRecord = (value) => value !== null && typeof value === 'object' && !Array.isArray(value)
 const isWidgetId = (value) => Object.hasOwn(WIDGET_LABELS, value)
+const isDimension = (value) => Number.isInteger(value) && value > 0 && value <= 10000
 export const isWidgetSize = (value) => isSizePreset(value) || (isRecord(value) &&
-  ['width', 'height'].every((key) => Number.isInteger(value[key]) && value[key] > 0 && value[key] <= 10000))
+  (isDimension(value.width) || isSizePreset(value.width)) && (isDimension(value.height) || value.height === 'auto'))
 
 export function widgetSize(data, spaceId, widgetId, themeId = BASIC_THEME_ID) {
   return data.layout?.[themeId]?.spaces?.[spaceId]?.widgets?.[widgetId] ?? DEFAULT_SIZE

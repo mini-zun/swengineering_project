@@ -1,6 +1,6 @@
-import { useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { WIDGET_LABELS } from '../../state/widgetSizes.js'
-import { dragWidgetSize, keyboardWidgetSize } from '../../lib/widgetResize.js'
+import { dragWidgetSize, keyboardWidgetSize, resizedWidgetSetting } from '../../lib/widgetResize.js'
 import './ResizableWidget.css'
 
 // 크기는 속성만 바꾼다. key나 컴포넌트 종류를 바꾸지 않아 내부 편집·타이머 상태를 유지한다.
@@ -8,11 +8,32 @@ export default function ResizableWidget({ widgetId, contextId, size, limits, cen
   const label = WIDGET_LABELS[widgetId]
   const helpId = useId()
   const element = useRef(null)
+  const content = useRef(null)
   const handle = useRef(null)
   const interaction = useRef(null)
   const [preview, setPreview] = useState(null)
+  const [scrollable, setScrollable] = useState(false)
   const live = preview?.contextId === contextId ? preview.size : null
   const dimensions = live ?? (typeof size === 'object' ? size : null)
+
+  useEffect(() => {
+    const node = content.current
+    function update() {
+      const style = getComputedStyle(node)
+      setScrollable((/auto|scroll/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 1) ||
+        (/auto|scroll/.test(style.overflowX) && node.scrollWidth > node.clientWidth + 1))
+    }
+    const resize = new ResizeObserver(update)
+    function observe() {
+      resize.disconnect()
+      resize.observe(node)
+      for (const child of node.children) resize.observe(child)
+    }
+    const mutation = new MutationObserver(() => { observe(); update() })
+    observe()
+    mutation.observe(node, { childList: true, subtree: true, characterData: true, attributes: true })
+    return () => { resize.disconnect(); mutation.disconnect() }
+  }, [])
 
   function availableWidth() {
     const parent = element.current.parentElement
@@ -35,7 +56,7 @@ export default function ResizableWidget({ widgetId, contextId, size, limits, cen
     event.currentTarget.focus({ preventScroll: true })
     event.currentTarget.setPointerCapture(event.pointerId)
     interaction.current = { contextId, pointerId: event.pointerId,
-      start: { ...measure(), x: event.clientX, y: event.clientY }, moved: false }
+      start: { ...measure(), x: event.clientX, y: event.clientY }, saved: size, moved: false }
   }
   function move(event) {
     const job = interaction.current
@@ -50,7 +71,9 @@ export default function ResizableWidget({ widgetId, contextId, size, limits, cen
     if (!job || job.pointerId !== event.pointerId) return
     // 공간을 바꾼 뒤 도착한 포인터 이벤트는 새 공간에 저장하지 않는다.
     if (job.contextId === contextId && job.moved) {
-      onSizeChange(dragWidgetSize(job.start, { x: event.clientX, y: event.clientY }, limits, availableWidth(), centered))
+      const displayed = dragWidgetSize(job.start, { x: event.clientX, y: event.clientY }, limits, availableWidth(), centered)
+      const next = resizedWidgetSetting(job.saved, job.start, displayed)
+      if (next) onSizeChange(next)
     }
     cancel()
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
@@ -58,19 +81,21 @@ export default function ResizableWidget({ widgetId, contextId, size, limits, cen
   function onKeyDown(event) {
     if (event.key === 'Escape' && interaction.current) { event.preventDefault(); cancel(); return }
     if (interaction.current) return
-    const next = keyboardWidgetSize(measure(), event.key, event.shiftKey ? 50 : 10, limits, availableWidth())
-    if (!next) return
+    const before = measure()
+    const displayed = keyboardWidgetSize(before, event.key, event.shiftKey ? 50 : 10, limits, availableWidth())
+    if (!displayed) return
     event.preventDefault()
-    onSizeChange(next)
+    const next = resizedWidgetSetting(size, before, displayed)
+    if (next) onSizeChange(next)
   }
 
   return <div ref={element} className={`widget resizable-widget widget-${widgetId}`}
-    data-widget={widgetId} data-size={typeof size === 'string' ? size : 'custom'} data-resizing={Boolean(live)}
-    style={{ '--widget-width': dimensions ? `${dimensions.width}px` : undefined,
-      '--widget-height': dimensions ? `${dimensions.height}px` : undefined,
+    data-widget={widgetId} data-size={typeof size === 'string' ? size : typeof size.width === 'string' ? size.width : 'custom'} data-resizing={Boolean(live)}
+    style={{ '--widget-width': typeof dimensions?.width === 'number' ? `${dimensions.width}px` : undefined,
+      '--widget-height': typeof dimensions?.height === 'number' ? `${dimensions.height}px` : undefined,
       '--widget-min-width': `${limits.minWidth}px`, '--widget-min-height': `${limits.minHeight}px`,
       '--widget-max-width': `${limits.maxWidth}px`, '--widget-max-height': `${limits.maxHeight}px` }}>
-    <div className="widget-content" role="region" aria-label={`${label} 내용`} tabIndex={0}>{children}</div>
+    <div ref={content} className="widget-content" role="region" aria-label={`${label} 내용`} tabIndex={scrollable ? 0 : undefined}>{children}</div>
     <div className="widget-resize-footer">
       {live && <output className="widget-dimensions" aria-live="off">{live.width} × {live.height}</output>}
       {size !== 'm' && <button type="button" className="widget-size-reset" onClick={() => { cancel(); onSizeChange('m') }} aria-label={`${label} 기본 크기로`}>기본 크기</button>}

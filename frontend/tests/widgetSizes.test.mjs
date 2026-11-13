@@ -8,7 +8,7 @@ import { changeProductivity } from '../src/state/productivity.js'
 import { elapsedMs } from '../src/lib/productivity.js'
 import { editQuoteDraft, settleQuoteDrafts } from '../src/state/quotes.js'
 import { loadData, saveData, STORAGE_KEY } from '../src/storage/storage.js'
-import { constrainWidgetSize, dragWidgetSize, keyboardWidgetSize } from '../src/lib/widgetResize.js'
+import { constrainWidgetSize, dragWidgetSize, keyboardWidgetSize, resizedWidgetSetting } from '../src/lib/widgetResize.js'
 
 function storageOf(data) {
   return { raw: JSON.stringify(data), writes: 0,
@@ -207,4 +207,60 @@ test('손상된 자유 치수는 원본 보존으로 차단하며 저장 실패 
   const storage = storageOf(data)
   assert.equal(saveData(next, storage).error, null)
   assert.deepEqual(loadData(storage).data, next)
+})
+
+test('좁은 화면에서 세로 드래그·방향키는 원래 저장한 너비를 유지한다', () => {
+  const limits = { minWidth: 280, minHeight: 240, maxWidth: 1200, maxHeight: 1200 }
+  const saved = { width: 800, height: 400 }
+  const before = { x: 0, y: 0, width: 335, height: 400 }
+  const dragged = dragWidgetSize(before, { x: 1, y: 50 }, limits, 335)
+  assert.deepEqual(dragged, { width: 335, height: 450 })
+  const setting = resizedWidgetSetting(saved, before, dragged)
+  assert.deepEqual(setting, { width: 800, height: 450 })
+  const key = keyboardWidgetSize(before, 'ArrowDown', 50, limits, 335)
+  assert.deepEqual(resizedWidgetSetting(saved, before, key), setting)
+  const data = createDefaultData(), storage = storageOf(data)
+  const next = setWidgetSize(data, { spaceId: data.activeSpaceId, widgetId: 'todos', size: setting })
+  assert.equal(saveData(next, storage).error, null)
+  assert.deepEqual(widgetSize(loadData(storage).data, data.activeSpaceId, 'todos'), setting)
+})
+
+test('한 축만 조절하면 다른 축의 기본 너비·자동 높이를 보존하여 저장·복원한다', () => {
+  const before = { width: 335, height: 400 }
+  for (const preset of ['s', 'm', 'l']) {
+    const vertical = resizedWidgetSetting(preset, before, { width: 335, height: 450 })
+    assert.deepEqual(vertical, { width: preset, height: 450 })
+    const horizontal = resizedWidgetSetting(preset, before, { width: 300, height: 400 })
+    assert.deepEqual(horizontal, { width: 300, height: 'auto' })
+    const data = createDefaultData(), storage = storageOf(data)
+    for (const size of [vertical, horizontal]) {
+      const next = setWidgetSize(data, { spaceId: data.activeSpaceId, widgetId: 'todos', size })
+      assert.equal(saveData(next, storage).error, null)
+      assert.deepEqual(widgetSize(loadData(storage).data, data.activeSpaceId, 'todos'), size)
+    }
+  }
+})
+
+test('최소·최대·화면 너비 제한과 이동 후 원위치에서는 저장할 변경을 만들지 않는다', () => {
+  const limits = { minWidth: 280, minHeight: 240, maxWidth: 1200, maxHeight: 1200 }
+  for (const [before, key] of [[{ width: 280, height: 240 }, 'ArrowLeft'], [{ width: 1200, height: 1200 }, 'ArrowDown'], [{ width: 335, height: 400 }, 'ArrowRight']]) {
+    const next = keyboardWidgetSize(before, key, 10, limits, key === 'ArrowRight' ? 335 : 1200)
+    assert.equal(resizedWidgetSetting(before, before, next), null)
+  }
+  const start = { x: 10, y: 10, width: 400, height: 400 }
+  assert.equal(resizedWidgetSetting('m', start, dragWidgetSize(start, { x: 10, y: 10 }, limits, 1200)), null)
+  assert.equal(resizedWidgetSetting('m', start, dragWidgetSize(start, { x: 11, y: 11 }, limits, 1200)), null)
+  assert.equal(resizedWidgetSetting('m', { width: 400.3, height: 400.1 }, { width: 400, height: 400 }), null)
+})
+
+test('축별 반응형 설정도 잘못된 토큰·높이는 거부하고 저장 원본을 보호한다', () => {
+  const data = createDefaultData()
+  for (const size of [{ width: 'auto', height: 400 }, { width: 'm', height: 'l' }, { width: 'm', height: 0 }, { width: 'm', height: '400' }]) {
+    assert.throws(() => setWidgetSize(data, { spaceId: data.activeSpaceId, widgetId: 'todos', size }))
+    const invalid = { ...data, layout: { basic: { spaces: { [data.activeSpaceId]: { widgets: { todos: size } } } } } }
+    const storage = storageOf(invalid), raw = storage.raw
+    assert.ok(loadData(storage).error)
+    assert.equal(storage.raw, raw)
+    assert.equal(storage.writes, 0)
+  }
 })
