@@ -1,6 +1,7 @@
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 import SpaceTabs from './components/spaces/SpaceTabs.jsx'
 import Quote from './components/quote/Quote.jsx'
+import { useQuotes } from './hooks/useQuotes.js'
 import Clock from './components/clock/Clock.jsx'
 import BasicLayout from './layouts/BasicLayout.jsx'
 import Calendar from './components/calendar/Calendar.jsx'
@@ -22,12 +23,11 @@ function initialize() {
   const result = loadData()
   return { ...result, recovery: result.data?.focus?.activeSession?.status === 'running'
     ? { checkpoint: result.data.focus.checkpoint } : null,
-  status: result.error ? 'error' : result.fresh ? 'new' : 'saved' }
+  status: result.error ? 'error' : result.fresh || result.migrated ? 'new' : 'saved' }
 }
 
 export default function App() {
   const [session, setSession] = useState(initialize)
-  const [quoteDraft, setQuoteDraft] = useState(null)
   // 오늘 날짜는 여기서 한 번만 구해 시계·달력·디데이에 같은 값을 내려준다.
   const todayKey = useToday()
   const data = session.data
@@ -36,6 +36,7 @@ export default function App() {
   const latest = useRef(session.data)
   useEffect(() => { latest.current = session.data }, [session.data])
   const memos = useMemos(commit)
+  const quotes = useQuotes(commit)
   useEffect(() => {
     if (session.status !== 'new') return
     // StrictMode 재실행이나 첫 입력 시 이전 저장 예약을 취소한다.
@@ -52,7 +53,10 @@ export default function App() {
     // 저장 실패 시에도 최신 입력을 메모리에 유지해 재시도한다.
     const result = saveData(nextData)
     setSession((current) => ({ ...current, data: nextData, error: null, status: result.error ? 'failed' : 'saved', saveError: result.error }))
-    if (!result.error) memos.markSaved(nextData)
+    if (!result.error) {
+      memos.markSaved(nextData)
+      quotes.markSaved(nextData)
+    }
     return result
   }
   function dispatch(action) {
@@ -130,10 +134,13 @@ export default function App() {
       }}
       onCreate={(name) => { memos.flush(data.activeSpaceId); commit((current) => createSpace(current, name)) }}
       onRename={(id, name) => commit((current) => renameSpace(current, id, name))}
-      onDelete={(id) => { commit((current) => deleteSpace(current, id)); memos.forgetSpace(id) }} />}
-    quote={<Quote value={data.quote} draft={quoteDraft} onEdit={() => setQuoteDraft(data.quote)}
-      onDraftChange={setQuoteDraft} onCancel={() => setQuoteDraft(null)}
-      onSave={() => { commit((current) => ({ ...current, quote: quoteDraft })); setQuoteDraft(null) }} />}
+      onDelete={(id) => { commit((current) => deleteSpace(current, id)); memos.forgetSpace(id); quotes.discard(id) }} />}
+    quote={<Quote key={activeSpace.id} value={activeSpace.quote}
+      draft={quotes.drafts[activeSpace.id] ?? null}
+      onEdit={() => quotes.edit(activeSpace.id, activeSpace.quote)}
+      onDraftChange={(content) => quotes.edit(activeSpace.id, content)}
+      onCancel={() => quotes.discard(activeSpace.id)}
+      onSave={() => quotes.save(activeSpace.id)} />}
     status={<div className="save-status" role="status">
       {session.status === 'saved' && '저장됨 · 이 브라우저에 보관돼요'}
       {session.status === 'new' && '공간을 만들거나 문구를 입력하며 시작해 보세요.'}

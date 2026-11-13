@@ -7,13 +7,13 @@ import { loadData, saveData } from '../src/storage/storage.js'
 
 function fixture() {
   const data = createSpace(createDefaultData(), '공부')
-  data.quote = '기존 문구'
+  data.spaces[0].quote = '기존 문구'
   data.spaces[0].memos = [{ id: 'memo-a', content: '기존 메모' }]
   return data
 }
 const storage = () => ({ raw: null, getItem() { return this.raw }, setItem(key, value) { this.raw = value } })
 
-test('빈 기존 version 1 데이터와 메모·문구·선택 공간을 그대로 복원한다', () => {
+test('현재 데이터의 메모·공간별 문구·선택 공간을 그대로 복원한다', () => {
   const data = fixture(), memory = storage()
   assert.equal(saveData(data, memory).error, null)
   assert.deepEqual(loadData(memory).data, data)
@@ -29,7 +29,7 @@ test('링크 추가·수정·삭제는 원래 공간만 변경하고 기존 필�
   assert.deepEqual(data.spaces[1], initial.spaces[1])
   assert.deepEqual(data.spaces[0].memos, initial.spaces[0].memos)
   assert.equal(data.activeSpaceId, b)
-  assert.equal(data.quote, initial.quote)
+  assert.equal(data.spaces[0].quote, initial.spaces[0].quote)
   data = changeProductivity(data, { type: 'link/delete', spaceId: b, id: 'link' })
   assert.equal(data.spaces[0].links.length, 1)
   data = changeProductivity(data, { type: 'link/delete', spaceId: a, id: 'link' })

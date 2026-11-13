@@ -27,7 +27,7 @@ test('첫 접속은 빈 공간 하나이며 저장 후 ID와 선택 공간을 �
   assert.equal(initial.data.spaces.length, 1)
   assert.deepEqual(initial.data.spaces[0].links, [])
   const data = createSpace(initial.data, ' 공부 ')
-  data.quote = '한 걸음씩\n꾸준하게 🌱'
+  data.spaces[1].quote = '한 걸음씩\n꾸준하게 🌱'
   assert.equal(saveData(data, storage).error, null)
   assert.deepEqual(loadData(storage).data, data)
 })
@@ -73,7 +73,7 @@ test('없는 선택 공간은 첫 공간으로 복원한다', () => {
 
 test('읽기·JSON·버전·구조 오류는 원본을 덮어쓰지 않는다', () => {
   assert.match(loadData({ getItem() { throw new Error('blocked') } }).error, /접근/)
-  for (const raw of ['{broken', '{"version":2}', '{"version":1}', 'null']) {
+  for (const raw of ['{broken', '{"version":3}', '{"version":1}', 'null']) {
     const storage = memoryStorage(raw)
     assert.ok(loadData(storage).error)
     assert.equal(storage.raw, raw)
@@ -93,7 +93,8 @@ test('저장 실패 뒤 재시도하며 빈 문구·줄바꿈을 보존한다', 
   assert.equal(saveData(data, storage).error, null)
   assert.deepEqual(loadData(storage).data, snapshot)
   for (const quote of ['', '  공백\n줄바꿈  ', '<script>alert(1)</script>']) {
-    saveData({ ...data, quote }, storage)
-    assert.equal(loadData(storage).data.quote, quote)
+    data.spaces[0].quote = quote
+    saveData(data, storage)
+    assert.equal(loadData(storage).data.spaces[0].quote, quote)
   }
 })
