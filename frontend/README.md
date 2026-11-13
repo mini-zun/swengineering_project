@@ -21,6 +21,7 @@ PowerShell 실행 정책으로 npm.ps1이 차단되면 npm.cmd를 사용합니�
 - FR-13: 저장 성공·실패 표시, 메모리의 최신 데이터 유지와 저장 재시도. 읽기 오류 시 원본 보존 및 편집 차단.
 - FR-17: 좌우명·문구 입력·수정·취소·저장·복원. 빈 문구, 공백과 줄바꿈을 보존합니다.
 - 기본 화면: 이슈 #13의 미니멀 페이퍼 디자인을 적용했습니다. 날짜·큰 시계·좌우명 아래에 바로가기를 놓고, PC에서 할 일·메모·집중 시간을 3열로 배치합니다. 좁은 화면에서는 열 수를 줄입니다. 추가 테마 선택은 이번 변경 범위에 포함하지 않습니다.
+- #17·SCRUM-49: 기본 테마의 8개 위젯을 오른쪽 아래 모서리에서 드래그해 크기를 바꿉니다. 공간별·테마별 너비·높이를 저장하며 배치 순서는 유지합니다. 위치 이동과 추가 테마·사용자 꾸미기 UI는 포함하지 않습니다. 최초 프리셋 제안은 사용자 피드백에 따라 직접 조절 방식으로 변경했습니다.
 - 문구는 공간별로 저장합니다(#15, SCRUM-22). 공간 전환 시 편집 초안은 원래 공간에 유지되며 명시적으로 저장하기 전에는 새로고침으로 사라집니다. 새 공간의 문구는 비어 있습니다. 저장 실패 시 편집창과 입력을 유지하고 재시도를 제공합니다.
 - 이름 글자 수는 Array.from으로 센 유니코드 코드 포인트 기준입니다. 앞뒤 공백 제거 후 1~20자이며 조용히 잘라 저장하지 않습니다.
 
@@ -33,7 +34,10 @@ App이 공통 상태를 소유하고 `useQuotes`가 공간 ID별 문구 초안�
 | components/spaces/SpaceTabs.jsx | spaces, activeSpaceId | onSelect(spaceId), onCreate(name), onRename(spaceId, name), onDelete(spaceId) |
 | components/quote/Quote.jsx | 해당 공간 value, draft(null 또는 { content, error }) | onEdit(), onDraftChange(text), onSave(), onCancel(). App에서 공간 ID를 연결 |
 | hooks/useQuotes.js, state/quotes.js | App의 commit(updater), 공간 ID·내용 | 공간별 초안·수동 저장·실패 표시·재시도 성공 후 정리. 공간 삭제 시 초안 제거 |
-| layouts/BasicLayout.jsx | tabs, quote, space, status, slots | 전달받은 UI의 배치만 담당. BasicLayout.css를 직접 가져옴 |
+| layouts/BasicLayout.jsx | tabs, quote, space, status, slots, widgetSizes | 기본 테마 배치·치수와 onWidgetSizeChange(widgetId, size). App에서 spaceId·themeId를 연결 |
+| components/common/ResizableWidget.jsx, lib/widgetResize.js | widgetId, contextId(공간·테마), size, limits, centered, children | 포인터 미리보기·드래그 종료 저장 이벤트·방향키·Escape 취소·기본 크기 복귀. onSizeChange(size)를 전달하며 자체 저장하지 않음 |
+| components/common/SizeSelect.jsx, lib/sizes.js | label, value, onChange | 개별 메모의 기존 프리셋(s·m·l) 선택과 접근 가능한 이름 |
+| state/widgetSizes.js | 공통 데이터, spaceId·themeId·widgetId·size | 크기 변경·조회·검증·공간 삭제 시 설정 정리 |
 | components/clock/Clock.jsx | variant('hero' \| 'compact'), hour12, showSeconds | 현재 시각·날짜·요일 표시만 담당. 저장 데이터 없음. 스타일은 Clock.css의 `--clock-*` 변수 |
 | state/spaces.js | 공통 데이터 | 공간 변경과 이름 검증. 기존 데이터와 ID 보존 |
 | storage/storage.js | 공통 데이터, 선택적 저장소 어댑터 | 읽기·구조 검증·저장·오류 분류 |
@@ -73,6 +77,37 @@ slots={{
 - 입력이 1초 멈추면 저장하고, 예약 당시의 공간·메모 ID로 저장합니다. 공간 전환·페이지 숨김 때는 바로 저장합니다.
 - `App`의 `commit`은 새 데이터 또는 `(최신 데이터) => 새 데이터` 함수를 받고 저장 결과(`{ error }`)를 돌려줍니다. 지연 저장이 다른 변경을 덮어쓰지 않게 하기 위함입니다.
 
+## 기본 테마 직접 크기 조절 (#17, SCRUM-49)
+
+오른쪽 아래 대각선 손잡이를 드래그하면 너비·높이를 연속적으로 조절합니다. 드래그 중에는 현재 픽셀 크기를 보여 주고 마우스를 놓을 때 한 번 저장합니다. Escape·포인터 취소·캡처 해제는 저장하지 않고 원래 크기로 돌아갑니다. 드래그 중 다른 공간으로 전환되면 늦게 도착한 이벤트를 새 공간에 저장하지 않습니다.
+
+손잡이에 키보드 초점을 두면 방향키로 10px, Shift+방향키로 50px씩 조절합니다. 변경 후 ‘기본 크기’ 버튼으로 복귀할 수 있습니다. 공간 탭과 개별 메모 카드는 기존 조작 방식을 유지하고, 메모 위젯 영역 전체를 드래그로 조절합니다.
+
+| 대상 | 최소 너비×높이 | 최대 너비×높이 |
+|---|---|---|
+| 시계 | 240×150px | 1200×600px |
+| 문구 | 240×140px | 1200×900px |
+| 바로가기 | 280×180px | 1200×1200px |
+| 할 일·메모 영역·집중 타이머 | 280×240px | 1200×1200px |
+| 달력 | 300×240px | 1200×1200px |
+| 디데이 | 260×180px | 1200×1200px |
+
+모든 위젯은 부모 영역보다 넓어지지 않습니다. 좁은 화면에서는 최소 너비보다 화면 맞춤이 우선하며, 화면 축소 자체로 저장값을 바꾸지 않습니다. 세로만 드래그하거나 위·아래 방향키로 조절하면 기존 가로 픽셀값 또는 반응형 기본 너비를 유지합니다. 가로만 바꾸면 원래 높이·자동 높이를 유지합니다. 2px 이하의 포인터 흔들림은 해당 축의 변경으로 처리하지 않으며, 제한 크기에서 값이 바뀌지 않으면 저장을 생략합니다.
+
+내용은 영역 안에서 스크롤할 수 있습니다. 내용 영역의 크기와 내부 DOM 변화를 관찰해 실제 스크롤이 필요할 때만 추가 Tab 정지점을 제공합니다. 손잡이는 항상 키보드로 접근할 수 있고 평소 옅게, hover·초점·드래그 중에는 선명하게 표시합니다. 상단 안내는 유지합니다.
+
+시계는 기본 높이 250px로 글자 여백을 확보하며, 시각의 행 높이와 영역 너비·높이에 맞춘 글자 크기로 불필요한 스크롤을 방지합니다. 시계 내용 칸은 스크롤을 숨기므로 최소 크기에서 날짜·시각이 잘리지 않는지 화면 검증이 필요합니다. 다른 위젯의 기본 높이는 내용에 맞추며, 직접 높이를 조절하면 지정한 값을 사용합니다.
+
+할 일·메모·타이머와 달력·디데이는 각각 원래 순서대로 flex 줄바꿈합니다. 너비를 늘려 행에 들어가지 않으면 뒤의 위젯이 다음 행으로 밀려납니다. DOM 순서·컴포넌트 key·종류를 바꾸지 않으며 위치 이동은 제공하지 않습니다. 기본 너비는 시계·문구 640px, 바로가기 전체 너비, 작업 위젯 3열, 달력·디데이 2열입니다. 1050px 이하 작업 위젯은 기본 2열, 640px 이하에는 1열입니다. 사용자가 지정한 너비가 있으면 화면 안에서 그 값을 우선합니다.
+
+공통 `ResizableWidget`은 포인터·키보드 입력과 미리보기만 담당하며, 크기 계산은 `lib/widgetResize.js`, 공통 상태·검증·저장은 `state/widgetSizes.js`와 기존 저장 계층을 재사용합니다. 테마가 최소·최대 크기와 기본 너비를 전달하므로 다른 디자인에서도 같은 로직을 사용할 수 있습니다.
+
+메모 영역 전체 크기와 개별 메모 크기는 독립적입니다. 기존 `layout[themeId].memo.sizes[memoId]`의 s·m·l 값과 보기 방식은 그대로 보존합니다. 개별 메모 입력 영역은 기존 140·180·360px와 공통 `SizeSelect`를 유지합니다.
+
+위젯 크기는 선택 필드 `layout[themeId].spaces[spaceId].widgets[widgetId]`에 `{ width, height }`로 저장합니다. `width`는 정수 픽셀값 또는 반응형 기본 너비 s·m·l, `height`는 정수 픽셀값 또는 자동 높이 `auto`입니다. 예를 들어 `{ width: 'm', height: 450 }`는 기본 너비와 지정 높이, `{ width: 500, height: 'auto' }`는 지정 너비와 기본 높이를 의미합니다. 기존 두 축 모두 숫자인 데이터와 루트 프리셋 s·m·l도 읽으며 미설정 또는 m은 기본 크기입니다. 저장 키와 version 2는 유지하며 version 1 문구 이전도 지원합니다. 공간 이름 변경은 설정을 유지하고 공간 삭제는 해당 공간의 위젯 설정만 모든 테마에서 제거합니다. 이전 PR 버전으로의 저장 형식 역변환은 지원하지 않습니다.
+
+드래그 종료·방향키 변경은 App의 최신 데이터에 반영한 뒤 공통 저장을 시도합니다. 저장 실패해도 조절한 크기는 화면과 메모리에 유지되며 하단 실패 안내와 전체 최신 상태 저장 재시도를 제공합니다. 잘못된 치수·저장 구조는 읽기 오류 화면에서 원본 보호·편집 차단을 적용합니다.
+
 ## 디데이 (SCRUM-42)
 
 - 남은 날짜는 시각이 아닌 달력 날짜 차이(`lib/date.js`의 `daysBetween`)로 계산합니다. 미래는 D-n, 당일은 D-Day, 지난 날짜는 D+n이며 지난 디데이는 자동으로 지우지 않습니다.
@@ -89,7 +124,13 @@ slots={{
   version: 2,
   activeSpaceId: '고유 ID',
   ddays: [{ id: '고유 ID', title: '기말고사', targetDate: '2026-12-15' }], // 선택
-  spaces: [{ id: '고유 ID', name: '기본 공간', quote: '', links: [], todos: [], memos: [] }]
+  spaces: [{ id: '고유 ID', name: '기본 공간', quote: '', links: [], todos: [], memos: [] }],
+  layout: { // 선택: 내용과 분리한 화면 설정
+    basic: {
+      memo: { view: 'sheet', sizes: { '메모 ID': 'l' } }, // 기존 개별 메모 설정
+      spaces: { '공간 ID': { widgets: { clock: { width: 500, height: 220 }, todos: { width: 440, height: 550 } } } }
+    }
+  }
 }
 ```
 

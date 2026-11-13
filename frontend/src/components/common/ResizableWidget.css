@@ -1,0 +1,12 @@
+.resizable-widget { display: flex; flex-direction: column; position: relative; flex: 0 1 auto; width: min(100%, var(--widget-width, var(--widget-default-width, 100%))); height: var(--widget-height, var(--widget-default-height, auto)); min-width: min(100%, var(--widget-min-width)); min-height: var(--widget-min-height); max-width: min(100%, var(--widget-max-width)); max-height: var(--widget-max-height); border: 1px solid transparent; border-radius: 12px; padding: 8px; }
+.resizable-widget:hover, .resizable-widget:focus-within { border-color: var(--color-border, #e2e0da); }
+.resizable-widget[data-resizing="true"] { border-color: var(--color-accent, #2456d6); user-select: none; }
+.resizable-widget > .widget-content { flex: 1 1 auto; min-width: 0; min-height: 0; overflow: auto; padding: 4px; overflow-wrap: anywhere; }
+.resizable-widget > .widget-content:focus-visible { outline: 2px solid var(--color-accent, #2456d6); outline-offset: -2px; }
+.widget-resize-footer { flex: 0 0 28px; display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 4px; min-width: 0; }
+.widget-resize-footer .widget-resize-handle { display: grid; place-items: center; flex-shrink: 0; width: 28px; min-height: 28px; padding: 0; border: 0; background: transparent; color: var(--color-text-muted, #5e5d58); cursor: nwse-resize; touch-action: none; }
+.widget-resize-footer .widget-resize-handle:hover, .widget-resize-footer .widget-resize-handle:focus-visible { color: var(--color-accent, #2456d6); background: var(--color-surface-subtle, #efede7); }
+.resizable-widget .widget-resize-handle { opacity: .4; }
+.resizable-widget:hover .widget-resize-handle, .resizable-widget:focus-within .widget-resize-handle, .resizable-widget[data-resizing="true"] .widget-resize-handle { opacity: 1; }
+.widget-resize-footer .widget-size-reset { border: 0; background: transparent; color: var(--color-text-muted, #5e5d58); font-size: 11px; min-height: 28px; padding: 2px 6px; }
+.widget-dimensions { color: var(--color-text-muted, #5e5d58); font-size: 11px; font-variant-numeric: tabular-nums; }

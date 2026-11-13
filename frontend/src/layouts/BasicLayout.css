@@ -142,8 +142,6 @@ dialog p { overflow-wrap: anywhere; }
   .app-header { flex-wrap: wrap; }
   .space-navigation { flex-basis: 100%; }
   .brand { display: none; }
-  .workspace-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .widget-timer { grid-column: 1 / -1; }
   .hero { padding-top: 40px; }
 }
 @media (max-width: 640px) {
@@ -152,11 +150,49 @@ dialog p { overflow-wrap: anywhere; }
   .space-tabs { flex-basis: 100%; }
   .space-actions { margin-left: 5px; }
   .hero { padding: 36px 0 30px; }
-  .hero .clock { --clock-time-size: 88px; }
   .quote-text { font-size: 15px; }
-  .workspace-grid, .support-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
-  .widget-timer { grid-column: auto; }
   .support-grid { margin-top: 32px; }
   .basic-layout .sc-links-grid { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); }
   .basic-layout .sc-time { font-size: 40px; }
+}
+
+/* Resize in normal flow; wrapping never changes DOM order. */
+.basic-layout .workspace-grid, .basic-layout .support-grid { display: flex; flex-wrap: wrap; align-items: flex-start; }
+.basic-layout .workspace-grid > .widget { --widget-default-width: calc((100% - 48px) / 3); }
+.basic-layout .support-grid > .widget { --widget-default-width: calc((100% - 24px) / 2); }
+.basic-layout .widget-clock { --widget-default-width: 640px; --widget-default-height: 250px; --clock-time-size: 112px; }
+/* 글자 위아래 여백을 확보하고 최소 크기에서도 시각·날짜를 영역 안에 맞춘다. */
+.basic-layout .widget-clock > .widget-content { overflow: hidden; container-type: size; display: flex; align-items: center; justify-content: center; }
+.basic-layout .widget-clock .clock { width: 100%; }
+.basic-layout .widget-clock .clock--hero { gap: min(8px, 4cqb); }
+.basic-layout .widget-clock .clock-date { font-size: clamp(10px, 10cqb, 14px); }
+.basic-layout .widget-clock .clock-time { line-height: 1.3; font-size: min(var(--clock-time-size), calc(var(--clock-time-fit, 30) * 1cqi), max(16px, calc((100cqb - 38px) / 1.3))); }
+.basic-layout .widget-quote { --widget-default-width: 640px; margin-top: 14px; }
+.basic-layout .widget-clock, .basic-layout .widget-quote { margin-inline: auto; }
+.basic-layout .widget-quote .quote-card { margin: 0; max-width: none; }
+.basic-layout .widget-links { --widget-default-width: 100%; }
+.basic-layout .widget-links .sc-links-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 174px), 1fr)); max-height: none; }
+.basic-layout .widget-todos .sc-todo-list { max-height: none; }
+.basic-layout .sc-todo-toolbar, .basic-layout .sc-segmented { flex-wrap: wrap; }
+.basic-layout .sc-section-heading > div, .basic-layout .sc-daily-focus > div, .basic-layout .sc-daily-goal > div { min-width: 0; }
+.basic-layout .sc-timer-actions .sc-button { flex: 1 1 90px; }
+.basic-layout .memo-widget .memo-size select { min-height: 36px; }
+.basic-layout .memo-status p { min-width: min(100%, 10em); }
+.basic-layout .calendar-nav { flex-wrap: wrap; }
+.basic-layout .resizable-widget { width: min(100%, var(--widget-width, var(--widget-default-width))); min-width: min(100%, var(--widget-min-width)); max-width: min(100%, var(--widget-max-width)); }
+.basic-layout .layout-resize-hint { margin-top: 12px; }
+/* Compatibility with previously stored presets. Dragging writes dimensions. */
+.basic-layout .widget-clock[data-size="s"], .basic-layout .widget-quote[data-size="s"] { --widget-default-width: 400px; }
+.basic-layout .widget-clock[data-size="l"], .basic-layout .widget-quote[data-size="l"] { --widget-default-width: 880px; }
+.basic-layout .widget-links[data-size="s"] { --widget-default-width: 720px; }
+.basic-layout .workspace-grid > .widget[data-size="s"] { --widget-default-width: 280px; }
+.basic-layout .workspace-grid > .widget[data-size="l"] { --widget-default-width: 760px; }
+.basic-layout .support-grid > .widget[data-size="s"] { --widget-default-width: 360px; }
+.basic-layout .support-grid > .widget[data-size="l"] { --widget-default-width: 100%; }
+@media (max-width: 1050px) {
+  .basic-layout .workspace-grid > .widget { --widget-default-width: calc((100% - 24px) / 2); }
+}
+@media (max-width: 640px) {
+  .basic-layout .workspace-grid, .basic-layout .support-grid { gap: 24px; }
+  .basic-layout .workspace-grid > .widget, .basic-layout .support-grid > .widget { --widget-default-width: 100%; }
 }
