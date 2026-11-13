@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { settleQuoteDrafts, updateQuote } from '../state/quotes.js'
+import { editQuoteDraft, saveQuote, settleQuoteDrafts } from '../state/quotes.js'
 
 export function useQuotes(commit) {
   // 문구는 명시적으로 저장한다. 공간 전환 시 초안은 메모리에만 보관한다.
@@ -9,12 +9,12 @@ export function useQuotes(commit) {
   }
   return {
     drafts,
-    edit: (spaceId, content) => setDrafts((current) => ({ ...current, [spaceId]: { content, error: null } })),
+    edit: (spaceId, content) => setDrafts((current) => editQuoteDraft(current, spaceId, content)),
     discard,
     save(spaceId) {
       const draft = drafts[spaceId]
       if (!draft) return
-      const result = commit((data) => updateQuote(data, spaceId, draft.content))
+      const result = saveQuote(commit, spaceId, draft.content)
       if (!result.error) discard(spaceId)
       else setDrafts((current) => ({ ...current, [spaceId]: { ...draft, error: result.error } }))
     },

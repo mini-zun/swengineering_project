@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createDefaultData, createSpace, renameSpace, deleteSpace } from '../src/state/spaces.js'
-import { updateQuote, settleQuoteDrafts } from '../src/state/quotes.js'
+import { editQuoteDraft, saveQuote, updateQuote, settleQuoteDrafts } from '../src/state/quotes.js'
 import { loadData, saveData } from '../src/storage/storage.js'
 import { changeProductivity } from '../src/state/productivity.js'
 
@@ -109,4 +109,40 @@ test('전체 저장 성공 시 기록된 실패 초안과 삭제된 공간만 �
   const different = { content: '아직 기록되지 않은 실패 초안', error: '실패' }
   assert.deepEqual(settleQuoteDrafts({ [a]: different }, data), { [a]: different })
   assert.deepEqual(settleQuoteDrafts({ [b]: unsaved }, deleteSpace(data, b)), {})
+})
+
+test('저장 실패 후 다시 입력해도 오류와 다른 공간 초안을 유지하고 최신 내용 저장 성공 후에만 정리한다', () => {
+  let data = createSpace(createDefaultData(), 'B')
+  const [a, b] = data.spaces.map((space) => space.id)
+  let drafts = editQuoteDraft({}, a, '첫 문구')
+  drafts = editQuoteDraft(drafts, b, 'B의 초안')
+  const result = saveQuote((updater) => {
+    data = updater(data)
+    return { error: '저장 공간 부족' }
+  }, a, drafts[a].content)
+  drafts[a] = { ...drafts[a], error: result.error }
+  drafts = editQuoteDraft(drafts, a, '첫 문구 수정')
+  assert.equal(drafts[a].error, '저장 공간 부족')
+  assert.equal(drafts[a].content, '첫 문구 수정')
+  assert.deepEqual(drafts[b], { content: 'B의 초안', error: null })
+  // 다른 기능이 이전 실패 내용을 저장해도 수정한 초안은 아직 저장된 것이 아니다.
+  assert.deepEqual(settleQuoteDrafts(drafts, data), drafts)
+  const storage = memoryStorage(data)
+  assert.equal(saveQuote((updater) => {
+    data = updater(data)
+    return saveData(data, storage)
+  }, a, drafts[a].content).error, null)
+  assert.equal(loadData(storage).data.spaces[0].quote, '첫 문구 수정')
+  assert.deepEqual(settleQuoteDrafts(drafts, data), { [b]: drafts[b] })
+})
+
+test('문구 저장의 공간 없음·commit 예외를 오류로 반환하고 초안과 기존 데이터를 보존한다', () => {
+  const data = createDefaultData(), before = structuredClone(data)
+  const drafts = editQuoteDraft({}, 'missing', '아직 저장하지 못한 내용')
+  const result = saveQuote((updater) => updater(data), 'missing', drafts.missing.content)
+  assert.match(result.error, /공간을 찾을 수 없어요/)
+  assert.deepEqual(data, before)
+  assert.equal(drafts.missing.content, '아직 저장하지 못한 내용')
+  assert.match(saveQuote(() => { throw new Error('예상하지 못한 오류') }, data.activeSpaceId, '').error, /예상하지 못한 오류/)
+  assert.match(saveQuote(() => { throw null }, data.activeSpaceId, '').error, /다시 시도/)
 })
