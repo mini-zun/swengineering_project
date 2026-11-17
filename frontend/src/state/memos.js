@@ -1,6 +1,7 @@
 import { createId } from './id.js'
-import { characterCount } from './spaces.js'
+import { characterCount } from '../lib/text.js'
 import { SIZE_PRESETS, SIZE_LABELS, DEFAULT_SIZE } from '../lib/sizes.js'
+import { DEFAULT_THEME_ID, isThemeId } from './themes.js'
 
 export const MEMO_MAX_LENGTH = 5000
 export const MEMO_MAX_COUNT = 20
@@ -12,8 +13,6 @@ export const MEMO_SIZE_LABELS = SIZE_LABELS
 export const MEMO_VIEWS = ['sheet', 'board']
 export const DEFAULT_MEMO_COLOR = 'paper'
 export const DEFAULT_MEMO_SIZE = DEFAULT_SIZE
-// 테마 선택 기능 전까지는 기본 디자인(미니멀 페이퍼) 하나만 있다.
-export const DEFAULT_THEME_ID = 'basic'
 export const DEFAULT_MEMO_VIEW = 'sheet'
 
 export function validateMemoContent(content) {
@@ -71,16 +70,22 @@ export function setMemoColor(data, spaceId, memoId, color) {
 export function deleteMemo(data, spaceId, memoId) {
   const space = findSpace(data, spaceId)
   if (!space.memos.some((memo) => memo.id === memoId)) throw new Error('메모를 찾을 수 없어요.')
-  const layout = Object.fromEntries(Object.entries(data.layout ?? {}).map(([themeId, theme]) => {
-    const sizes = { ...theme?.memo?.sizes }
-    delete sizes[memoId]
-    return [themeId, { ...theme, memo: { ...theme?.memo, sizes } }]
-  }))
   return {
-    ...data,
-    ...(data.layout ? { layout } : {}),
+    ...removeMemoSizes(data, [memoId]),
     spaces: data.spaces.map((item) => item.id === spaceId ? { ...item, memos: item.memos.filter((memo) => memo.id !== memoId) } : item),
   }
+}
+
+// 공간 삭제에서도 모든 테마의 해당 메모 크기만 정리한다. 다른 화면 설정은 보존한다.
+export function removeMemoSizes(data, memoIds) {
+  if (!data.layout) return data
+  const layout = Object.fromEntries(Object.entries(data.layout).map(([themeId, theme]) => {
+    if (!theme.memo?.sizes) return [themeId, theme]
+    const sizes = { ...theme?.memo?.sizes }
+    for (const memoId of memoIds) delete sizes[memoId]
+    return [themeId, { ...theme, memo: { ...theme?.memo, sizes } }]
+  }))
+  return { ...data, layout }
 }
 
 // 화면 설정(보기 방식·크기)은 내용과 분리해 테마별로 저장한다. 테마를 바꿔도 메모 내용은 그대로다.
@@ -92,6 +97,7 @@ export function memoLayout(data, themeId = DEFAULT_THEME_ID) {
 export const memoSize = (layout, memoId) => MEMO_SIZES.includes(layout.sizes[memoId]) ? layout.sizes[memoId] : DEFAULT_MEMO_SIZE
 
 function updateMemoLayout(data, themeId, change) {
+  if (!isThemeId(themeId)) throw new Error('테마 설정이 올바르지 않아요.')
   const theme = data.layout?.[themeId] ?? {}
   return { ...data, layout: { ...data.layout, [themeId]: { ...theme, memo: { ...memoLayout(data, themeId), ...change } } } }
 }
@@ -140,11 +146,12 @@ export function validateMemoFields(memo) {
 export function validateLayout(layout) {
   if (layout === undefined) return
   if (!layout || typeof layout !== 'object' || Array.isArray(layout)) throw new Error('화면 설정 데이터가 올바르지 않아요.')
-  for (const theme of Object.values(layout)) {
-    if (!theme || typeof theme !== 'object') throw new Error('화면 설정 데이터가 올바르지 않아요.')
+  for (const [themeId, theme] of Object.entries(layout)) {
+    if (!isThemeId(themeId)) throw new Error('화면 설정의 테마 ID가 올바르지 않아요.')
+    if (!theme || typeof theme !== 'object' || Array.isArray(theme)) throw new Error('화면 설정 데이터가 올바르지 않아요.')
     const memo = theme.memo
     if (memo === undefined) continue
-    if (!memo || typeof memo !== 'object' || (memo.view !== undefined && !MEMO_VIEWS.includes(memo.view))) throw new Error('메모 화면 설정이 올바르지 않아요.')
-    if (memo.sizes !== undefined && (!memo.sizes || typeof memo.sizes !== 'object' || Object.values(memo.sizes).some((size) => !MEMO_SIZES.includes(size)))) throw new Error('메모 크기 설정이 올바르지 않아요.')
+    if (!memo || typeof memo !== 'object' || Array.isArray(memo) || (memo.view !== undefined && !MEMO_VIEWS.includes(memo.view))) throw new Error('메모 화면 설정이 올바르지 않아요.')
+    if (memo.sizes !== undefined && (!memo.sizes || typeof memo.sizes !== 'object' || Array.isArray(memo.sizes) || Object.values(memo.sizes).some((size) => !MEMO_SIZES.includes(size)))) throw new Error('메모 크기 설정이 올바르지 않아요.')
   }
 }

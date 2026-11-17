@@ -1,5 +1,6 @@
 import './BasicLayout.css'
 import ResizableWidget from '../components/common/ResizableWidget.jsx'
+import { DEFAULT_THEME_ID } from '../state/themes.js'
 
 const BASIC_LIMITS = {
   clock: { minWidth: 240, minHeight: 150, maxWidth: 1200, maxHeight: 600 },
@@ -13,10 +14,10 @@ const BASIC_LIMITS = {
 }
 
 // 같은 slot을 한 번만 렌더해 편집 상태와 실행 중인 타이머를 유지한다.
-export default function BasicLayout({ tabs, quote, space, status, slots = {}, widgetSizes = {}, onWidgetSizeChange }) {
+export default function BasicLayout({ tabs, quote, space, status, slots = {}, widgetSizes = {}, onWidgetSizeChange, themeId = DEFAULT_THEME_ID }) {
   function widget(id, content) {
     return <ResizableWidget widgetId={id} size={widgetSizes[id] ?? 'm'}
-      contextId={`${space.id}:basic`} limits={BASIC_LIMITS[id]} centered={id === 'clock' || id === 'quote'}
+      contextId={`${space.id}:${themeId}`} limits={BASIC_LIMITS[id]} centered={id === 'clock' || id === 'quote'}
       onSizeChange={(size) => onWidgetSizeChange(id, size)}>{content}</ResizableWidget>
   }
   return <div className="basic-layout">
