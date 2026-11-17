@@ -169,10 +169,14 @@ export default function App() {
     </div>} />
     {themeDialogOpen && <ThemeDialog spaceName={activeSpace.name} selectedId={themes.selectedId} selectedName={themeName(themes.selectedId)}
       fallback={themes.fallback} options={themes.options} onClose={() => setThemeDialogOpen(false)}
+      saveError={session.status === 'failed' ? session.saveError : null}
+      onRetry={() => { memos.retryAll(); return commit((current) => current) }}
       onSelect={(selectedThemeId) => {
         // 대기 중인 메모 저장을 원래 공간에 먼저 처리한 뒤 선택만 바꾼다. 내용 데이터는 건드리지 않는다.
         memos.flush(activeSpace.id)
-        return commit((current) => setSpaceTheme(current, activeSpace.id, selectedThemeId))
+        const result = commit((current) => setSpaceTheme(current, activeSpace.id, selectedThemeId))
+        // 저장 실패는 공통 저장 상태(saveError)로 안내하고 재시도한다. 선택은 메모리에 유지된다.
+        return { ...result, saveFailed: Boolean(result.error) }
       }} />}
   </>
 }
