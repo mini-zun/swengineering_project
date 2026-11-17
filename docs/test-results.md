@@ -1,5 +1,14 @@
 # 검증 기록
 
+## 2026-11-17 PR #20 리뷰 반영
+
+- `validateLayout`·`validateWidgetSizes`가 `layout`의 키도 공통 `isThemeId`로 검사하도록 수정했습니다. 잘못된 키는 읽기·저장을 차단하고 원본을 보존하며, 유효한 미등록·미래 테마 키는 계속 보존합니다.
+- 기본 테마 상수를 `state/themes.js`의 `DEFAULT_THEME_ID`로 통일했습니다. `widgetSizes.js`의 별칭과 `memos.js` 재수출을 제거했으며 저장 데이터의 ID 값은 그대로입니다.
+- 렌더러 목록 명시적 전달은 리뷰어가 SCRUM-20에서 연결하기로 한 항목이므로 현재 App은 변경하지 않았습니다.
+- `frontend/`에서 `npm.cmd test`: 99개 통과(기존 97 + 회귀 2). 잘못된 키의 독립 검증·읽기·쓰기·원본 보존과 유효한 미래 키·64자 경계의 저장 복원을 확인했습니다. `npm.cmd run lint`, `npm.cmd run build`, `git diff --check` 통과.
+- 리뷰어는 이전 커밋 `2966b42`에서 헤드리스 Chromium 1280×720의 기본 화면 대체·basic 크기 저장·선택값 보존·잘못된 선택 ID 원본 보호를 확인했다고 보고했습니다. [PR 리뷰](https://github.com/mini-zun/swengineering_project/pull/20/files)는 이번 수정본의 직접 화면 검증과 구분합니다.
+- 이번 변경은 화면 배치·스타일을 바꾸지 않았으며 실제 브라우저 재검증은 수행하지 않았습니다. 실제 테마 전환·Edge·1920×1080 및 기존 미검증 통합 항목은 그대로 남습니다.
+
 ## 2026-11-17 SCRUM-21 공통 저장·테마 연동 보완 (#19)
 
 관련 요구사항: FR-01·03·11·12·13·19·20의 공통 저장 및 이미지 저장 설계 범위. 설계·필드·팀원 연동 계약은 [design.md](design.md)를 참고합니다.

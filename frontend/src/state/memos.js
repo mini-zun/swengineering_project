@@ -3,8 +3,6 @@ import { characterCount } from '../lib/text.js'
 import { SIZE_PRESETS, SIZE_LABELS, DEFAULT_SIZE } from '../lib/sizes.js'
 import { DEFAULT_THEME_ID, isThemeId } from './themes.js'
 
-export { DEFAULT_THEME_ID }
-
 export const MEMO_MAX_LENGTH = 5000
 export const MEMO_MAX_COUNT = 20
 // 색 키만 저장한다. 실제 색은 테마가 --memo-bg-<키> 변수로 정한다.
@@ -148,7 +146,8 @@ export function validateMemoFields(memo) {
 export function validateLayout(layout) {
   if (layout === undefined) return
   if (!layout || typeof layout !== 'object' || Array.isArray(layout)) throw new Error('화면 설정 데이터가 올바르지 않아요.')
-  for (const theme of Object.values(layout)) {
+  for (const [themeId, theme] of Object.entries(layout)) {
+    if (!isThemeId(themeId)) throw new Error('화면 설정의 테마 ID가 올바르지 않아요.')
     if (!theme || typeof theme !== 'object' || Array.isArray(theme)) throw new Error('화면 설정 데이터가 올바르지 않아요.')
     const memo = theme.memo
     if (memo === undefined) continue

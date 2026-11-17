@@ -2,8 +2,8 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createDefaultData, createSpace, renameSpace, deleteSpace } from '../src/state/spaces.js'
 import { THEME_IDS, spaceThemeId, resolveSpaceThemeId, setSpaceTheme } from '../src/state/themes.js'
-import { addMemo, setMemoSize, setMemoView, memoLayout, applyMemoSave, deleteMemo } from '../src/state/memos.js'
-import { setWidgetSize, widgetSize } from '../src/state/widgetSizes.js'
+import { addMemo, setMemoSize, setMemoView, memoLayout, applyMemoSave, deleteMemo, validateLayout } from '../src/state/memos.js'
+import { setWidgetSize, widgetSize, validateWidgetSizes } from '../src/state/widgetSizes.js'
 import { changeProductivity } from '../src/state/productivity.js'
 import { elapsedMs } from '../src/lib/productivity.js'
 import { createMemoAutosave } from '../src/state/memoAutosave.js'
@@ -15,6 +15,41 @@ function storageOf(data) {
     setItem(key, value) { assert.equal(key, STORAGE_KEY); this.raw = value; this.writes++ },
   }
 }
+
+test('잘못된 layout 테마 키는 읽기·쓰기에서 거부하고 저장 원본을 보존한다', () => {
+  const data = createDefaultData(), spaceId = data.activeSpaceId
+  for (const themeId of ['', 'BAD KEY!', 'Basic', 'sidebar_cork', '__proto__', 'x'.repeat(65)]) {
+    for (const settings of [{ memo: { view: 'board' } }, { spaces: { [spaceId]: { widgets: { clock: 'l' } } } }]) {
+      const layout = { [themeId]: settings }
+      assert.throws(() => validateLayout(layout), /테마 ID/)
+      assert.throws(() => validateWidgetSizes(layout), /테마 ID/)
+      const storage = storageOf({ ...data, layout }), raw = storage.raw
+      assert.match(loadData(storage).error, /테마 ID/)
+      assert.ok(saveData({ ...data, layout }, storage).error)
+      assert.equal(storage.raw, raw)
+      assert.equal(storage.writes, 0)
+    }
+    assert.throws(() => setWidgetSize(data, { spaceId, themeId, widgetId: 'clock', size: 'l' }))
+    assert.throws(() => setMemoView(data, 'board', themeId))
+  }
+})
+
+test('형식이 유효한 미등록 layout 테마는 선택값 없이도 보존하고 읽기·쓰기를 허용한다', () => {
+  const data = createDefaultData(), spaceId = data.activeSpaceId
+  for (const themeId of ['future-theme', `a${'0'.repeat(63)}`]) {
+    const next = setWidgetSize(setMemoView(data, 'board', themeId), { spaceId, themeId, widgetId: 'clock', size: 'l' })
+    validateLayout(next.layout)
+    validateWidgetSizes(next.layout)
+    const storage = storageOf(next), raw = storage.raw
+    const loaded = loadData(storage)
+    assert.equal(loaded.error, null)
+    assert.deepEqual(loaded.data.layout, next.layout)
+    assert.equal(loaded.data.spaceThemes, undefined)
+    assert.equal(storage.writes, 0)
+    assert.equal(saveData(loaded.data, storage).error, null)
+    assert.equal(storage.raw, raw)
+  }
+})
 
 test('선택 테마가 없는 version 1·2는 기본 테마를 사용하고 읽기 중 원본을 쓰지 않는다', () => {
   for (const version of [1, 2]) {

@@ -66,6 +66,7 @@ localStorage 키 `start.home.v1`, 내부 `version: 2`를 유지한다. 이번 �
 
 - version 1의 공통 문구 이전과 version 2 읽기를 유지한다. `spaceThemes`가 없는 데이터는 값을 강제로 추가하거나 읽기 중 저장하지 않는다.
 - 선택 테마 ID의 저장 형식은 소문자 영문으로 시작하는 1~64자의 영문 소문자·숫자·하이픈이다. 새 선택 함수는 위 표의 ID만 받는다.
+- `layout`의 테마 키도 같은 `isThemeId` 규칙으로 읽기·쓰기를 검사한다. 잘못된 키는 원본 보호 화면으로 처리하며, 형식이 유효한 미등록 키는 보존한다. 키를 자동 변경하거나 삭제하지 않는다.
 - 읽기에서는 형식이 유효한 미등록·미구현 ID도 보존한다. 사용 가능한 렌더러 목록에 없으면 화면만 `basic`으로 대체한다. 저장된 선택과 해당 테마의 설정은 지우지 않는다.
 - 기본 화면으로 대체한 동안에는 크기·메모 보기 변경을 **표시 중인 basic 설정**에 쓴다. 구현되지 않은 선택 테마의 설정에 기본 화면 설정을 기록하지 않는다.
 - `spaceThemes`가 배열·null이거나 잘못된 ID를 포함하면 읽기를 차단하고 원본 보호 화면을 표시한다. JSON·버전·기존 내용/설정 오류도 같은 원본 보호 원칙을 따른다.
@@ -77,6 +78,8 @@ localStorage 키 `start.home.v1`, 내부 `version: 2`를 유지한다. 이번 �
 ## 팀원용 함수·연동 계약
 
 `frontend/src/state/themes.js`:
+
+기본 테마 상수는 이 파일의 `DEFAULT_THEME_ID`에서만 import한다. `widgetSizes.js`의 `BASIC_THEME_ID` 별칭과 `memos.js`의 재수출은 제거했다.
 
 ```js
 spaceThemeId(data, spaceId) // 저장된 선택 ID. 미설정이면 basic
