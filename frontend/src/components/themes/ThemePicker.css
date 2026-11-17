@@ -49,5 +49,7 @@
 @media (prefers-reduced-motion: no-preference) {
   .theme-option { transition: border-color .12s; }
 }
-.theme-dialog .error:empty { display: none; }
+.theme-save-error { display: flex; align-items: center; gap: 8px 12px; flex-wrap: wrap; }
+.theme-save-error .error { margin-top: 8px; }
+.theme-save-error button { margin-top: 8px; }
 .theme-dialog .dialog-actions { margin-top: 12px; }

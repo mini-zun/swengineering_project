@@ -15,8 +15,9 @@ export function ThemeButton({ onOpen, themeName }) {
     title="이 공간의 테마 바꾸기">테마<span className="visually-hidden">: {themeName}</span></button>
 }
 
-// options: themeOptions()의 결과. onSelect(themeId)는 { error }를 돌려준다.
-export function ThemeDialog({ spaceName, selectedId, fallback, selectedName, options, onSelect, onClose }) {
+// options: themeOptions()의 결과. onSelect(themeId)와 onRetry()는 { error }를 돌려준다.
+// saveError: App의 공통 저장이 실패한 상태일 때의 안내 문구. 이 대화상자는 모달이라 하단의 공통 재시도 버튼을 누를 수 없으므로 여기서도 재시도를 제공한다.
+export function ThemeDialog({ spaceName, selectedId, fallback, selectedName, options, saveError = null, onSelect, onRetry, onClose }) {
   const dialog = useRef(null)
   const [error, setError] = useState('')
   useEffect(() => {
@@ -36,7 +37,8 @@ export function ThemeDialog({ spaceName, selectedId, fallback, selectedName, opt
     let result
     try { result = onSelect(themeId) }
     catch (failure) { result = { error: failure.message } }
-    setError(result?.error ? `테마를 저장하지 못했어요. ${result.error}` : '')
+    // 저장 실패는 saveError로 전달받아 표시한다. 여기에는 선택 자체가 거부된 경우만 남긴다.
+    setError(result?.error && !result.saveFailed ? result.error : '')
   }
 
   return <dialog ref={dialog} className="theme-dialog" aria-labelledby="theme-dialog-title" aria-describedby="theme-dialog-scope"
@@ -55,7 +57,11 @@ export function ThemeDialog({ spaceName, selectedId, fallback, selectedName, opt
         </button>
       </li>)}
     </ul>
-    <p className="error" role="alert">{error}</p>
+    <div className="theme-save-error" role="alert">
+      {saveError !== null && <><p className="error">테마를 저장하지 못했어요. 새로고침하면 선택이 사라질 수 있어요. {saveError}</p>
+        <button type="button" onClick={() => { setError(''); onRetry() }}>저장 재시도</button></>}
+      {saveError === null && error && <p className="error">{error}</p>}
+    </div>
     <div className="theme-notes">
       <p><strong>테마</strong>는 화면 전체의 배치와 분위기를 바꿔요. 메모·할 일·바로가기·집중 기록은 테마를 바꿔도 그대로 남아요.</p>
       <p><strong>개별 색상</strong>(메모 색상처럼 항목마다 고르는 색)은 테마와 따로 저장돼요. 각 항목에서 바꾸고, 테마를 바꿔도 유지돼요.</p>
