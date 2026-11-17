@@ -6,8 +6,8 @@ import { DEFAULT_THEME_ID, spaceThemeId, resolveSpaceThemeId } from '../state/th
 export const THEME_CATALOG = [
   { id: 'basic', name: '미니멀 페이퍼', description: '여백이 넓고 차분한 기본 디자인',
     preview: { shape: 'hero', bg: '#f7f6f3', surface: '#ffffff', ink: '#1c1c1a', accent: '#2456d6' } },
-  { id: 'emotional', name: '감성', description: '부드러운 색과 분위기 있는 화면',
-    preview: { shape: 'hero', bg: '#f3e9e4', surface: '#fffaf7', ink: '#5b4a47', accent: '#c98a7d' } },
+  { id: 'emotional', name: '감성', description: '밝은 종이 배경과 올리브 색의 차분한 화면',
+    preview: { shape: 'hero', bg: '#efede5', surface: '#fbfaf3', ink: '#5a6242', accent: '#c5c9ab' } },
   { id: 'memo-board', name: '메모보드', description: '메모를 가운데에 크게 펼친 화면',
     preview: { shape: 'board', bg: '#eef1f4', surface: '#ffffff', ink: '#27323d', accent: '#3d7a8c' } },
   { id: 'sidebar-cork', name: '사이드바 코르크', description: '옆 메뉴와 코르크판 느낌의 화면',

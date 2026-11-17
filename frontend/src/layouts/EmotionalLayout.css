@@ -1,0 +1,193 @@
+/*
+ * 감성 테마(emotional). 참고 이미지 감성적인분위기.png 기준: 밝은 종이 배경과 차분한 올리브 색.
+ * 색은 :root[data-theme="emotional"] 아래에서만 공통 토큰을 덮어써 기본 테마와 다른 테마에 영향을 주지 않는다.
+ * 대화상자는 레이아웃 밖에 그려지므로 같은 범위에서 색을 받는다.
+ */
+:root[data-theme="emotional"] {
+  --color-bg: #efede5;
+  --color-surface: #fbfaf3;
+  --color-surface-subtle: #e9e7da;
+  --color-text: #3b3d30;
+  --color-text-muted: #6a6c5c;
+  --color-border: #dddbcd;
+  --color-border-strong: #a8aa96;
+  --color-primary-hover: #474e33;
+  --color-quote: #3b3d30;
+  --color-accent: #5a6242;
+  --emotional-olive: #5a6242;
+  --emotional-olive-soft: #e3e4d3;
+  --emotional-paper: #f6f4e3;
+  --emotional-tape: #c5c9abcc;
+  --emotional-serif: 'Noto Serif KR', 'Nanum Myeongjo', 'AppleMyungjo', 'Batang', Georgia, serif;
+  --emotional-script: Georgia, 'Times New Roman', serif;
+  background-color: var(--color-bg);
+  /* 종이 결: 아주 옅은 점 무늬. */
+  background-image: radial-gradient(#7d7a6012 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+.emotional-layout {
+  --memo-text: var(--color-text);
+  --memo-muted: var(--color-text-muted);
+  --memo-border: 0;
+  --memo-radius: 3px;
+  --memo-shadow: 0 10px 24px #55523a26, 0 1px 2px #55523a1f;
+  --memo-padding: 30px 32px 18px;
+  --memo-font-size: 15px;
+  /* 줄노트의 줄 간격. 글 줄 높이와 같은 값이어야 글이 줄 위에 놓인다. */
+  --memo-line-height: 35px;
+  --memo-title-size: 22px;
+  --memo-focus: var(--emotional-olive);
+  --memo-control-bg: var(--color-surface-subtle);
+  --memo-selected-bg: var(--emotional-olive);
+  --memo-selected-text: #fbfaf3;
+  --memo-height-s: 140px;
+  --memo-height-m: 245px;
+  --memo-height-l: 385px;
+  --memo-bg-paper: var(--emotional-paper);
+  --memo-bg-yellow: #f6edc4;
+  --memo-bg-pink: #f3e3dc;
+  --memo-bg-blue: #e4e9e6;
+  --memo-bg-green: #e6ead2;
+  --clock-color: var(--emotional-olive);
+  --clock-font-family: var(--emotional-serif);
+  --clock-align: start;
+  --clock-gap: 14px;
+  --clock-time-weight: 500;
+  --clock-time-tracking: -0.03em;
+  --clock-date-tracking: 0;
+  --clock-date-size: 14px;
+  max-width: 1500px;
+  padding-top: 18px;
+}
+
+/* 맨 위: 이름과 테마 버튼 */
+.emotional-layout .emotional-header { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 22px; min-height: 52px; padding-bottom: 12px; border-bottom: 1px solid var(--color-border); }
+.emotional-layout .emotional-brand { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; margin-right: auto; color: var(--emotional-olive); text-decoration: none; }
+.emotional-layout .emotional-brand svg { align-self: center; flex-shrink: 0; }
+.emotional-layout .emotional-brand strong { font: italic 700 34px/1 var(--emotional-script); letter-spacing: .01em; }
+.emotional-layout .emotional-brand span { margin-left: 12px; font: italic 13px var(--emotional-serif); color: var(--color-text-muted); }
+.emotional-layout .emotional-welcome { font-size: 13px; letter-spacing: .04em; color: var(--color-text-muted); }
+.emotional-layout .theme-button { border: 0; font-size: 14px; color: var(--color-text); padding: 8px 10px; }
+.emotional-layout .theme-button::before { content: '⇄'; margin-right: 8px; color: var(--emotional-olive); }
+
+/* 시계 | 문구 | 사진 장식. 줄바꿈되는 한 줄이라 크기를 바꿔도 겹치지 않는다. */
+.emotional-layout .emotional-hero { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 28px; padding: 10px 0 6px; }
+.emotional-layout .widget-clock { --widget-default-width: 300px; --widget-default-height: 172px; --clock-time-size: 76px; }
+.emotional-layout .widget-clock .clock--hero { flex-direction: column-reverse; }
+.emotional-layout .widget-clock > .widget-content { justify-content: flex-start; }
+.emotional-layout .widget-clock .clock-date { font-size: 14px; }
+.emotional-layout .widget-clock .clock-time { line-height: 1.1; font-size: min(var(--clock-time-size), calc(var(--clock-time-fit, 30) * 1cqi), max(16px, calc((100cqb - 34px) / 1.1))); }
+.emotional-layout .widget-quote { --widget-default-width: 560px; margin: 0; flex-grow: 0; border-radius: 0; }
+.emotional-layout .widget-quote::before { content: ''; position: absolute; left: -15px; top: 14px; bottom: 14px; border-left: 1px solid var(--color-border); }
+.emotional-layout .widget-clock, .emotional-layout .widget-quote { margin-inline: 0; }
+.emotional-layout .quote-display { align-items: flex-start; gap: 4px; }
+.emotional-layout .quote-text { font-family: var(--emotional-serif); font-size: 34px; line-height: 1.35; letter-spacing: -.01em; text-align: left; color: var(--color-text); }
+.emotional-layout .quote-edit { padding: 4px 0; font-size: 13px; }
+.emotional-layout .emotional-polaroid { margin: 6px 6px 0 auto; padding: 10px 10px 6px; width: 190px; flex-shrink: 0; position: relative; background: #fdfcf6; box-shadow: 0 8px 20px #55523a2e; transform: rotate(3deg); }
+.emotional-layout .emotional-polaroid::before { content: ''; position: absolute; top: -9px; left: 50%; width: 76px; height: 20px; transform: translateX(-30%) rotate(-3deg); background: var(--emotional-tape); }
+.emotional-layout .emotional-polaroid svg { display: block; width: 100%; height: auto; }
+.emotional-layout .emotional-polaroid figcaption { padding-top: 6px; text-align: center; font: italic 12px var(--emotional-script); color: var(--color-text-muted); }
+
+/* 공간 탭: 문구 아래 줄 */
+.emotional-layout .emotional-spaces { display: flex; margin: 10px 0 20px; }
+.emotional-layout .space-tab { font-size: 15px; padding: 8px 22px; }
+.emotional-layout .space-tab.selected, .emotional-layout .space-tab.selected:hover:not(:disabled) { background: var(--emotional-olive); color: #fbfaf3; font-weight: 500; }
+.emotional-layout .space-tab.selected::before { content: '•'; margin-right: 8px; }
+.emotional-layout .space-actions button:first-child { border-radius: 999px; }
+
+/* 왼쪽 바로가기·할 일, 오른쪽 메모. 각 열 안에서 위아래로만 쌓인다. */
+.emotional-layout .emotional-columns { display: grid; grid-template-columns: minmax(0, 58fr) minmax(0, 39fr); gap: 20px 44px; align-items: start; }
+.emotional-layout .emotional-column { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; min-width: 0; }
+.emotional-layout .emotional-column > .widget { --widget-default-width: 100%; }
+
+/* 둥근 종이 카드: 바로가기·할 일·타이머·디데이 */
+.emotional-layout .widget-links, .emotional-layout .widget-todos, .emotional-layout .widget-dday, .emotional-layout .widget-timer {
+  padding: 22px 24px 8px; background: var(--color-surface); border-color: transparent; border-radius: 18px; box-shadow: 0 2px 10px #55523a0f; margin-bottom: 0;
+}
+.emotional-layout .resizable-widget:hover, .emotional-layout .resizable-widget:focus-within { border-color: var(--color-border); }
+.emotional-layout .focus-card { border: 0; padding: 0; background: transparent; }
+
+/* 제목은 명조체 */
+.emotional-layout .sc-section-heading h2, .emotional-layout .calendar .calendar-heading, .emotional-layout .widget-dday h2 { font-family: var(--emotional-serif); font-size: 17px; font-weight: 700; color: var(--color-text); }
+.emotional-layout .sc-count { font: italic 13px var(--emotional-script); }
+
+/* 버튼·선택 표시를 올리브로 */
+.emotional-layout .sc-button, .emotional-layout .sc-timer-actions .sc-button { background: var(--emotional-olive); color: #fbfaf3; }
+.emotional-layout .sc-button:hover:not(:disabled) { background: var(--color-primary-hover); }
+.emotional-layout .sc-button.secondary, .emotional-layout .sc-button.sc-stop, .emotional-layout .sc-timer-actions .sc-button.sc-stop { background: transparent; border-color: var(--color-border); color: var(--color-text); }
+.emotional-layout .sc-button.danger { background: var(--color-danger); color: var(--color-on-danger); }
+.emotional-layout .sc-segmented button[aria-pressed="true"] { background: var(--emotional-olive-soft); }
+.emotional-layout .sc-time { font-family: var(--emotional-serif); font-weight: 500; color: var(--emotional-olive); }
+:root[data-theme="emotional"] button.primary { background: var(--emotional-olive); border-color: var(--emotional-olive); color: #fbfaf3; }
+:root[data-theme="emotional"] button.primary:hover:not(:disabled) { background: var(--color-primary-hover); }
+
+/* 바로가기: 아이콘 아래 이름 */
+.emotional-layout .widget-links .sc-section-heading .sc-button { border: 0; padding-inline: 6px; }
+.emotional-layout .widget-links .sc-links-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 112px), 1fr)); gap: 6px 10px; }
+.emotional-layout .sc-link-tile { border: 0; background: transparent; box-shadow: none; }
+.emotional-layout .sc-site-anchor { flex-direction: column; justify-content: flex-start; gap: 10px; min-height: 0; padding: 10px 6px 30px; text-align: center; }
+.emotional-layout .sc-site-icon { width: 46px; height: 46px; border-radius: 12px; background: var(--color-surface-subtle); color: var(--color-text); font: 700 22px var(--emotional-script); }
+.emotional-layout .sc-link-tile:nth-child(4n + 2) .sc-site-icon { background: var(--emotional-olive); color: #fbfaf3; }
+.emotional-layout .sc-link-tile:nth-child(4n + 3) .sc-site-icon { background: #e6e7d6; color: #6f7659; }
+.emotional-layout .sc-link-tile:nth-child(4n + 4) .sc-site-icon { background: #efe0d6; color: #8b5f4c; }
+.emotional-layout .sc-site-info { align-items: center; }
+.emotional-layout .sc-site-info strong { font-size: 14px; font-weight: 400; }
+.emotional-layout .sc-link-tools { right: 50%; bottom: 0; transform: translateX(50%); opacity: .35; }
+.emotional-layout .sc-link-tile:hover .sc-link-tools, .emotional-layout .sc-link-tile:focus-within .sc-link-tools { opacity: 1; }
+.emotional-layout .sc-link-add { flex-direction: column; min-height: 0; padding: 10px 6px; border: 0; gap: 10px; }
+.emotional-layout .sc-link-add > span { display: grid; place-items: center; width: 46px; height: 46px; border: 1px dashed var(--color-border-strong); border-radius: 12px; }
+.emotional-layout .sc-link-add strong { font-size: 13px; font-weight: 400; }
+
+/* 할 일: 동그란 체크와 가는 줄 */
+.emotional-layout .widget-todos .sc-section-heading { margin-bottom: 4px; padding-bottom: 10px; border-bottom: 1px solid var(--color-border); position: relative; }
+.emotional-layout .widget-todos .sc-section-heading::after { content: ''; position: absolute; left: 0; bottom: -1px; width: 25%; border-bottom: 2px solid var(--emotional-olive); }
+.emotional-layout .sc-todo-row { min-height: 40px; padding: 8px 0; }
+.emotional-layout .sc-todo-row > input { border-radius: 50%; border-color: var(--color-border-strong); }
+.emotional-layout .sc-todo-row > input:checked { background: var(--emotional-olive); border-color: var(--emotional-olive); }
+.emotional-layout .sc-todo-content label { font-size: 15px; }
+.emotional-layout .sc-todo-form { border: 0; border-radius: 0; padding: 6px 0 0; background: transparent; }
+
+/* 줄노트 메모: 종이 한 장, 위쪽 마스킹테이프, 가로줄 */
+.emotional-layout .widget-memos { padding: 8px 8px 8px; }
+.emotional-layout .memo-header h2 { font-family: var(--emotional-serif); font-weight: 500; color: var(--color-text); }
+.emotional-layout .memo-header h2::before { content: '마음 한쪽의 '; }
+.emotional-layout .memo-card { position: relative; margin: 14px 6px 10px; transform: rotate(.5deg); }
+.emotional-layout .memo-card::before { content: ''; position: absolute; top: -13px; left: 50%; width: 112px; height: 26px; transform: translateX(-50%) rotate(-2deg); background: repeating-linear-gradient(90deg, var(--emotional-tape) 0 9px, #d6d9bfcc 9px 14px); pointer-events: none; }
+.emotional-layout .memo-card::after { content: 'dear, me'; position: absolute; top: 12px; right: 32px; font: italic 13px var(--emotional-script); color: var(--color-text-muted); pointer-events: none; }
+.emotional-layout .memo-text { margin-top: 14px; background-image: repeating-linear-gradient(transparent 0 34px, #a8aa9680 34px 35px); background-attachment: local; }
+.emotional-layout .memo-empty { border: 0; border-radius: 3px; min-height: 220px; padding: 30px 32px; background: var(--emotional-paper); box-shadow: var(--memo-shadow); }
+.emotional-layout .memo-size select { background: transparent; }
+
+/* 주간 날짜: 한 줄 */
+.emotional-layout .emotional-week { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 44px; margin-top: 18px; padding-bottom: 6px; border-bottom: 1px solid var(--color-border); }
+.emotional-layout .widget-calendar { --widget-default-width: calc((100% - 44px) * 58 / 97); border-radius: 0; }
+.emotional-layout .emotional-motto { flex: 1 1 240px; text-align: center; font: italic 18px var(--emotional-script); color: var(--color-text-muted); }
+.emotional-layout .calendar { --calendar-today-bg: transparent; --calendar-today-fg: var(--color-text); --calendar-accent: transparent; --calendar-radius: 999px; --calendar-day-size: 14px; --calendar-label-size: 13px; flex-direction: row; align-items: center; gap: 12px 24px; flex-wrap: wrap; }
+.emotional-layout .calendar .calendar-heading { font-family: inherit; font-size: 13px; font-weight: 400; color: var(--color-text-muted); flex-shrink: 0; }
+.emotional-layout .calendar-week { flex: 1 1 260px; }
+.emotional-layout .calendar-week-day time { flex-direction: row; justify-content: center; gap: 8px; padding: 7px 0; border: 1px solid transparent; }
+.emotional-layout .calendar-week-day.is-today time { border-color: var(--emotional-olive); }
+.emotional-layout .calendar-week-day.is-today time::after { content: none; }
+
+/* 아래: 누적 타이머와, 시안에 없는 디데이. 숨기지 않고 본문 아래에 둔다. */
+.emotional-layout .emotional-extra { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 20px 44px; margin-top: 28px; }
+.emotional-layout .emotional-extra > .widget { --widget-default-width: calc((100% - 44px) / 2); }
+
+@media (max-width: 1050px) {
+  .emotional-layout .emotional-polaroid { display: none; }
+  .emotional-layout .quote-text { font-size: 28px; }
+}
+@media (max-width: 900px) {
+  .emotional-layout .emotional-columns { grid-template-columns: minmax(0, 1fr); }
+  .emotional-layout .emotional-extra > .widget, .emotional-layout .widget-calendar { --widget-default-width: 100%; }
+  .emotional-layout .widget-quote::before { content: none; }
+}
+@media (max-width: 640px) {
+  .emotional-layout .emotional-welcome { display: none; }
+  .emotional-layout .emotional-brand strong { font-size: 28px; }
+  .emotional-layout .emotional-brand span { margin-left: 0; }
+  .emotional-layout .quote-text { font-size: 22px; }
+  .emotional-layout .calendar-week-day time { flex-direction: column; gap: 0; }
+  .emotional-layout { --memo-padding: 26px 20px 16px; }
+}

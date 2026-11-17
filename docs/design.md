@@ -91,13 +91,24 @@ SCRUM-20 담당자는 실제 렌더러가 있는 ID만 선택 UI에서 활성화
 
 ### 테마 선택 UI와 렌더러 등록 — SCRUM-20 구현
 
-- `frontend/src/themes/renderers.js`의 `THEME_RENDERERS`가 테마 ID → 레이아웃 컴포넌트 등록표다. 현재 `basic: BasicLayout`만 있다. 테마 담당자는 레이아웃을 만든 뒤 여기에 한 줄을 추가한다(예: `emotional: EmotionalLayout`). 등록표의 키가 곧 사용 가능한 테마 목록이며 App이 `themeOptions`·`resolveSpaceThemeId`에 그대로 넘긴다.
+- `frontend/src/themes/renderers.js`의 `THEME_RENDERERS`가 테마 ID → 레이아웃 컴포넌트 등록표다. 현재 `basic: BasicLayout`과 `emotional: EmotionalLayout`(SCRUM-34)이 있다. 테마 담당자는 레이아웃을 만든 뒤 여기에 한 줄을 추가한다(예: `emotional: EmotionalLayout`). 등록표의 키가 곧 사용 가능한 테마 목록이며 App이 `themeOptions`·`resolveSpaceThemeId`에 그대로 넘긴다.
 - 레이아웃은 BasicLayout과 같은 props(`tabs`, `themeControl`, `quote`, `space`, `status`, `slots`, `widgetSizes`, `onWidgetSizeChange`, `themeId`)를 받는다. `themeControl`은 테마 버튼이므로 **반드시 화면에 배치한다**. 빠뜨리면 사용자가 그 테마에서 다른 테마로 돌아갈 수 없다.
 - `frontend/src/themes/catalog.js`의 `THEME_CATALOG`가 선택 화면의 이름·설명·미리보기(대표 색 4개와 배치 종류)다. 미리보기 색은 시안 확정 전 임시값이며 각 테마 담당자가 자기 항목의 `preview`를 실제 색으로 고친다. `custom`은 SCRUM-47에서 별도로 연결하므로 목록에 없다.
 - 등록되지 않은 테마는 선택 화면에 ‘준비 중’으로 보이고 누를 수 없다. 저장된 선택이 미등록 테마인 공간은 기본 디자인으로 표시하고 선택 화면에서 그 사실을 안내한다. 저장된 선택은 바꾸지 않는다.
 - App은 표시 중인 테마 ID를 `<html data-theme="…">`에 기록한다. 테마 전용 CSS는 `:root[data-theme="emotional"]` 또는 자기 레이아웃 클래스 아래로 범위를 제한한다. 공통 `:root` 변수를 직접 바꾸지 않는다.
 - 선택 대화상자는 레이아웃 밖(App)에 있어 테마가 바뀌어도 닫히지 않는다. 레이아웃 컴포넌트가 바뀌면 그 안의 위젯은 다시 만들어지므로, 저장 전 입력 중이던 바로가기·할 일 추가 폼의 글자는 사라진다. 메모 초안은 전환 전에 저장하고, 문구 초안·집중 타이머는 App이 들고 있어 유지된다.
 - 전체 테마 선택과 개별 색상(메모 색상 등 항목별 설정)은 저장 위치가 다르다. 테마는 `spaceThemes`, 개별 색상은 각 항목(`memos[].color`)에 있으며 테마 전환이 개별 색상을 바꾸지 않는다. 선택 화면 하단에서 두 가지를 구분해 안내한다.
+
+### 감성 테마 — SCRUM-34 구현
+
+- `frontend/src/layouts/EmotionalLayout.jsx`·`EmotionalLayout.css`. App이 넘긴 공통 slot을 그대로 배치하고 색상·장식만 정한다. 기능·저장 코드는 복사하지 않았다.
+- 배치는 참고 이미지 `감성적인분위기.png`(2026-11-17 사용자 제공)를 따른다: 맨 위 이름·테마 버튼 → 시계 | 문구 | 사진 장식 → 공간 탭 → 왼쪽 열 바로가기·할 일, 오른쪽 열 줄노트 메모 → 주간 날짜 한 줄 → 아래 누적 집중 타이머·디데이. 900px 이하에서는 한 열로 쌓고 1050px 이하에서는 사진 장식을 숨긴다.
+- 위치는 고정이고 크기만 조절한다. 모든 영역이 일반 흐름에 있어 크기를 바꿔도 겹치지 않고 뒤 영역이 밀리거나 다음 줄로 넘어간다. 크기는 `layout.emotional.spaces[spaceId].widgets`에, 메모 보기·개별 크기는 `layout.emotional.memo`에 저장한다.
+- 주간 날짜는 공통 달력 컴포넌트를 `variant="week"`로 표시한다. 월간 달력은 이 테마에서 표시하지 않으며 저장 데이터가 없는 표시 전용이다.
+- 이미지와 다른 점: 제목 글자(‘바로가기’·‘할 일’)와 할 일 필터·기한 입력, 바로가기 수정·삭제 버튼, 메모 색·크기 도구는 공통 컴포넌트의 것을 그대로 둔다. 이미지의 ‘공간 편집’은 기존 공간 추가·이름 변경·삭제 버튼이, ‘분위기 바꾸기’는 테마 버튼이 대신한다. 사진·문구 장식(‘a quiet little place.’ 등)은 기능이 없는 장식이다.
+- **시안에 없는 컴포넌트의 표시 정책(임시)**: 팀 정책이 문서에 없어, 누적 집중 타이머와 디데이는 숨기지 않고 주간 날짜 아래에 표시한다. 데이터는 어떤 경우에도 지우지 않는다. 팀이 숨김 정책을 정하면 이 레이아웃에서 해당 위젯만 빼면 된다.
+- 명조체 표시를 위해 `index.html`의 글꼴 링크에 Noto Serif KR을 추가했다. 감성 테마 범위에서만 쓴다.
+- 색은 `:root[data-theme="emotional"]`에서 공통 색 토큰 값을 덮어쓴다(레이아웃 밖의 대화상자도 같은 색을 받는다). 메모·시계·달력은 각 컴포넌트의 공개 변수(`--memo-*`, `--clock-*`, `--calendar-*`)로 조정한다. 공통 컴포넌트의 기본 표시 규칙을 재사용하려고 루트에 `basic-layout emotional-layout` 두 클래스를 함께 쓴다.
 
 ```js
 // App의 연결 방식(요약).
