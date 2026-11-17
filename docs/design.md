@@ -89,8 +89,18 @@ setSpaceTheme(data, spaceId, themeId) // 원본을 바꾸지 않고 새 데이�
 
 SCRUM-20 담당자는 실제 렌더러가 있는 ID만 선택 UI에서 활성화한다. 전체 THEME_IDS에는 예약 ID도 있으므로 그대로 전부 활성화하지 않는다. 현재 App의 사용 가능한 테마는 기본값 `['basic']`이다. 렌더러를 등록할 때 같은 목록을 `resolveSpaceThemeId`에 넘긴다. 기본 렌더러는 항상 제공한다.
 
+### 테마 선택 UI와 렌더러 등록 — SCRUM-20 구현
+
+- `frontend/src/themes/renderers.js`의 `THEME_RENDERERS`가 테마 ID → 레이아웃 컴포넌트 등록표다. 현재 `basic: BasicLayout`만 있다. 테마 담당자는 레이아웃을 만든 뒤 여기에 한 줄을 추가한다(예: `emotional: EmotionalLayout`). 등록표의 키가 곧 사용 가능한 테마 목록이며 App이 `themeOptions`·`resolveSpaceThemeId`에 그대로 넘긴다.
+- 레이아웃은 BasicLayout과 같은 props(`tabs`, `themeControl`, `quote`, `space`, `status`, `slots`, `widgetSizes`, `onWidgetSizeChange`, `themeId`)를 받는다. `themeControl`은 테마 버튼이므로 **반드시 화면에 배치한다**. 빠뜨리면 사용자가 그 테마에서 다른 테마로 돌아갈 수 없다.
+- `frontend/src/themes/catalog.js`의 `THEME_CATALOG`가 선택 화면의 이름·설명·미리보기(대표 색 4개와 배치 종류)다. 미리보기 색은 시안 확정 전 임시값이며 각 테마 담당자가 자기 항목의 `preview`를 실제 색으로 고친다. `custom`은 SCRUM-47에서 별도로 연결하므로 목록에 없다.
+- 등록되지 않은 테마는 선택 화면에 ‘준비 중’으로 보이고 누를 수 없다. 저장된 선택이 미등록 테마인 공간은 기본 디자인으로 표시하고 선택 화면에서 그 사실을 안내한다. 저장된 선택은 바꾸지 않는다.
+- App은 표시 중인 테마 ID를 `<html data-theme="…">`에 기록한다. 테마 전용 CSS는 `:root[data-theme="emotional"]` 또는 자기 레이아웃 클래스 아래로 범위를 제한한다. 공통 `:root` 변수를 직접 바꾸지 않는다.
+- 선택 대화상자는 레이아웃 밖(App)에 있어 테마가 바뀌어도 닫히지 않는다. 레이아웃 컴포넌트가 바뀌면 그 안의 위젯은 다시 만들어지므로, 저장 전 입력 중이던 바로가기·할 일 추가 폼의 글자는 사라진다. 메모 초안은 전환 전에 저장하고, 문구 초안·집중 타이머는 App이 들고 있어 유지된다.
+- 전체 테마 선택과 개별 색상(메모 색상 등 항목별 설정)은 저장 위치가 다르다. 테마는 `spaceThemes`, 개별 색상은 각 항목(`memos[].color`)에 있으며 테마 전환이 개별 색상을 바꾸지 않는다. 선택 화면 하단에서 두 가지를 구분해 안내한다.
+
 ```js
-// SCRUM-20 통합 예시. 아래 코드는 아직 App에 추가된 선택 UI가 아니다.
+// App의 연결 방식(요약).
 const themeId = resolveSpaceThemeId(data, data.activeSpaceId, Object.keys(renderers))
 function onThemeChange(spaceId, selectedThemeId) {
   // 기존 메모의 대기 저장을 원래 공간에 먼저 처리한다.

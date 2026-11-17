@@ -14,7 +14,7 @@ const BASIC_LIMITS = {
 }
 
 // 같은 slot을 한 번만 렌더해 편집 상태와 실행 중인 타이머를 유지한다.
-export default function BasicLayout({ tabs, quote, space, status, slots = {}, widgetSizes = {}, onWidgetSizeChange, themeId = DEFAULT_THEME_ID }) {
+export default function BasicLayout({ tabs, themeControl, quote, space, status, slots = {}, widgetSizes = {}, onWidgetSizeChange, themeId = DEFAULT_THEME_ID }) {
   function widget(id, content) {
     return <ResizableWidget widgetId={id} size={widgetSizes[id] ?? 'm'}
       contextId={`${space.id}:${themeId}`} limits={BASIC_LIMITS[id]} centered={id === 'clock' || id === 'quote'}
@@ -24,6 +24,7 @@ export default function BasicLayout({ tabs, quote, space, status, slots = {}, wi
     <a className="skip-link" href="#main">본문으로 이동</a>
     <header className="app-header">
       {tabs}
+      {themeControl}
       <a className="brand" href="#main" aria-label="Start 본문으로 이동">Start<span>나만의 시작페이지</span></a>
     </header>
     <p className="hint layout-resize-hint">각 영역의 오른쪽 아래 모서리를 드래그해 크기를 바꿔 보세요.</p>

@@ -3,14 +3,16 @@ import SpaceTabs from './components/spaces/SpaceTabs.jsx'
 import Quote from './components/quote/Quote.jsx'
 import { useQuotes } from './hooks/useQuotes.js'
 import Clock from './components/clock/Clock.jsx'
-import BasicLayout from './layouts/BasicLayout.jsx'
 import Calendar from './components/calendar/Calendar.jsx'
 import { useToday } from './hooks/useToday.js'
 import MemoWidget from './components/memos/MemoWidget.jsx'
 import { useMemos } from './hooks/useMemos.js'
 import { memoLayout } from './state/memos.js'
 import { WIDGET_LABELS, setWidgetSize, widgetSize } from './state/widgetSizes.js'
-import { resolveSpaceThemeId } from './state/themes.js'
+import { setSpaceTheme } from './state/themes.js'
+import { themeName, themeOptions } from './themes/catalog.js'
+import { AVAILABLE_THEME_IDS, THEME_RENDERERS } from './themes/renderers.js'
+import { ThemeButton, ThemeDialog } from './components/themes/ThemePicker.jsx'
 import { createSpace, renameSpace, deleteSpace } from './state/spaces.js'
 import DdayWidget from './components/dday/DdayWidget.jsx'
 import { addDday, updateDday, deleteDday, ddaysOf } from './state/ddays.js'
@@ -34,9 +36,17 @@ export default function App() {
   const todayKey = useToday()
   const data = session.data
   const focus = data ? focusState(data) : null
-  // SCRUM-20에서 렌더러를 연결하면 사용 가능한 ID 목록도 함께 확장한다.
-  // 저장된 선택값과 실제 표시 테마를 구분해 미구현 테마의 설정에 기본 화면 크기를 쓰지 않는다.
-  const themeId = data ? resolveSpaceThemeId(data, data.activeSpaceId) : undefined
+  // 저장된 선택값과 실제 표시 테마를 구분한다. 화면이 아직 없는 테마를 고른 공간은 기본 디자인으로 보여 주고,
+  // 그동안의 크기·메모 보기 변경은 표시 중인 테마의 설정에 쓴다.
+  const themes = data ? themeOptions(data, data.activeSpaceId, AVAILABLE_THEME_IDS) : null
+  const themeId = themes?.displayedId
+  const [themeDialogOpen, setThemeDialogOpen] = useState(false)
+  // 테마별 CSS가 자기 범위에만 적용되도록 표시 중인 테마 ID를 문서에 알린다.
+  useEffect(() => {
+    if (!themeId) return
+    document.documentElement.dataset.theme = themeId
+    return () => { delete document.documentElement.dataset.theme }
+  }, [themeId])
   // 자동 저장처럼 렌더 사이에 일어나는 변경이 서로 덮어쓰지 않도록 가장 최근 데이터를 따로 들고 있는다.
   const latest = useRef(session.data)
   useEffect(() => { latest.current = session.data }, [session.data])
@@ -89,7 +99,9 @@ export default function App() {
     <p role="alert">{session.error}</p><p>원본 보호를 위해 편집과 자동 저장을 멈췄어요. 기존 데이터는 변경하지 않았어요.</p>
     <button onClick={() => setSession(initialize())}>다시 불러오기</button></main>
   const activeSpace = data.spaces.find((space) => space.id === data.activeSpaceId)
-  return <BasicLayout space={activeSpace} themeId={themeId}
+  const Layout = THEME_RENDERERS[themeId]
+  return <><Layout space={activeSpace} themeId={themeId}
+    themeControl={<ThemeButton themeName={themeName(themeId)} onOpen={() => setThemeDialogOpen(true)} />}
     widgetSizes={Object.fromEntries(Object.keys(WIDGET_LABELS).map((id) => [id, widgetSize(data, activeSpace.id, id, themeId)]))}
     onWidgetSizeChange={(widgetId, size) => commit((current) => setWidgetSize(current, { spaceId: activeSpace.id, themeId, widgetId, size }))}
     slots={{
@@ -155,4 +167,12 @@ export default function App() {
       {session.status === 'failed' && <><span>저장하지 못했어요. 새로고침하면 저장하지 못한 내용이 사라질 수 있어요. {session.saveError}</span>
         <button onClick={() => { memos.retryAll(); commit((current) => current) }}>저장 재시도</button></>}
     </div>} />
+    {themeDialogOpen && <ThemeDialog spaceName={activeSpace.name} selectedId={themes.selectedId} selectedName={themeName(themes.selectedId)}
+      fallback={themes.fallback} options={themes.options} onClose={() => setThemeDialogOpen(false)}
+      onSelect={(selectedThemeId) => {
+        // 대기 중인 메모 저장을 원래 공간에 먼저 처리한 뒤 선택만 바꾼다. 내용 데이터는 건드리지 않는다.
+        memos.flush(activeSpace.id)
+        return commit((current) => setSpaceTheme(current, activeSpace.id, selectedThemeId))
+      }} />}
+  </>
 }
