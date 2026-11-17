@@ -34,7 +34,9 @@ App이 공통 상태를 소유하고 `useQuotes`가 공간 ID별 문구 초안�
 | components/spaces/SpaceTabs.jsx | spaces, activeSpaceId | onSelect(spaceId), onCreate(name), onRename(spaceId, name), onDelete(spaceId) |
 | components/quote/Quote.jsx | 해당 공간 value, draft(null 또는 { content, error }) | onEdit(), onDraftChange(text), onSave(), onCancel(). App에서 공간 ID를 연결 |
 | hooks/useQuotes.js, state/quotes.js | App의 commit(updater), 공간 ID·내용 | 공간별 초안·수동 저장·실패 표시·재시도 성공 후 정리. 공간 삭제 시 초안 제거 |
-| layouts/BasicLayout.jsx | tabs, quote, space, status, slots, widgetSizes | 기본 테마 배치·치수와 onWidgetSizeChange(widgetId, size). App에서 spaceId·themeId를 연결 |
+| layouts/BasicLayout.jsx | tabs, themeControl, quote, space, status, slots, widgetSizes | 기본 테마 배치·치수와 onWidgetSizeChange(widgetId, size). App에서 spaceId·themeId를 연결 |
+| themes/catalog.js, themes/renderers.js | 공통 데이터, spaceId | 제공 테마 6개의 이름·설명·미리보기 목록과 `themeOptions()`, 테마 ID → 레이아웃 등록표(`THEME_RENDERERS`). 등록된 테마만 선택 가능 |
+| components/themes/ThemePicker.jsx | themeOptions 결과, spaceName | `ThemeButton`(레이아웃이 `themeControl`로 배치)과 `ThemeDialog`. onSelect(themeId)는 App이 `setSpaceTheme`으로 연결하고 `{ error }`를 반환 |
 | components/common/ResizableWidget.jsx, lib/widgetResize.js | widgetId, contextId(공간·테마), size, limits, centered, children | 포인터 미리보기·드래그 종료 저장 이벤트·방향키·Escape 취소·기본 크기 복귀. onSizeChange(size)를 전달하며 자체 저장하지 않음 |
 | components/common/SizeSelect.jsx, lib/sizes.js | label, value, onChange | 개별 메모의 기존 프리셋(s·m·l) 선택과 접근 가능한 이름 |
 | state/widgetSizes.js | 공통 데이터, spaceId·themeId·widgetId·size | 크기 변경·조회·검증·공간 삭제 시 설정 정리 |
@@ -117,7 +119,9 @@ slots={{
 
 ## 저장 구조와 주의점
 
-SCRUM-21: [테마 ID·저장 필드·연동 계약·이미지 저장 설계안](../docs/design.md). 공간별 선택 테마는 선택 필드 `spaceThemes[spaceId]`에 저장합니다. 미설정은 `basic`, 미구현·미등록 ID는 원본을 유지하면서 기본 화면으로 표시합니다. 현재 App에는 기본 렌더러만 연결돼 있으며 선택 UI·추가 테마는 SCRUM-20 및 각 테마 작업에서 연결합니다.
+SCRUM-21: [테마 ID·저장 필드·연동 계약·이미지 저장 설계안](../docs/design.md). 공간별 선택 테마는 선택 필드 `spaceThemes[spaceId]`에 저장합니다. 미설정은 `basic`, 미구현·미등록 ID는 원본을 유지하면서 기본 화면으로 표시합니다. 현재 App에는 기본 렌더러만 연결돼 있습니다.
+
+SCRUM-20(#21): 상단의 ‘테마’ 버튼으로 공간별 테마를 고릅니다. 기본 디자인과 추가 5개 디자인을 이름·설명·미리보기로 보여 주며, `themes/renderers.js`에 레이아웃이 등록된 테마만 선택할 수 있고 나머지는 ‘준비 중’으로 표시합니다. 새 테마는 레이아웃을 만든 뒤 `THEME_RENDERERS`에 한 줄을 추가하면 선택 가능해집니다. 표시 중인 테마 ID는 `<html data-theme="…">`에도 기록하므로 테마 전용 CSS는 이 속성이나 자기 레이아웃 클래스로 범위를 제한합니다. 테마 선택(화면 전체)과 개별 색상(메모 색상 등 항목별 설정)은 따로 저장하며 선택 화면에서 구분해 안내합니다.
 
 `useMemos(commit, themeId)`·`memoLayout(data, themeId)`·위젯 크기 함수는 실제 표시 테마 ID를 공유합니다. `layout[themeId].memo.view`는 기존처럼 테마별 공통이며 개별 메모 크기는 메모 ID별입니다. 공간 삭제 시 해당 선택 테마·위젯 크기와 소속 메모 크기만 모든 테마에서 정리합니다.
 
