@@ -53,7 +53,6 @@
   --clock-font-family: var(--emotional-serif);
   --clock-align: start;
   --clock-gap: 14px;
-  --clock-time-size: 76px;
   --clock-time-weight: 500;
   --clock-time-tracking: -0.03em;
   --clock-date-tracking: 0;
@@ -74,7 +73,7 @@
 
 /* 시계 | 문구 | 사진 장식. 줄바꿈되는 한 줄이라 크기를 바꿔도 겹치지 않는다. */
 .emotional-layout .emotional-hero { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 28px; padding: 10px 0 6px; }
-.emotional-layout .widget-clock { --widget-default-width: 300px; --widget-default-height: 172px; }
+.emotional-layout .widget-clock { --widget-default-width: 300px; --widget-default-height: 172px; --clock-time-size: 76px; }
 .emotional-layout .widget-clock .clock--hero { flex-direction: column-reverse; }
 .emotional-layout .widget-clock > .widget-content { justify-content: flex-start; }
 .emotional-layout .widget-clock .clock-date { font-size: 14px; }
