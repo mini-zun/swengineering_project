@@ -27,11 +27,11 @@
 .theme-preview-board .theme-preview-b { right: 8%; width: 22%; top: 14%; height: 20%; background: var(--preview-ink); }
 .theme-preview-board .theme-preview-c { right: 8%; width: 22%; top: 40%; height: 20%; }
 .theme-preview-board .theme-preview-d { right: 8%; width: 22%; bottom: 14%; height: 18%; background: var(--preview-accent); }
-/* sidebar: 왼쪽 메뉴와 오른쪽 판 */
-.theme-preview-sidebar .theme-preview-a { left: 0; width: 24%; top: 0; bottom: 0; border-radius: 0; background: var(--preview-ink); }
-.theme-preview-sidebar .theme-preview-b { left: 32%; width: 28%; top: 16%; height: 34%; }
-.theme-preview-sidebar .theme-preview-c { right: 8%; width: 28%; top: 16%; height: 34%; }
-.theme-preview-sidebar .theme-preview-d { left: 32%; right: 8%; bottom: 14%; height: 24%; border-left: 4px solid var(--preview-accent); }
+/* sidebar: 종이색 사이드바·상단 배너와 본문 카드·녹색 집중 보드 */
+.theme-preview-sidebar .theme-preview-a { left: 0; width: 22%; top: 0; bottom: 0; border-radius: 0; }
+.theme-preview-sidebar .theme-preview-b { left: 29%; right: 7%; top: 12%; height: 22%; }
+.theme-preview-sidebar .theme-preview-c { left: 29%; width: 38%; top: 44%; bottom: 12%; }
+.theme-preview-sidebar .theme-preview-d { right: 7%; width: 19%; top: 44%; bottom: 12%; background: var(--preview-accent); }
 /* desktop: 제목 표시줄이 있는 창 두 개와 아래 작업 표시줄 */
 .theme-preview-desktop .theme-preview-a { left: 8%; width: 46%; top: 12%; height: 52%; border-top: 5px solid var(--preview-accent); border-radius: 0; }
 .theme-preview-desktop .theme-preview-b { right: 8%; width: 32%; top: 26%; height: 44%; border-top: 5px solid var(--preview-accent); border-radius: 0; }
