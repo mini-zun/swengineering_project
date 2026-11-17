@@ -1,6 +1,7 @@
 import { DEFAULT_SIZE, isSizePreset } from '../lib/sizes.js'
+import { DEFAULT_THEME_ID, isThemeId } from './themes.js'
 
-export const BASIC_THEME_ID = 'basic'
+export const BASIC_THEME_ID = DEFAULT_THEME_ID
 export const WIDGET_LABELS = {
   clock: '시계', quote: '문구', links: '바로가기', todos: '할 일',
   memos: '메모 영역', timer: '집중 타이머', calendar: '달력', dday: '디데이',
@@ -18,7 +19,7 @@ export function widgetSize(data, spaceId, widgetId, themeId = BASIC_THEME_ID) {
 
 export function setWidgetSize(data, { spaceId, themeId = BASIC_THEME_ID, widgetId, size }) {
   if (!data.spaces.some((space) => space.id === spaceId)) throw new Error('공간을 찾을 수 없어요.')
-  if (typeof themeId !== 'string' || !themeId.trim()) throw new Error('테마를 찾을 수 없어요.')
+  if (!isThemeId(themeId)) throw new Error('테마를 찾을 수 없어요.')
   if (!isWidgetId(widgetId)) throw new Error('크기를 변경할 컴포넌트를 찾을 수 없어요.')
   if (!isWidgetSize(size)) throw new Error('지원하지 않는 크기예요.')
   const theme = data.layout?.[themeId] ?? {}

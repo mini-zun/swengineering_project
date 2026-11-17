@@ -117,12 +117,17 @@ slots={{
 
 ## 저장 구조와 주의점
 
+SCRUM-21: [테마 ID·저장 필드·연동 계약·이미지 저장 설계안](../docs/design.md). 공간별 선택 테마는 선택 필드 `spaceThemes[spaceId]`에 저장합니다. 미설정은 `basic`, 미구현·미등록 ID는 원본을 유지하면서 기본 화면으로 표시합니다. 현재 App에는 기본 렌더러만 연결돼 있으며 선택 UI·추가 테마는 SCRUM-20 및 각 테마 작업에서 연결합니다.
+
+`useMemos(commit, themeId)`·`memoLayout(data, themeId)`·위젯 크기 함수는 실제 표시 테마 ID를 공유합니다. `layout[themeId].memo.view`는 기존처럼 테마별 공통이며 개별 메모 크기는 메모 ID별입니다. 공간 삭제 시 해당 선택 테마·위젯 크기와 소속 메모 크기만 모든 테마에서 정리합니다.
+
 브라우저 localStorage의 start.home.v1 키에 다음 구조를 저장합니다.
 
 ```js
 {
   version: 2,
   activeSpaceId: '고유 ID',
+  spaceThemes: { '고유 ID': 'sidebar-cork' }, // 선택: 공간별 선택 테마. 미설정은 basic
   ddays: [{ id: '고유 ID', title: '기말고사', targetDate: '2026-12-15' }], // 선택
   spaces: [{ id: '고유 ID', name: '기본 공간', quote: '', links: [], todos: [], memos: [] }],
   layout: { // 선택: 내용과 분리한 화면 설정

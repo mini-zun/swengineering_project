@@ -9,7 +9,8 @@ import { useToday } from './hooks/useToday.js'
 import MemoWidget from './components/memos/MemoWidget.jsx'
 import { useMemos } from './hooks/useMemos.js'
 import { memoLayout } from './state/memos.js'
-import { BASIC_THEME_ID, WIDGET_LABELS, setWidgetSize, widgetSize } from './state/widgetSizes.js'
+import { WIDGET_LABELS, setWidgetSize, widgetSize } from './state/widgetSizes.js'
+import { resolveSpaceThemeId } from './state/themes.js'
 import { createSpace, renameSpace, deleteSpace } from './state/spaces.js'
 import DdayWidget from './components/dday/DdayWidget.jsx'
 import { addDday, updateDday, deleteDday, ddaysOf } from './state/ddays.js'
@@ -33,10 +34,13 @@ export default function App() {
   const todayKey = useToday()
   const data = session.data
   const focus = data ? focusState(data) : null
+  // SCRUM-20에서 렌더러를 연결하면 사용 가능한 ID 목록도 함께 확장한다.
+  // 저장된 선택값과 실제 표시 테마를 구분해 미구현 테마의 설정에 기본 화면 크기를 쓰지 않는다.
+  const themeId = data ? resolveSpaceThemeId(data, data.activeSpaceId) : undefined
   // 자동 저장처럼 렌더 사이에 일어나는 변경이 서로 덮어쓰지 않도록 가장 최근 데이터를 따로 들고 있는다.
   const latest = useRef(session.data)
   useEffect(() => { latest.current = session.data }, [session.data])
-  const memos = useMemos(commit)
+  const memos = useMemos(commit, themeId)
   const quotes = useQuotes(commit)
   useEffect(() => {
     if (session.status !== 'new') return
@@ -49,6 +53,7 @@ export default function App() {
   }, [session])
   // next는 새 데이터 또는 최신 데이터를 받아 새 데이터를 돌려주는 함수다.
   function commit(next) {
+    if (!latest.current) return { error: '원본 보호를 위해 저장을 중단했어요. 데이터를 다시 불러와 주세요.' }
     const nextData = typeof next === 'function' ? next(latest.current) : next
     latest.current = nextData
     // 저장 실패 시에도 최신 입력을 메모리에 유지해 재시도한다.
@@ -84,9 +89,9 @@ export default function App() {
     <p role="alert">{session.error}</p><p>원본 보호를 위해 편집과 자동 저장을 멈췄어요. 기존 데이터는 변경하지 않았어요.</p>
     <button onClick={() => setSession(initialize())}>다시 불러오기</button></main>
   const activeSpace = data.spaces.find((space) => space.id === data.activeSpaceId)
-  return <BasicLayout space={activeSpace}
-    widgetSizes={Object.fromEntries(Object.keys(WIDGET_LABELS).map((id) => [id, widgetSize(data, activeSpace.id, id, BASIC_THEME_ID)]))}
-    onWidgetSizeChange={(widgetId, size) => commit((current) => setWidgetSize(current, { spaceId: activeSpace.id, themeId: BASIC_THEME_ID, widgetId, size }))}
+  return <BasicLayout space={activeSpace} themeId={themeId}
+    widgetSizes={Object.fromEntries(Object.keys(WIDGET_LABELS).map((id) => [id, widgetSize(data, activeSpace.id, id, themeId)]))}
+    onWidgetSizeChange={(widgetId, size) => commit((current) => setWidgetSize(current, { spaceId: activeSpace.id, themeId, widgetId, size }))}
     slots={{
       links: <SiteLinks key={activeSpace.id} spaceId={activeSpace.id} links={activeSpace.links}
         onRetry={() => commit((current) => current)}
@@ -126,7 +131,7 @@ export default function App() {
         onUpdate={(id, fields) => commit((current) => updateDday(current, id, fields))}
         onDelete={(id) => commit((current) => deleteDday(current, id))}
         onRetry={() => commit((current) => current)} />,
-      memos: <MemoWidget space={activeSpace} layout={memoLayout(data)} memos={memos} persisted={session.status === 'saved'} />,
+      memos: <MemoWidget space={activeSpace} layout={memoLayout(data, themeId)} memos={memos} persisted={session.status === 'saved'} />,
     }}
     tabs={<SpaceTabs spaces={data.spaces} activeSpaceId={data.activeSpaceId}
       onSelect={(id) => {

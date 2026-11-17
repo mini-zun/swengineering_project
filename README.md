@@ -15,6 +15,8 @@ npm run dev
 
 검사 명령과 컴포넌트 연결 방법은 [앱 README](frontend/README.md)를 참고하세요.
 
+Sprint 2의 테마 ID, 공간별 선택 테마 저장 필드, 팀원 연동 함수와 사용자 이미지 저장 설계안은 [공통 저장·테마 연동 설계](docs/design.md)에 정리했습니다.
+
 ## 배포 경로
 
 Vercel에 연결할 경우 Root Directory를 `frontend`, Build Command를 `npm run build`, Output Directory를 `dist`로 지정합니다. 이전 앱 폴더를 Root Directory로 사용 중이라면 `frontend`로 변경해야 합니다. 실제 배포 설정이나 연결 상태를 변경한 것은 아닙니다.

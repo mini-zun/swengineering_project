@@ -2,6 +2,8 @@ import { createId } from './id.js'
 import { removeSpaceFocus } from './productivity.js'
 import { characterCount } from '../lib/text.js'
 import { removeSpaceWidgetSizes } from './widgetSizes.js'
+import { removeSpaceTheme } from './themes.js'
+import { removeMemoSizes } from './memos.js'
 
 export { characterCount }
 
@@ -34,6 +36,9 @@ export function renameSpace(data, id, name) {
 
 export function deleteSpace(data, id) {
   if (data.spaces.length === 1) throw new Error('마지막 공간은 삭제할 수 없어요.')
+  const target = data.spaces.find((space) => space.id === id)
+  if (!target) throw new Error('공간을 찾을 수 없어요.')
   const spaces = data.spaces.filter((space) => space.id !== id)
-  return removeSpaceWidgetSizes(removeSpaceFocus({ ...data, spaces, activeSpaceId: data.activeSpaceId === id ? spaces[0].id : data.activeSpaceId }, id), id)
+  const next = removeMemoSizes({ ...data, spaces, activeSpaceId: data.activeSpaceId === id ? spaces[0].id : data.activeSpaceId }, target.memos.map((memo) => memo.id))
+  return removeSpaceTheme(removeSpaceWidgetSizes(removeSpaceFocus(next, id), id), id)
 }

@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { createMemoAutosave } from '../state/memoAutosave.js'
 import { addMemo, applyMemoSave, deleteMemo, setMemoColor, setMemoSize, setMemoView, settleFailedDrafts, validateMemoContent } from '../state/memos.js'
+import { DEFAULT_THEME_ID } from '../state/themes.js'
 
 // 메모 로직(초안·자동 저장·선택 메모)을 표시 컴포넌트와 분리한다.
 // 테마가 새 표시 방식을 추가해도 이 훅은 그대로 쓴다.
 // commit(updater)는 App의 최신 데이터에 변경을 적용하고 저장 결과({ error })를 돌려준다.
-export function useMemos(commit) {
+export function useMemos(commit, themeId = DEFAULT_THEME_ID) {
   const commitRef = useRef(commit)
   useEffect(() => { commitRef.current = commit })
   // drafts[memoId] = { spaceId, content, status: 'pending' | 'failed' | 'invalid', error }
@@ -86,7 +87,7 @@ export function useMemos(commit) {
       dropDrafts((_, draft) => draft.spaceId === spaceId)
     },
     setColor: (spaceId, memoId, color) => commitRef.current((data) => setMemoColor(data, spaceId, memoId, color)),
-    setSize: (spaceId, memoId, size) => commitRef.current((data) => setMemoSize(data, spaceId, memoId, size)),
-    setView: (view) => commitRef.current((data) => setMemoView(data, view)),
+    setSize: (spaceId, memoId, size) => commitRef.current((data) => setMemoSize(data, spaceId, memoId, size, themeId)),
+    setView: (view) => commitRef.current((data) => setMemoView(data, view, themeId)),
   }
 }
