@@ -4,7 +4,7 @@ import './SidebarCorkLayout.css'
 import ResizableWidget from '../components/common/ResizableWidget.jsx'
 
 const CORK_LIMITS = {
-  clock: { minWidth: 220, minHeight: 76, maxWidth: 700, maxHeight: 400 },
+  clock: { minWidth: 220, minHeight: 76, maxWidth: 700, maxHeight: 120 },
   quote: { minWidth: 240, minHeight: 100, maxWidth: 1400, maxHeight: 900 },
   links: { minWidth: 260, minHeight: 180, maxWidth: 1400, maxHeight: 1200 },
   todos: { minWidth: 260, minHeight: 240, maxWidth: 1400, maxHeight: 1200 },

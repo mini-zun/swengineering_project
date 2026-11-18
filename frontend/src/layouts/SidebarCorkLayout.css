@@ -99,10 +99,20 @@
 .sidebar-cork-layout .widget-todos::before, .sidebar-cork-layout .widget-quote::before { content: ''; position: absolute; top: -5px; left: 50%; height: 9px; width: 9px; border-radius: 50%; background: radial-gradient(circle at 30% 25%, #e7a18b, #a34e32); box-shadow: 1px 2px 2px #51371b66; pointer-events: none; }
 .sidebar-cork-layout .widget-calendar::before { content: ''; position: absolute; left: calc(50% - 28px); top: -10px; width: 56px; height: 20px; transform: rotate(-5deg); background: #dbc18eaa; pointer-events: none; }
 .sidebar-cork-layout .widget-links { padding: 0; }
+/* 작은 제목·조작 글자는 질감 위에 놓지 않고 불투명한 종이 띠에 표시한다. */
+.sidebar-cork-layout .widget-links .sc-section-heading,
+.sidebar-cork-layout .widget-memos .memo-header,
+.sidebar-cork-layout .widget-memos .memo-picker {
+  background: var(--cork-paper);
+  padding: 10px 12px;
+  border-radius: 2px;
+}
+.sidebar-cork-layout .widget-links > .widget-resize-footer,
+.sidebar-cork-layout .widget-memos > .widget-resize-footer { background: var(--cork-paper); border-radius: 2px; }
 .sidebar-cork-layout .sc-links-grid { gap: 12px; }
 .sidebar-cork-layout .sc-link-tile { border-radius: 1px; background: var(--cork-paper); box-shadow: 1px 3px 5px #51371b2b; }
 .sidebar-cork-layout .sc-site-icon { border-radius: 2px; background: #efe1bd; color: #8a6039; }
-.sidebar-cork-layout .sc-link-add { background: #fffcf12e; border-color: #f8ebcc; border-radius: 2px; color: #50371e; }
+.sidebar-cork-layout .sc-link-add { background: var(--cork-paper); border-color: #ddcfad; border-radius: 2px; color: #50371e; }
 .sidebar-cork-layout .sc-button { background: #6d7957; color: #fffdf5; border-radius: 4px; }
 .sidebar-cork-layout .sc-button.secondary, .sidebar-cork-layout .sc-button.sc-stop { background: #f3ecd9; color: #584632; }
 .sidebar-cork-layout .sc-button.danger { background: var(--color-danger); color: #fff; }
