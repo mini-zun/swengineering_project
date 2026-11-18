@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react'
+import { useId, useImperativeHandle, useRef, useState } from 'react'
 import {
   charCount,
   dateKey,
@@ -69,6 +69,7 @@ function TodoEdit({ todo, onSave, onClose, onRetry, returnFocusRef }) {
   )
 }
 export function TodoList({
+  ref,
   spaceId,
   todos,
   onAdd,
@@ -88,6 +89,8 @@ export function TodoList({
     id = useId(),
     now = useNow({ unit: 1000 })
   const newInput = useRef(null)
+  // 초안 자체는 기존 컴포넌트가 소유한다. 테마 전환 경고에는 유무만 제공한다.
+  useImperativeHandle(ref, () => ({ hasUnsubmittedInput: () => Boolean(content || dueDate || editing) }))
   const { error, busy, retryOnly, run } = useSaveAction(onRetry)
   const items = todos,
     done = items.filter((t) => t.done).length,
