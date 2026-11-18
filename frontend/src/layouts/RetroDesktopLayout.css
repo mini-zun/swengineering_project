@@ -5,6 +5,13 @@
   --color-quote: #17172b; --color-danger: #a02b25; --color-on-danger: #fff;
   --color-ink: #17172b; --color-ink-muted: #41414f; --color-line: #929292; --radius-card: 0;
 }
+/* 선택창은 레이아웃 밖(App)에 있다. 바탕화면색을 버튼 글자색으로 물려받지 않게 한다. */
+:root[data-theme="retro-desktop"] .theme-dialog button.primary {
+  background: #c0c0c0; color: #17172b; border: 2px outset #eee; border-radius: 0;
+}
+:root[data-theme="retro-desktop"] .theme-dialog button.primary:hover:not(:disabled) {
+  background: #ddd; color: #17172b;
+}
 .retro-desktop-layout {
   --memo-text: #17172b; --memo-muted: #41414f; --memo-radius: 0;
   --memo-border: 2px inset #ddd; --memo-shadow: none; --memo-padding: 14px;
