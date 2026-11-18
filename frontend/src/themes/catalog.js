@@ -13,7 +13,7 @@ export const THEME_CATALOG = [
   { id: 'sidebar-cork', name: '사이드바 코르크', description: '옆 메뉴와 코르크판 느낌의 화면',
     preview: { shape: 'sidebar', bg: '#d9b88c', surface: '#fbf4e6', ink: '#4a3523', accent: '#b2552f' } },
   { id: 'retro-desktop', name: '레트로 데스크톱', description: '옛 컴퓨터 창을 닮은 화면',
-    preview: { shape: 'desktop', bg: '#2f8f8b', surface: '#d8d8d0', ink: '#16163f', accent: '#1a1a8c' } },
+    preview: { shape: 'desktop', bg: '#4e7c7c', surface: '#c0c0c0', ink: '#17172b', accent: '#000080' } },
   { id: 'postit-board', name: '포스트잇 보드', description: '포스트잇을 붙여 둔 듯한 화면',
     preview: { shape: 'notes', bg: '#f4f1ea', surface: '#ffe28a', ink: '#3a3528', accent: '#f29a76' } },
 ]

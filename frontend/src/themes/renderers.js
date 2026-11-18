@@ -1,5 +1,6 @@
 import BasicLayout from '../layouts/BasicLayout.jsx'
 import EmotionalLayout from '../layouts/EmotionalLayout.jsx'
+import RetroDesktopLayout from '../layouts/RetroDesktopLayout.jsx'
 
 // 테마 ID → 화면(레이아웃) 컴포넌트. 여기에 등록된 테마만 선택 화면에서 고를 수 있다.
 // 새 테마는 레이아웃을 만든 뒤 이 표에 한 줄을 추가한다. 예: emotional: EmotionalLayout
@@ -8,6 +9,7 @@ import EmotionalLayout from '../layouts/EmotionalLayout.jsx'
 export const THEME_RENDERERS = {
   basic: BasicLayout,
   emotional: EmotionalLayout,
+  'retro-desktop': RetroDesktopLayout,
 }
 
 export const AVAILABLE_THEME_IDS = Object.keys(THEME_RENDERERS)

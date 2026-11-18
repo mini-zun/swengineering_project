@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react'
+import { useId, useImperativeHandle, useRef, useState } from 'react'
 import { charCount, normalizeUrl, validateName } from '../../lib/productivity.js'
 import {
   ConfirmDialog,
@@ -79,6 +79,7 @@ function SiteIcon({ link }) {
 }
 /** Controlled component. Callbacks always receive the originating space ID. */
 export function SiteLinks({
+  ref,
   spaceId,
   links,
   onAdd,
@@ -90,6 +91,7 @@ export function SiteLinks({
   const [form, setForm] = useState(null),
     [deleting, setDeleting] = useState(null)
   const addButton = useRef(null)
+  useImperativeHandle(ref, () => ({ hasUnsubmittedInput: () => form !== null }))
   const items = links
   return (
     <section className="sc-panel sc-links" aria-label="사이트 바로가기">
