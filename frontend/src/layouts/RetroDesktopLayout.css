@@ -1,0 +1,117 @@
+:root[data-theme="retro-desktop"] {
+  --color-bg: #4e7c7c; --color-text: #17172b; --color-text-muted: #41414f;
+  --color-surface: #c0c0c0; --color-surface-subtle: #d5d5d5; --color-border: #808080;
+  --color-border-strong: #626262; --color-accent: #000080; --color-primary-hover: #242477;
+  --color-quote: #17172b; --color-danger: #a02b25; --color-on-danger: #fff;
+  --color-ink: #17172b; --color-ink-muted: #41414f; --color-line: #929292; --radius-card: 0;
+}
+/* 선택창은 레이아웃 밖(App)에 있다. 바탕화면색을 버튼 글자색으로 물려받지 않게 한다. */
+:root[data-theme="retro-desktop"] .theme-dialog button.primary {
+  background: #c0c0c0; color: #17172b; border: 2px outset #eee; border-radius: 0;
+}
+:root[data-theme="retro-desktop"] .theme-dialog button.primary:hover:not(:disabled) {
+  background: #ddd; color: #17172b;
+}
+.retro-desktop-layout {
+  --memo-text: #17172b; --memo-muted: #41414f; --memo-radius: 0;
+  --memo-border: 2px inset #ddd; --memo-shadow: none; --memo-padding: 14px;
+  --memo-bg-paper: #fff; --memo-bg-yellow: #ffffd9; --memo-bg-pink: #ffe5e5;
+  --memo-bg-blue: #e2ecff; --memo-bg-green: #e1efdb;
+  --memo-selected-bg: #000080; --memo-selected-text: #fff; --memo-focus: #000080;
+  --memo-board-min-width: 240px; --memo-gap: 14px;
+  max-width: none; min-height: 100vh; padding: 18px 18px 0; margin: 0;
+  background: #4e7c7c; font-family: 'Malgun Gothic', 'Noto Sans KR', sans-serif; font-size: 13px;
+  display: flex; flex-direction: column;
+}
+.retro-desktop-layout .rd-header { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; margin-bottom: 20px; }
+.retro-desktop-layout .rd-brand { color: #fff; font-size: 18px; font-weight: 700; text-decoration: none; text-shadow: 1px 2px #2b5353; }
+.retro-desktop-layout .rd-brand span { color: #ffffb1; font-size: 24px; }
+.retro-desktop-layout .rd-header h1 { color: #fff; font-size: 13px; flex: 1; min-width: 0; overflow-wrap: anywhere; font-weight: 400; }
+.retro-desktop-layout .theme-button { background: #c0c0c0; color: #17172b; border: 2px outset #eee; border-radius: 0; }
+.retro-desktop-layout .rd-desktop { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 22px; flex: 1; align-items: start; }
+.retro-desktop-layout .rd-spaces { min-width: 0; color: #fff; }
+.retro-desktop-layout .rd-spaces > h2 { font-size: 11px; font-weight: 400; letter-spacing: .14em; margin: 12px 0; }
+.retro-desktop-layout .space-navigation { flex-direction: column; align-items: stretch; gap: 14px; }
+.retro-desktop-layout .space-tabs { flex-direction: column; max-height: 55vh; overflow-y: auto; align-items: stretch; gap: 8px; }
+.retro-desktop-layout .space-tab { border: 1px solid transparent; background: transparent; color: #fff; text-align: left; white-space: normal; overflow-wrap: anywhere; border-radius: 0; max-width: none; padding: 10px; font-size: 13px; }
+.retro-desktop-layout .space-tab:not(.selected):hover:not(:disabled),
+.retro-desktop-layout .space-tab:not(.selected):focus-visible:not(:disabled) { background: #315c5c; color: #fff; }
+.retro-desktop-layout .space-tab::before { content: '▣'; display: inline-block; margin-right: 8px; color: #fffbd4; }
+.retro-desktop-layout .space-tab.selected, .retro-desktop-layout .space-tab.selected:hover:not(:disabled) { background: #000080; color: #fff; border: 1px dotted #fff; }
+.retro-desktop-layout .space-actions { flex-wrap: wrap; }
+.retro-desktop-layout .space-actions button { background: #c0c0c0; color: #17172b; border: 2px outset #eee; border-radius: 0; }
+.retro-desktop-layout .space-actions button:first-child { flex-basis: 100%; border: 2px outset #eee; border-radius: 0; }
+.retro-desktop-layout .rd-workspace { display: grid; grid-template-columns: minmax(150px, .55fr) minmax(0, 1.5fr) minmax(280px, 1fr); gap: 22px; align-items: start; min-width: 0; padding: 4px; }
+.retro-desktop-layout .rd-links, .retro-desktop-layout .rd-main-column, .retro-desktop-layout .rd-side-column { display: flex; flex-direction: column; min-width: 0; gap: 22px; align-items: flex-start; }
+.retro-desktop-layout .rd-workspace .resizable-widget { --widget-default-width: 100%; margin: 0; padding: 3px; border: 3px outset #eee; border-radius: 0; background: #c0c0c0; box-shadow: 3px 3px #294b4b; }
+.retro-desktop-layout .rd-titlebar { display: flex; justify-content: space-between; gap: 10px; background: #000080; color: #fff; padding: 3px 7px; font-size: 12px; font-weight: 700; margin-bottom: 12px; }
+.retro-desktop-layout .rd-titlebar > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.retro-desktop-layout .rd-titlebar > span:last-child { flex-shrink: 0; }
+.retro-desktop-layout .widget-content { padding: 0 4px 8px; }
+.retro-desktop-layout .widget-resize-footer { background: #c0c0c0; margin-top: 2px; }
+.retro-desktop-layout .rd-workspace .widget-links { background: transparent; border-color: transparent; box-shadow: none; }
+.retro-desktop-layout .widget-links .rd-titlebar, .retro-desktop-layout .widget-links .sc-section-heading { background: #c0c0c0; color: #17172b; padding: 6px; }
+.retro-desktop-layout .sc-section-heading { gap: 8px; }
+.retro-desktop-layout .sc-section-heading h2 { font-size: 13px; }
+.retro-desktop-layout .sc-links-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; max-height: none; }
+.retro-desktop-layout .sc-link-tile { border: 0; background: transparent; box-shadow: none; }
+.retro-desktop-layout .sc-site-anchor { padding: 12px 6px 32px; min-height: 116px; flex-direction: column; gap: 8px; text-align: center; align-items: center; }
+.retro-desktop-layout .sc-site-icon { border: 3px outset #eee; background: #c0c0c0; border-radius: 0; width: 40px; height: 40px; font: 700 20px Consolas, monospace; color: #17172b; }
+.retro-desktop-layout .sc-site-info strong { color: #fff; font-size: 12px; background: #315c5c; padding: 2px 4px; }
+.retro-desktop-layout .sc-link-tools { background: #c0c0c0; border: 1px solid #808080; }
+.retro-desktop-layout .sc-link-add { background: #c0c0c0; border: 2px outset #eee; border-radius: 0; min-height: 90px; }
+.retro-desktop-layout .sc-todos, .retro-desktop-layout .sc-focus { background: transparent; border: 0; padding: 0; box-shadow: none; border-radius: 0; }
+.retro-desktop-layout .sc-todo-list { background: #fff; border: 2px inset #ddd; padding: 4px 10px; max-height: none; }
+.retro-desktop-layout .sc-todo-row { padding-block: 12px; border-bottom-color: #ddd; }
+.retro-desktop-layout .sc-todo-row > input { appearance: auto; accent-color: #000080; }
+.retro-desktop-layout .sc-todo-form { background: #ddd; border: 2px inset #eee; border-radius: 0; }
+.retro-desktop-layout .sc-todo-toolbar, .retro-desktop-layout .sc-segmented { flex-wrap: wrap; }
+.retro-desktop-layout .sc-todo-progress { display: block; height: 12px; background: #fff; border: 2px inset #eee; }
+.retro-desktop-layout .sc-todo-progress > div, .retro-desktop-layout .sc-goal-track > div { background: repeating-linear-gradient(90deg, #000080 0 8px, transparent 8px 10px); }
+.retro-desktop-layout .sc-goal-track { background: #fff; height: 18px; border: 2px inset #eee; border-radius: 0; }
+.retro-desktop-layout .sc-segmented { background: transparent; }
+.retro-desktop-layout .sc-segmented button { border: 2px outset #eee; border-radius: 0; }
+.retro-desktop-layout .sc-segmented button[aria-pressed="true"] { border-style: inset; background: #ddd; color: #17172b; }
+.retro-desktop-layout .memo-card { border: 2px inset #ddd; border-radius: 0; }
+.retro-desktop-layout .memo-picker button, .retro-desktop-layout .memo-actions button { border-radius: 0; }
+.retro-desktop-layout .memo-text { font-family: inherit; }
+.retro-desktop-layout .widget-quote { background: #ffffdc; }
+.retro-desktop-layout .quote-card { margin: 0; max-width: none; }
+.retro-desktop-layout .quote-text { font-size: 14px; text-align: left; }
+.retro-desktop-layout .focus-card { background: transparent; border: 0; padding: 4px; }
+.retro-desktop-layout .sc-focus .sc-time { font-family: Consolas, monospace; font-size: clamp(24px, 2.8vw, 40px); letter-spacing: 1px; }
+.retro-desktop-layout .calendar { --calendar-radius: 0; --calendar-card-bg: #fff; --calendar-today-bg: #000080; --calendar-today-fg: #fff; --calendar-day-size: 12px; --calendar-cell-height: 30px; }
+.retro-desktop-layout .calendar-nav { flex-wrap: wrap; }
+.retro-desktop-layout .sc-button, .retro-desktop-layout .sc-button.secondary, .retro-desktop-layout .sc-focus .sc-timer-actions .sc-button,
+.retro-desktop-layout button.primary { border: 2px outset #eee; border-radius: 0; background: #c0c0c0; color: #17172b; box-shadow: none; }
+.retro-desktop-layout .sc-button:hover:not(:disabled), .retro-desktop-layout .sc-focus .sc-timer-actions .sc-button:hover:not(:disabled),
+.retro-desktop-layout button.primary:hover:not(:disabled) { background: #ddd; color: #17172b; }
+.retro-desktop-layout .sc-button:active:not(:disabled) { border-style: inset; transform: none; }
+.retro-desktop-layout .sc-button.danger { background: #a02b25; color: #fff; }
+.retro-desktop-layout .sc-button.danger:hover:not(:disabled) { background: #7d1c18; color: #fff; }
+.retro-desktop-layout input, .retro-desktop-layout select { border: 2px inset #ddd; border-radius: 0; background: #fff; }
+.retro-desktop-layout dialog { border: 3px outset #eee; border-radius: 0; background: #c0c0c0; }
+.retro-desktop-layout :focus-visible { outline: 2px dashed #000080; outline-offset: 2px; }
+.retro-desktop-layout .space-tab:focus-visible, .retro-desktop-layout .rd-brand:focus-visible { outline-color: #fff; }
+.retro-desktop-layout .rd-taskbar { margin: 36px -18px 0; padding: 4px 8px; min-height: 44px; border-top: 3px outset #eee; background: #c0c0c0; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.retro-desktop-layout .rd-start { padding: 4px 12px; border: 2px outset #eee; color: #17172b; font-weight: 700; text-decoration: none; }
+.retro-desktop-layout .rd-task-name { padding: 4px 12px; border: 2px inset #ddd; max-width: 220px; overflow-wrap: anywhere; }
+.retro-desktop-layout .rd-status { flex: 1; min-width: 180px; font-size: 11px; }
+.retro-desktop-layout .widget-clock { --widget-default-width: 270px; --widget-default-height: 76px; padding: 0 4px; margin: 0; border: 2px inset #ddd; border-radius: 0; }
+.retro-desktop-layout .widget-clock > .widget-content { overflow: auto; container-type: normal; padding: 4px; }
+.retro-desktop-layout .widget-clock .clock-time { font-size: 16px; line-height: 1.3; }
+.retro-desktop-layout .widget-clock .clock-date { font-size: 12px; }
+@media (max-width: 1200px) {
+  .retro-desktop-layout .rd-desktop { grid-template-columns: 140px minmax(0, 1fr); gap: 14px; }
+  .retro-desktop-layout .rd-workspace { grid-template-columns: minmax(0, 1fr) minmax(280px, 1fr); gap: 18px; }
+  .retro-desktop-layout .rd-links { grid-column: 1 / -1; }
+  .retro-desktop-layout .sc-links-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+}
+@media (max-width: 800px) {
+  .retro-desktop-layout { padding: 12px 10px 0; }
+  .retro-desktop-layout .rd-desktop, .retro-desktop-layout .rd-workspace { grid-template-columns: minmax(0, 1fr); }
+  .retro-desktop-layout .space-tabs { flex-direction: row; overflow-x: auto; max-height: 180px; }
+  .retro-desktop-layout .space-tab { flex-shrink: 0; max-width: 220px; }
+  .retro-desktop-layout .rd-links { grid-column: auto; }
+  .retro-desktop-layout .rd-taskbar { margin-inline: -10px; }
+}
