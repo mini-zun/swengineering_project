@@ -1,4 +1,5 @@
 import BasicLayout from '../layouts/BasicLayout.jsx'
+import MemoBoardLayout from '../layouts/MemoBoardLayout.jsx'
 import EmotionalLayout from '../layouts/EmotionalLayout.jsx'
 import SidebarCorkLayout from '../layouts/SidebarCorkLayout.jsx'
 
@@ -8,6 +9,7 @@ import SidebarCorkLayout from '../layouts/SidebarCorkLayout.jsx'
 // widgetSizes, onWidgetSizeChange, themeId)를 받고, themeControl(테마 버튼)을 반드시 화면에 배치한다.
 export const THEME_RENDERERS = {
   basic: BasicLayout,
+  'memo-board': MemoBoardLayout,
   emotional: EmotionalLayout,
   'sidebar-cork': SidebarCorkLayout,
 }

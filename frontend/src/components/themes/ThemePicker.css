@@ -53,3 +53,8 @@
 .theme-save-error .error { margin-top: 8px; }
 .theme-save-error button { margin-top: 8px; }
 .theme-dialog .dialog-actions { margin-top: 12px; }
+/* 메모보드의 종이 세 열과 주간 날짜 띠. */
+.theme-preview-paper-board .theme-preview-a { left: 6%; top: 16%; width: 27%; height: 53%; }
+.theme-preview-paper-board .theme-preview-b { left: 37%; top: 16%; width: 27%; height: 53%; }
+.theme-preview-paper-board .theme-preview-c { right: 6%; top: 16%; width: 25%; height: 53%; background: var(--preview-accent); }
+.theme-preview-paper-board .theme-preview-d { left: 6%; right: 6%; bottom: 10%; height: 12%; }

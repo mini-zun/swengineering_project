@@ -41,6 +41,8 @@ export default function App() {
   const themes = data ? themeOptions(data, data.activeSpaceId, AVAILABLE_THEME_IDS) : null
   const themeId = themes?.displayedId
   const [themeDialogOpen, setThemeDialogOpen] = useState(false)
+  const linkInput = useRef(null)
+  const todoInput = useRef(null)
   // 테마별 CSS가 자기 범위에만 적용되도록 표시 중인 테마 ID를 문서에 알린다.
   useEffect(() => {
     if (!themeId) return
@@ -105,12 +107,12 @@ export default function App() {
     widgetSizes={Object.fromEntries(Object.keys(WIDGET_LABELS).map((id) => [id, widgetSize(data, activeSpace.id, id, themeId)]))}
     onWidgetSizeChange={(widgetId, size) => commit((current) => setWidgetSize(current, { spaceId: activeSpace.id, themeId, widgetId, size }))}
     slots={{
-      links: <SiteLinks key={activeSpace.id} spaceId={activeSpace.id} links={activeSpace.links}
+      links: <SiteLinks ref={linkInput} key={activeSpace.id} spaceId={activeSpace.id} links={activeSpace.links}
         onRetry={() => commit((current) => current)}
         onAdd={(spaceId, value) => dispatch({ type: 'link/add', spaceId, ...value })}
         onEdit={(spaceId, id, value) => dispatch({ type: 'link/edit', spaceId, id, ...value })}
         onDelete={(spaceId, id) => dispatch({ type: 'link/delete', spaceId, id })} />,
-      todos: <TodoList key={activeSpace.id} spaceId={activeSpace.id} todos={activeSpace.todos}
+      todos: <TodoList ref={todoInput} key={activeSpace.id} spaceId={activeSpace.id} todos={activeSpace.todos}
         onRetry={() => commit((current) => current)}
         onAdd={(spaceId, value) => dispatch({ type: 'todo/add', spaceId, ...value })}
         onToggle={(spaceId, id, done) => dispatch({ type: 'todo/toggle', spaceId, id, done })}
@@ -172,6 +174,9 @@ export default function App() {
       saveError={session.status === 'failed' ? session.saveError : null}
       onRetry={() => { memos.retryAll(); return commit((current) => current) }}
       onSelect={(selectedThemeId) => {
+        // SCRUM-50: 취소하면 선택·입력·저장을 모두 그대로 둔다. 사용자와 합의한 경고 정책.
+        if (selectedThemeId !== themeId && (linkInput.current?.hasUnsubmittedInput() || todoInput.current?.hasUnsubmittedInput()) &&
+          !window.confirm('테마를 바꾸면 아직 제출하지 않은 바로가기·할 일 입력은 사라져요. 저장된 내용과 메모·문구 초안·집중 시간은 유지돼요. 테마를 바꿀까요?')) return { error: null }
         // 대기 중인 메모 저장을 원래 공간에 먼저 처리한 뒤 선택만 바꾼다. 내용 데이터는 건드리지 않는다.
         memos.flush(activeSpace.id)
         const result = commit((current) => setSpaceTheme(current, activeSpace.id, selectedThemeId))

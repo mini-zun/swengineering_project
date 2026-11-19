@@ -17,7 +17,7 @@ test('선택 목록은 기본 디자인과 추가 5개 디자인을 이름·설�
   for (const theme of THEME_CATALOG) {
     assert.ok(THEME_IDS.includes(theme.id) && isThemeId(theme.id))
     assert.ok(theme.name.trim() && theme.description.trim())
-    assert.match(theme.preview.shape, /^(hero|board|sidebar|desktop|notes)$/)
+    assert.match(theme.preview.shape, /^(hero|board|paper-board|sidebar|desktop|notes)$/)
     for (const key of ['bg', 'surface', 'ink', 'accent']) assert.match(theme.preview[key], /^#[0-9a-f]{6}$/)
   }
   // 사용자 꾸미기는 예약 ID이고 제공 테마 목록에는 넣지 않는다.

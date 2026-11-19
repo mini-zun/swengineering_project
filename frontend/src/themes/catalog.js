@@ -1,5 +1,11 @@
 import { DEFAULT_THEME_ID, spaceThemeId, resolveSpaceThemeId } from '../state/themes.js'
 
+const memoBoardPresentation = {
+  description: '코르크 보드 위 종이 카드와 주간 날짜',
+  preview: { shape: 'paper-board', bg: '#bfa173', surface: '#fffdf3', ink: '#403e30', accent: '#f3ebb5' },
+}
+
+// 병렬 개발 중인 다른 테마의 목록 항목과 독립적으로 구현된 미리보기를 적용한다.
 // 선택 화면에 보여 줄 제공 테마 목록이다. 순서가 곧 화면 순서다.
 // preview는 선택 화면의 작은 미리보기에만 쓰는 대표 색과 배치 종류다. 실제 화면 스타일은 각 테마의 레이아웃이 정한다.
 // custom(사용자 꾸미기)은 SCRUM-47에서 별도 진입점으로 연결하므로 여기에 넣지 않는다.
@@ -16,7 +22,7 @@ export const THEME_CATALOG = [
     preview: { shape: 'desktop', bg: '#2f8f8b', surface: '#d8d8d0', ink: '#16163f', accent: '#1a1a8c' } },
   { id: 'postit-board', name: '포스트잇 보드', description: '포스트잇을 붙여 둔 듯한 화면',
     preview: { shape: 'notes', bg: '#f4f1ea', surface: '#ffe28a', ink: '#3a3528', accent: '#f29a76' } },
-]
+].map((theme) => theme.id === 'memo-board' ? { ...theme, ...memoBoardPresentation } : theme)
 
 export const themeName = (themeId) => THEME_CATALOG.find((theme) => theme.id === themeId)?.name ?? themeId
 
