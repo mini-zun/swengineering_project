@@ -34,6 +34,8 @@
 .retro-desktop-layout .space-navigation { flex-direction: column; align-items: stretch; gap: 14px; }
 .retro-desktop-layout .space-tabs { flex-direction: column; max-height: 55vh; overflow-y: auto; align-items: stretch; gap: 8px; }
 .retro-desktop-layout .space-tab { border: 1px solid transparent; background: transparent; color: #fff; text-align: left; white-space: normal; overflow-wrap: anywhere; border-radius: 0; max-width: none; padding: 10px; font-size: 13px; }
+.retro-desktop-layout .space-tab:not(.selected):hover:not(:disabled),
+.retro-desktop-layout .space-tab:not(.selected):focus-visible:not(:disabled) { background: #315c5c; color: #fff; }
 .retro-desktop-layout .space-tab::before { content: '▣'; display: inline-block; margin-right: 8px; color: #fffbd4; }
 .retro-desktop-layout .space-tab.selected, .retro-desktop-layout .space-tab.selected:hover:not(:disabled) { background: #000080; color: #fff; border: 1px dotted #fff; }
 .retro-desktop-layout .space-actions { flex-wrap: wrap; }

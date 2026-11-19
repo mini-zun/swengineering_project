@@ -25,3 +25,20 @@ test('레이아웃 밖 레트로 테마 선택창의 기본·hover 버튼 색은
     assert.ok((values[0] + 0.05) / (values[1] + 0.05) >= 4.5, '일반 크기 버튼 글자 대비 4.5:1 이상')
   }
 })
+
+
+test('레트로 비선택 공간 탭은 hover·키보드 초점에서도 명시적인 배경과 글자 대비를 유지한다', () => {
+  const css = readFileSync(new URL('../src/layouts/RetroDesktopLayout.css', import.meta.url), 'utf8')
+  // 선언 색상 검사이며 실제 브라우저의 최종 cascade·렌더링 검증을 대신하지 않는다.
+  for (const state of ['hover', 'focus-visible']) {
+    const selector = `.retro-desktop-layout .space-tab:not(.selected):${state}:not(:disabled)`
+    const start = css.indexOf(selector)
+    assert.ok(start >= 0, '선택·비활성 탭에 영향을 주지 않는 상태 선택자가 필요하다')
+    const declarations = css.slice(css.indexOf('{', start), css.indexOf('}', start))
+    const background = declarations.match(/background:\s*(#[0-9a-f]{6}|#[0-9a-f]{3})/i)?.[1]
+    const foreground = declarations.match(/(?:\s|;)color:\s*(#[0-9a-f]{6}|#[0-9a-f]{3})/i)?.[1]
+    assert.ok(background && foreground, '공통 hover 배경을 덮어쓸 두 색을 모두 지정해야 한다')
+    const values = [luminance(background), luminance(foreground)].sort((a, b) => b - a)
+    assert.ok((values[0] + 0.05) / (values[1] + 0.05) >= 4.5)
+  }
+})
