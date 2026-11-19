@@ -20,8 +20,8 @@ export const THEME_CATALOG = [
     preview: { shape: 'sidebar', bg: '#c49a65', surface: '#fffcf1', ink: '#584632', accent: '#435f50' } },
   { id: 'retro-desktop', name: '레트로 데스크톱', description: '옛 컴퓨터 창을 닮은 화면',
     preview: { shape: 'desktop', bg: '#4e7c7c', surface: '#c0c0c0', ink: '#17172b', accent: '#000080' } },
-  { id: 'postit-board', name: '포스트잇 보드', description: '포스트잇을 붙여 둔 듯한 화면',
-    preview: { shape: 'notes', bg: '#f4f1ea', surface: '#ffe28a', ink: '#3a3528', accent: '#f29a76' } },
+  { id: 'postit-board', name: '포스트잇 보드', description: '갈색 보드 위 색색의 메모와 종이 카드',
+    preview: { shape: 'notes', bg: '#b0946b', surface: '#fffdf3', ink: '#30271d', accent: '#f8e88c' } },
 ].map((theme) => theme.id === 'memo-board' ? { ...theme, ...memoBoardPresentation } : theme)
 
 export const themeName = (themeId) => THEME_CATALOG.find((theme) => theme.id === themeId)?.name ?? themeId
