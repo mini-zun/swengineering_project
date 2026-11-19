@@ -170,6 +170,7 @@
 .sidebar-cork-layout .widget-timer .sc-timer-actions .sc-button { background: #f3e9ca; color: #435f50; }
 .sidebar-cork-layout .widget-timer .sc-timer-actions .sc-button:hover:not(:disabled) { background: #fff8df; }
 .sidebar-cork-layout .widget-timer .sc-timer-actions .sc-stop { background: transparent; color: #fff8df; }
+.sidebar-cork-layout .widget-timer .sc-timer-actions .sc-button.sc-stop:hover:not(:disabled) { background: #fff8df; color: #435f50; }
 .sidebar-cork-layout .calendar { --calendar-today-bg: #a34e32; --calendar-today-fg: #fffdf3; --calendar-weekend-fg: #a34e32; --calendar-cell-height: 30px; --calendar-card-bg: transparent; }
 .sidebar-cork-layout .calendar-nav { gap: 0; }
 .sidebar-cork-layout .calendar .calendar-title { font-size: 13px; }
