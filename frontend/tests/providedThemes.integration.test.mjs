@@ -140,6 +140,15 @@ test('제공 테마 실제 App 통합 (모의 DOM)', async (t) => {
           assert.equal(storage.snapshot().activeSpaceId, b)
           assert.equal(q('.memo-text').value, data.spaces[1].memos[0].content)
           assert.equal(window.document.documentElement.dataset.theme, 'postit-board')
+          // 재접속 당시의 B뿐 아니라 변경한 A의 선택·화면 설정도 실제로 다시 읽는다.
+          await selectSpace('기본 공간')
+          assert.equal(storage.snapshot().activeSpaceId, a)
+          assert.equal(window.document.documentElement.dataset.theme, to, `${from} → ${to} 재마운트 후 A`)
+          assert.equal(q('[data-widget="todos"]').style.getPropertyValue('--widget-width'), `${data.layout[to].spaces[a].widgets.todos.width}px`)
+          assert.equal(q('.memo-widget').dataset.view, data.layout[to].memo.view)
+          assert.equal(q('.memo-card').dataset.size, data.layout[to].memo.sizes[data.spaces[0].memos[0].id])
+          assert.equal(q('.memo-text').value, data.spaces[0].memos[0].content)
+          assert.deepEqual(storage.snapshot(), expected)
         }
       }
     })
@@ -290,7 +299,8 @@ test('제공 테마 실제 App 통합 (모의 DOM)', async (t) => {
           const parent = node.parentElement
           Object.defineProperty(parent, 'clientWidth', { configurable: true, value: 1200 })
           parent.style.padding = '0px'
-          const width = Math.min(500, parseInt(node.style.getPropertyValue('--widget-max-width')) - 60)
+          const maxWidth = Math.min(1200, parseInt(node.style.getPropertyValue('--widget-max-width')))
+          const width = Math.min(500, maxWidth - 60)
           const maxHeight = parseInt(node.style.getPropertyValue('--widget-max-height'))
           const height = Math.max(parseInt(node.style.getPropertyValue('--widget-min-height')), Math.min(500, maxHeight - 60))
           node.getBoundingClientRect = () => ({ width, height })
@@ -332,7 +342,14 @@ test('제공 테마 실제 App 통합 (모의 DOM)', async (t) => {
           await pointer('pointermove', 20, 20)
           await pointer('pointerup', 20, 20)
           assert.equal(storage.writes, writes + 1)
+          // 기본 테마의 시계·문구는 가운데를 유지해 가로 이동량의 두 배만큼 커져야 한다.
+          const widthDelta = theme === 'basic' && ['clock', 'quote'].includes(id) ? 40 : 20
+          assert.equal(widgetSize(storage.snapshot(), a, id, theme).width, Math.min(maxWidth, width + widthDelta), `${theme}/${id} 드래그 너비`)
           assert.equal(widgetSize(storage.snapshot(), a, id, theme).height, Math.min(maxHeight, height + 20))
+          await pointer('pointerdown', 0, 0)
+          await pointer('pointermove', 10000, 20)
+          await pointer('pointerup', 10000, 20)
+          assert.equal(widgetSize(storage.snapshot(), a, id, theme).width, maxWidth, `${theme}/${id} 드래그 최대 너비`)
           await click(q(`[data-widget="${id}"] .widget-size-reset`))
           assert.equal(widgetSize(storage.snapshot(), a, id, theme), 'm')
         }

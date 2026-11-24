@@ -6,6 +6,8 @@ React 19 + Vite 8 + JavaScript 프로젝트입니다. npm과 기존 package-lock
 
 프로젝트 폴더(`frontend/`)에서 실행합니다. 검증 환경: Windows, Node v24.18.0, npm 11.16.0.
 
+개발·전체 테스트의 Node 요구 범위는 `^22.22.2 || ^24.15.0 || >=26.0.0`입니다. jsdom 31 기준으로 Node 22는 22.22.2 이상, Node 24는 24.15.0 이상, Node 26 이상을 사용하세요. Node 20·23·25는 이 범위에 포함되지 않습니다. `package.json`의 `engines.node`에도 같은 기준을 명시합니다.
+
 - 최초 의존성 설치: `npm.cmd ci`
 - 개발 서버: `npm.cmd run dev`
 - ESLint: `npm.cmd run lint`
