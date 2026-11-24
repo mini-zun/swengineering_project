@@ -1,0 +1,137 @@
+:root[data-theme="postit-board"] {
+  --color-bg: #b0946b;
+  --color-text: #30271d;
+  --color-text-muted: #65513a;
+  --color-surface: #fffdf3;
+  --color-surface-subtle: #eee3c9;
+  --color-border: #d1bd95;
+  --color-border-strong: #95805c;
+  --color-accent: #78432c;
+  --color-primary-hover: #59402b;
+  --color-quote: #30271d;
+  --color-danger: #a02d29;
+  --color-on-danger: #ffffff;
+  --color-ink: #30271d;
+  --color-ink-muted: #65513a;
+  --color-line: #d1bd95;
+  --radius-card: 2px;
+}
+.postit-board-layout {
+  --pb-paper: #fffdf3;
+  --pb-dark: #2d251b;
+  --pb-yellow: #f8e88c;
+  --memo-text: #30271d;
+  --memo-muted: #65513a;
+  --memo-border: 1px solid #b8a268;
+  --memo-radius: 1px;
+  --memo-shadow: 2px 5px 6px #30271d30;
+  --memo-padding: 22px 18px 16px;
+  --memo-bg-paper: #fff7d5;
+  --memo-bg-yellow: #f8e88c;
+  --memo-bg-pink: #edbfd0;
+  --memo-bg-blue: #bdd9f3;
+  --memo-bg-green: #cce5b8;
+  --memo-selected-bg: #59402b;
+  --memo-selected-text: #fffdf3;
+  --memo-control-bg: #eee3c9;
+  --memo-focus: #78432c;
+  --memo-board-min-width: 210px;
+  --memo-gap: 18px;
+  max-width: 1640px;
+  min-height: 100vh;
+  padding: 28px 32px 0;
+}
+.postit-board-layout .pb-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.postit-board-layout .widget-quote { --widget-default-width: calc(100% - 304px); margin: 0; padding: 14px 18px 4px; border-radius: 1px; background: var(--pb-paper); box-shadow: 2px 4px 5px #30271d30; }
+.postit-board-layout .quote-display { flex-direction: row; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.postit-board-layout .quote-text { font: 700 19px/1.7 'Noto Serif KR', Georgia, serif; letter-spacing: .04em; text-align: left; }
+.postit-board-layout .quote-edit { flex-shrink: 0; }
+.postit-board-layout .widget-clock { --widget-default-width: 280px; --widget-default-height: 90px; --clock-color: #fff7d5; --clock-muted-color: #fff7d5; padding: 6px 10px 0; margin: 0; border-radius: 6px; background: var(--pb-dark); }
+.postit-board-layout .widget-clock > .widget-content { container-type: normal; overflow: auto; }
+.postit-board-layout .widget-clock .clock--compact { flex-wrap: wrap; gap: 6px 10px; justify-content: center; }
+.postit-board-layout .widget-clock .clock-time { font-size: 24px; line-height: 1.25; color: #fff7d5; }
+.postit-board-layout .widget-clock .clock-date { font-size: 12px; color: #fff7d5; }
+.postit-board-layout .pb-navigation { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin: 24px 0; }
+.postit-board-layout .space-navigation { flex-wrap: wrap; gap: 10px; }
+.postit-board-layout .space-tabs { flex: 1; gap: 8px; padding: 4px; }
+.postit-board-layout .space-tab { background: #eee3c9; color: #30271d; border-radius: 2px; font-size: 14px; white-space: normal; overflow-wrap: anywhere; box-shadow: 1px 2px 3px #30271d26; }
+.postit-board-layout .space-tab.selected, .postit-board-layout .space-tab.selected:hover:not(:disabled) { background: var(--pb-yellow); color: #30271d; box-shadow: inset 0 -3px #78432c; }
+.postit-board-layout .space-tab:not(.selected):hover:not(:disabled), .postit-board-layout .space-tab:not(.selected):focus-visible:not(:disabled) { background: var(--pb-paper); color: #30271d; }
+.postit-board-layout .space-actions { flex-wrap: wrap; }
+.postit-board-layout .space-actions button, .postit-board-layout .theme-button { background: var(--pb-paper); color: #30271d; border: 1px solid #95805c; border-radius: 2px; }
+.postit-board-layout .space-actions button:first-child { border-style: dashed; border-radius: 2px; }
+.postit-board-layout .pb-upper { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(0, 2.2fr); gap: 26px; align-items: start; }
+.postit-board-layout .pb-notes { display: grid; grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr); gap: 22px; align-items: start; min-width: 0; }
+.postit-board-layout .pb-column { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+.postit-board-layout .pb-column > .widget { --widget-default-width: 100%; margin: 0; border-radius: 1px; }
+.postit-board-layout .widget-todos { padding: 22px 18px 6px; background: var(--pb-paper); box-shadow: 2px 5px 6px #30271d30; }
+.postit-board-layout .sc-section-heading h2 { font: 700 18px/1.6 'Noto Serif KR', Georgia, serif; }
+.postit-board-layout .sc-todo-row { border-bottom: 1px solid #e3d8c2; }
+.postit-board-layout .sc-todo-row > input:checked { background: #78432c; border-color: #78432c; }
+.postit-board-layout .sc-todo-form { background: #eee3c9; border-radius: 1px; }
+.postit-board-layout .widget-memos { padding: 0; }
+/* 제목·보기·선택·크기 컨트롤은 갈색 바탕과 분리해 작은 글자 대비를 확보한다. */
+.postit-board-layout .memo-header, .postit-board-layout .memo-picker, .postit-board-layout .widget-links .sc-section-heading,
+.postit-board-layout .widget-memos > .widget-resize-footer, .postit-board-layout .widget-links > .widget-resize-footer { background: var(--pb-paper); padding: 10px; border-radius: 2px; }
+.postit-board-layout .memo-card { border-top: 8px solid #30271d0a; }
+.postit-board-layout .memo-text { font-family: 'Noto Serif KR', Georgia, serif; }
+.postit-board-layout .memo-empty { background: var(--pb-yellow); border: 1px dashed #95805c; border-radius: 1px; box-shadow: var(--memo-shadow); }
+.postit-board-layout .memo-error { padding: 10px; background: var(--pb-paper); }
+.postit-board-layout .widget-dday { --dday-count-size: 34px; padding: 22px 16px 6px; background: #bdd9f3; box-shadow: 2px 5px 6px #30271d30; }
+.postit-board-layout .dday-item { grid-template-columns: minmax(0, 1fr); grid-template-areas: 'text' 'count' 'actions'; gap: 12px; }
+.postit-board-layout .dday-actions { flex-wrap: wrap; }
+.postit-board-layout .pb-lower { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr); align-items: start; gap: 28px; margin-top: 38px; }
+.postit-board-layout .widget-links { padding: 0; }
+.postit-board-layout .widget-links .sc-links-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 106px), 1fr)); gap: 14px; }
+.postit-board-layout .sc-link-tile { background: var(--pb-paper); border: 0; border-radius: 1px; box-shadow: 1px 4px 5px #30271d30; }
+.postit-board-layout .sc-site-anchor { flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; gap: 10px; min-height: 130px; padding: 12px 8px 32px; }
+.postit-board-layout .sc-site-icon { width: 56px; height: 56px; border-radius: 0; background: #f8e88c; color: #30271d; font: 500 24px 'Noto Serif KR', Georgia, serif; }
+.postit-board-layout .sc-link-tile:nth-child(4n + 2) .sc-site-icon { background: #cce5b8; }
+.postit-board-layout .sc-link-tile:nth-child(4n + 3) .sc-site-icon { background: #bdd9f3; }
+.postit-board-layout .sc-link-tile:nth-child(4n + 4) .sc-site-icon { background: #edbfd0; }
+.postit-board-layout .sc-site-info { align-items: center; }
+.postit-board-layout .sc-site-info strong { font-size: 12px; font-weight: 500; }
+.postit-board-layout .sc-link-add { min-height: 130px; background: var(--pb-paper); border: 1px dashed #95805c; border-radius: 1px; }
+.postit-board-layout .widget-timer { padding: 22px 18px 6px; background: var(--pb-dark); color: #fff7d5; border-radius: 8px; }
+.postit-board-layout .widget-timer .sc-focus { --sc-text: #fff7d5; --sc-muted: #fff7d5; --sc-line: #95805c; --sc-accent: #f8e88c; }
+.postit-board-layout .focus-card { border: 0; background: transparent; padding: 0; }
+.postit-board-layout .widget-timer .sc-time { font: 500 clamp(26px, 3vw, 44px)/1.3 Consolas, monospace; color: #fff7d5; }
+.postit-board-layout .widget-timer :is(.sc-section-heading > svg, .sc-timer-state, .sc-timer-space, .sc-focus-owner, .sc-daily-focus > div:first-child, .sc-daily-focus small, .sc-daily-focus strong, .sc-daily-goal, .sc-text-button, .sc-goal-caption, .focus-details, .sc-focus-note, .sc-history h3, .sc-history h3 span, .sc-history > p, .sc-history b, .sc-history small) { color: #fff7d5; }
+/* 목표 버튼에만 적용해 대화상자의 텍스트 버튼 팔레트는 유지한다. */
+.postit-board-layout .widget-timer .sc-daily-goal > .sc-text-button:hover:not(:disabled),
+.postit-board-layout .widget-timer .sc-daily-goal > .sc-text-button:focus-visible:not(:disabled) { background: #fff7d5; color: #30271d; }
+/* summary는 공통 button/a/input 초점 규칙의 대상이 아니다. */
+.postit-board-layout .widget-timer .focus-details > summary:focus-visible { outline: 3px solid #f8e88c; outline-offset: 3px; }
+.postit-board-layout .widget-timer .sc-goal-track { background: #65513a; }
+.postit-board-layout .widget-timer .sc-goal-track > div { background: var(--pb-yellow); }
+.postit-board-layout .widget-timer .sc-daily-focus, .postit-board-layout .widget-timer .sc-history { border-color: #95805c; }
+.postit-board-layout .widget-timer .sc-error { background: var(--pb-paper); color: #a02d29; padding: 8px; }
+/* 대화상자는 루트의 종이 팔레트를 사용해 어두운 카드의 글자색을 입력창에 전달하지 않는다. */
+.postit-board-layout .widget-timer .sc-dialog { --sc-text: #30271d; --sc-muted: #65513a; --sc-line: #d1bd95; --sc-accent: #78432c; color: #30271d; }
+.postit-board-layout .widget-timer .sc-dialog :is(.sc-text-button, .sc-focus-note) { color: #65513a; }
+.postit-board-layout .widget-clock > .widget-resize-footer, .postit-board-layout .widget-timer > .widget-resize-footer { --color-text-muted: #fff7d5; --color-accent: #f8e88c; }
+.postit-board-layout :is(.widget-clock, .widget-timer) > .widget-resize-footer button:is(:hover, :focus-visible) { background: #fff7d5; color: #30271d; }
+.postit-board-layout .widget-timer .sc-timer-actions .sc-button,
+.postit-board-layout .widget-timer .sc-timer-actions .sc-button.sc-stop { background: var(--pb-yellow); color: #30271d; border-color: #b8a268; border-radius: 3px; }
+.postit-board-layout .widget-timer .sc-timer-actions .sc-button:hover:not(:disabled),
+.postit-board-layout .widget-timer .sc-timer-actions .sc-button:focus-visible:not(:disabled) { background: #fff7d5; color: #30271d; }
+.postit-board-layout .sc-button { background: #59402b; color: #fffdf3; border-radius: 3px; }
+.postit-board-layout .sc-button.secondary { background: #eee3c9; color: #30271d; }
+.postit-board-layout .sc-button.danger { background: #a02d29; color: #fff; }
+.postit-board-layout .pb-support { display: flex; flex-wrap: wrap; margin-top: 32px; }
+.postit-board-layout .widget-calendar { --widget-default-width: 460px; padding: 20px 18px 6px; background: var(--pb-paper); border-radius: 1px; box-shadow: 2px 5px 6px #30271d30; }
+.postit-board-layout .calendar { --calendar-today-bg: #78432c; --calendar-today-fg: #fffdf3; --calendar-weekend-fg: #78432c; }
+.postit-board-layout .pb-resize-hint, .postit-board-layout .app-footer { padding: 12px 16px; background: var(--pb-paper); border-radius: 2px; }
+.postit-board-layout .pb-resize-hint { margin-top: 28px; font-size: 12px; }
+:root[data-theme="postit-board"] button.primary { background: #59402b; color: #fffdf3; }
+@media (max-width: 1100px) {
+  .postit-board-layout .pb-upper { grid-template-columns: minmax(0, 1fr); }
+  .postit-board-layout .pb-notes { grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr); }
+}
+@media (max-width: 740px) {
+  .postit-board-layout { padding: 20px 16px 0; }
+  .postit-board-layout .pb-notes, .postit-board-layout .pb-lower { grid-template-columns: minmax(0, 1fr); }
+  .postit-board-layout .pb-notes { gap: 26px; }
+  .postit-board-layout .widget-quote, .postit-board-layout .widget-clock { --widget-default-width: 100%; }
+  .postit-board-layout .space-tabs { flex-basis: 100%; }
+}
