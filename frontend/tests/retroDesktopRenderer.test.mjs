@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url'
 
 test('레트로 데스크톱는 공통 내용을 한 번씩 연결하고 실제 테마별 크기를 전달한다', async () => {
   const server = await createServer({ root: fileURLToPath(new URL('..', import.meta.url)),
-    server: { middlewareMode: true, hmr: false }, appType: 'custom' })
+    server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' })
   try {
     const { THEME_RENDERERS, AVAILABLE_THEME_IDS } = await server.ssrLoadModule('/src/themes/renderers.js')
     function marker(id) { return createElement('span', { 'data-test-slot': id }) }

@@ -10,7 +10,7 @@ import { themeOptions } from '../src/themes/catalog.js'
 
 test('포스트잇은 기존 5개 테마를 보존하며 공통 슬롯·시계·달력과 저장 크기를 연결한다', async () => {
   const server = await createServer({ root: fileURLToPath(new URL('..', import.meta.url)),
-    server: { middlewareMode: true, hmr: false }, appType: 'custom' })
+    server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' })
   try {
     const { THEME_RENDERERS, AVAILABLE_THEME_IDS } = await server.ssrLoadModule('/src/themes/renderers.js')
     assert.deepEqual([...AVAILABLE_THEME_IDS].sort(), ['basic', 'emotional', 'memo-board', 'postit-board', 'retro-desktop', 'sidebar-cork'])
