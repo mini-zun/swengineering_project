@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 // 실제 JSX와 등록표를 로드해 선택 가능 여부 및 공통 slot 연결 누락을 검사한다.
 test('코르크 렌더러는 공통 8개 영역과 공간·테마·저장 컨트롤을 한 번씩 연결한다', async () => {
   const server = await createServer({ root: fileURLToPath(new URL('..', import.meta.url)),
-    server: { middlewareMode: true }, appType: 'custom' })
+    server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom' })
   try {
     const { THEME_RENDERERS, AVAILABLE_THEME_IDS } = await server.ssrLoadModule('/src/themes/renderers.js')
     assert.ok(AVAILABLE_THEME_IDS.includes('sidebar-cork'))

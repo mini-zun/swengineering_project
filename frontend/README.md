@@ -15,6 +15,14 @@ React 19 + Vite 8 + JavaScript 프로젝트입니다. npm과 기존 package-lock
 
 PowerShell 실행 정책으로 npm.ps1이 차단되면 npm.cmd를 사용합니다. 필요한 환경변수는 없습니다.
 
+### 제공 테마 통합 검사 (#34, SCRUM-51)
+
+`npm.cmd test`는 기존 상태·SSR 검사와 함께 `tests/providedThemes.integration.test.mjs`를 실행합니다. 이 파일만 실행하려면 `node --test tests/providedThemes.integration.test.mjs`를 사용합니다.
+
+실제 App의 입력·이벤트·저장 연결을 검사하기 위해 개발 의존성 `jsdom@31.0.1`을 사용합니다. 기존 상태 함수와 SSR만으로는 App의 미제출 경고·메모 초안·저장 재시도 연결을 검증하기 어려워 추가했습니다. 위에 기록한 Node 환경에서 실행했으며 제품 번들에는 포함하지 않습니다.
+
+각 사례는 테스트 전용 A/B 데이터와 메모리 저장소를 만들고, 실패는 해당 저장소의 예외로 재현합니다. 실제 브라우저 프로필이나 개인 데이터에 접근하지 않습니다. 모달·치수·포인터 캡처는 테스트 대역이므로 실제 배치·네이티브 초점·IME 검증을 대신하지 않습니다. 범위와 남은 수동 확인은 [제공 테마 통합 검증 기록](../docs/provided-themes-test-results.md)을 참고하세요.
+
 ## 이번 구현 범위
 
 - FR-01~04: 빈 기본 공간 하나, 생성·선택·이름 변경·삭제, 마지막 공간 삭제 방지, 생성 순서 유지와 선택 공간 복원.
