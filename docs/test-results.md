@@ -264,3 +264,11 @@
 - 모의 저장 실패 시 최신 입력·치수 유지·모달/전체 재시도. 사용자 저장소를 지우거나 채우지 않는다.
 
 이번 작업은 구현·자동 검사 범위의 완료이며 실제 브라우저 인수·성능 측정은 미완료다.
+
+### 2026-11-24 PR #33 리뷰 반영
+
+- [목표 변경 hover 리뷰](https://github.com/mini-zun/swengineering_project/pull/33#issuecomment-7092093940): `.sc-daily-goal` 바로 아래 목표 버튼에만 hover/focus-visible 배경 `#fff7d5`와 글자 `#30271d`를 함께 지정했다. 비활성 버튼은 제외하며 목표 대화상자의 버튼은 이 선택자에 포함하지 않는다.
+- [집중 기록 summary 초점 리뷰](https://github.com/mini-zun/swengineering_project/pull/33#discussion_r4662045445): 해당 summary의 focus-visible에 3px 노란색 `#f8e88c` 초점선을 직접 지정했다. 타이머 전체의 `--color-accent`를 바꾸지 않아 대화상자와 다른 테마의 초점 토큰을 유지한다.
+- `postitContrast.test.mjs`에 선언 색상 회귀 검사 2개를 추가했다. 목표 버튼의 hover/키보드 초점 대비 4.5:1 이상, summary 초점선과 어두운 배경 대비 3:1 이상, 종이 대화상자·루트의 강조색 유지 여부를 검사한다. 실제 브라우저 computed style 검사와 구분한다.
+- Windows에서 테스트 **112개·lint·빌드·git diff --check 통과**. 빌드 CSS에 두 전용 상태 규칙이 포함된 것도 확인했다. 수정 후 실제 Chrome·Edge 화면 재검증은 이번에 수행하지 않았다.
+- 수정 전 `24caea5`의 리뷰어 Chromium 검증은 별도 근거다. 리뷰어는 1280/1000/390px 가로 스크롤 없음과 표시 글자 대비를 보고했고, 위 두 상태 문제를 지적했다. 이 결과를 수정 후 에이전트의 직접 화면 통과로 바꾸어 기록하지 않는다.

@@ -97,6 +97,11 @@
 .postit-board-layout .focus-card { border: 0; background: transparent; padding: 0; }
 .postit-board-layout .widget-timer .sc-time { font: 500 clamp(26px, 3vw, 44px)/1.3 Consolas, monospace; color: #fff7d5; }
 .postit-board-layout .widget-timer :is(.sc-section-heading > svg, .sc-timer-state, .sc-timer-space, .sc-focus-owner, .sc-daily-focus > div:first-child, .sc-daily-focus small, .sc-daily-focus strong, .sc-daily-goal, .sc-text-button, .sc-goal-caption, .focus-details, .sc-focus-note, .sc-history h3, .sc-history h3 span, .sc-history > p, .sc-history b, .sc-history small) { color: #fff7d5; }
+/* 목표 버튼에만 적용해 대화상자의 텍스트 버튼 팔레트는 유지한다. */
+.postit-board-layout .widget-timer .sc-daily-goal > .sc-text-button:hover:not(:disabled),
+.postit-board-layout .widget-timer .sc-daily-goal > .sc-text-button:focus-visible:not(:disabled) { background: #fff7d5; color: #30271d; }
+/* summary는 공통 button/a/input 초점 규칙의 대상이 아니다. */
+.postit-board-layout .widget-timer .focus-details > summary:focus-visible { outline: 3px solid #f8e88c; outline-offset: 3px; }
 .postit-board-layout .widget-timer .sc-goal-track { background: #65513a; }
 .postit-board-layout .widget-timer .sc-goal-track > div { background: var(--pb-yellow); }
 .postit-board-layout .widget-timer .sc-daily-focus, .postit-board-layout .widget-timer .sc-history { border-color: #95805c; }
